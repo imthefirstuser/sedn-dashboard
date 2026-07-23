@@ -76,12 +76,12 @@ tr.missing td{color:var(--red)}
   </div>
   <div class="card">
     <div class="label">废料回收</div>
-    <div class="value" style="color:var(--green)">—</div>
-    <div class="sub">无废料</div>
+    <div class="value" style="color:var(--green)">−10.29</div>
+    <div class="sub">304废铁 1.286kg</div>
   </div>
   <div class="card">
     <div class="label">净原料成本</div>
-    <div class="value" style="color:var(--text)">208.88</div>
+    <div class="value" style="color:var(--text)">198.59</div>
   </div>
   <div class="card">
     <div class="label">总成本</div>
@@ -137,10 +137,19 @@ tr.missing td{color:var(--red)}
     <tr class="missing"><td>缺价</td><td>线篮</td><td style="font-size:11px;color:var(--text-muted)">WG0057/480*380，散件</td><td>1.00</td><td>—</td><td>—</td><td style="font-size:10px;max-width:250px">—</td></tr>
 
     <tr class="subtotal"><td colspan="5"><strong>小计</strong></td><td><strong>208.88</strong></td><td>35项有价 / 1项缺价</td></tr>
+    <tr class="scrap"><td colspan="5">废料回收（镭射切角）</td><td>−10.29</td><td>304废铁 1.286kg × 7元/kg</td></tr>
   </table>
 </div>
 
 
+  <div class="section">
+    <div class="section-title">废料回收明细</div>
+    <table>
+      <tr><th>废料类型</th><th>说明</th><th>重量(kg)</th><th>单价</th><th>金额</th></tr>
+      <tr><td>第二刀</td><td>镭射切角 (坯料−展开面积)</td><td style="text-align:right">0.000</td><td style="text-align:right">7元/kg</td><td style="text-align:right;color:var(--green)">0.00</td></tr>
+      <tr class="subtotal"><td colspan="3">合计</td><td></td><td style="text-align:right;color:var(--green)"><strong>−10.29</strong></td></tr>
+    </table>
+  </div>
 
 <div class="section">
   <div class="section-title">② 生产人工成本 <span style="font-size:10px;color:var(--text-muted);font-weight:400">A路线</span></div>
@@ -198,17 +207,18 @@ tr.missing td{color:var(--red)}
   <div class="section-title">④ 成本汇总</div>
   <table class="summary-table">
     <tr class=""><td>原料成本</td><td>208.88</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">35项有价，1项缺价</td></tr>
-    <tr class=""><td>净原料成本</td><td>**208.88**</td><td></td></tr>
+    <tr class=""><td>废料回收</td><td>−10.29</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">304废铁 1.286kg × 7元/kg</td></tr>
+    <tr class=""><td>净原料成本</td><td>**198.59**</td><td></td></tr>
     <tr class=""><td>生产人工</td><td>**44.98**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">A路线 28道工序</td></tr>
     <tr class=""><td>管理人工</td><td>**27.48**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">10部门分摊</td></tr>
     <tr class="total" style="color:var(--red)"><td>**总成本**</td><td>**异常**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">有 1 项缺价，成本不完整</td></tr>
-    <tr class=""><td>实际</td><td>**281.34**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">元/件（缺价项未计入）</td></tr>
+    <tr class=""><td>实际</td><td>**271.05**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">元/件（缺价项未计入）</td></tr>
 
   </table>
 </div>
 
 <div class="footer">
-  数据来源：BOM递归 + DCSHCB最近采购价 | 生成时间：2026-07-23 15:10
+  数据来源：BOM递归 + DCSHCB最近采购价 | 生成时间：2026-07-23 15:13
 </div>
 
 </div>
