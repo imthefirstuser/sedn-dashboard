@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>304#2B 库存看板</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: #f0f2f5; color: #333; padding: 20px; }
+.container { max-width: 1200px; margin: 0 auto; }
+.header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 12px; margin-bottom: 24px; }
+.header h1 { font-size: 28px; margin-bottom: 6px; }
+.header .subtitle { font-size: 14px; opacity: 0.85; }
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+.stat-card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.stat-card .label { font-size: 13px; color: #888; margin-bottom: 4px; }
+.stat-card .value { font-size: 28px; font-weight: 700; color: #1a1a2e; }
+.stat-card .value.warn { color: #e74c3c; }
+.stat-card .value.info { color: #3498db; }
+.table-card { background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden; margin-bottom: 24px; }
+.table-card .card-header { padding: 16px 20px; border-bottom: 1px solid #eee; font-weight: 600; font-size: 16px; }
+table { width: 100%; border-collapse: collapse; }
+th { background: #f8f9fa; padding: 12px 16px; text-align: left; font-size: 13px; color: #666; font-weight: 600; border-bottom: 2px solid #eee; }
+td { padding: 12px 16px; font-size: 14px; border-bottom: 1px solid #f0f0f0; }
+tr:hover { background: #f8f9ff; }
+tr.obsolete { background: #fff5f5; }
+tr.obsolete:hover { background: #ffe8e8; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+.badge-obsolete { background: #fde8e8; color: #c0392b; }
+.badge-active { background: #e8f5e9; color: #27ae60; }
+.qty { font-weight: 600; text-align: right; }
+.qty.total { color: #1a1a2e; font-size: 16px; }
+.summary-row { display: flex; justify-content: space-between; padding: 14px 20px; font-weight: 700; font-size: 15px; background: #fafbff; }
+.footer { text-align: center; font-size: 12px; color: #999; margin-top: 20px; padding: 16px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>📊 304#2B 不锈钢板库存看板</h1>
+    <div class="subtitle">数据来源：TPASYS DCSHCB · 实时查询 · 单位：PCS（张）</div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="label">品项数</div>
+      <div class="value info">3</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">现有库存总量</div>
+      <div class="value">199 张</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">在途总量</div>
+      <div class="value warn">140,722 张</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">仓库数</div>
+      <div class="value info">16</div>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="card-header">📋 按品号汇总</div>
+    <table>
+      <thead>
+        <tr>
+          <th>品号</th>
+          <th>品名</th>
+          <th style="text-align:right">现有库存</th>
+          <th style="text-align:right">在途量</th>
+          <th style="text-align:right">合计（现有+在途）</th>
+          <th>状态</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>110110300001</code></td>
+          <td>304#2B</td>
+          <td class="qty">134</td>
+          <td class="qty">76,027</td>
+          <td class="qty total">76,161</td>
+          <td><span class="badge badge-active">正常</span></td>
+        </tr>
+        <tr class="obsolete">
+          <td><code>110110300014</code></td>
+          <td>304#2B 作废</td>
+          <td class="qty">47</td>
+          <td class="qty">64,940</td>
+          <td class="qty total">64,987</td>
+          <td><span class="badge badge-obsolete">作废 ⚠️</span></td>
+        </tr>
+        <tr>
+          <td><code>110110300017</code></td>
+          <td>304#2B</td>
+          <td class="qty">22</td>
+          <td class="qty">0</td>
+          <td class="qty total">22</td>
+          <td><span class="badge badge-active">正常</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="summary-row">
+      <span>合计</span>
+      <span><strong>199 张</strong> 现有库存 · <strong>140,967 张</strong> 在途</span>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="card-header">📦 库存明细 — 按仓库</div>
+    <table>
+      <thead>
+        <tr>
+          <th>品号</th>
+          <th>品名</th>
+          <th>仓库代码</th>
+          <th style="text-align:right">库存量</th>
+          <th style="text-align:right">在途量</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>110110300001</code></td>
+          <td>304#2B</td>
+          <td>DG202010220001</td>
+          <td class="qty">82</td>
+          <td class="qty">0</td>
+        </tr>
+        <tr>
+          <td><code>110110300001</code></td>
+          <td>304#2B</td>
+          <td>DG202103230002</td>
+          <td class="qty">13</td>
+          <td class="qty">16,939</td>
+        </tr>
+        <tr>
+          <td><code>110110300001</code></td>
+          <td>304#2B</td>
+          <td>DG202103230005</td>
+          <td class="qty">14</td>
+          <td class="qty">18,242</td>
+        </tr>
+        <tr>
+          <td><code>110110300001</code></td>
+          <td>304#2B</td>
+          <td>DG202111300002</td>
+          <td class="qty">17</td>
+          <td class="qty">27,965</td>
+        </tr>
+        <tr>
+          <td><code>110110300001</code></td>
+          <td>304#2B</td>
+          <td>DG202112110003</td>
+          <td class="qty">2</td>
+          <td class="qty">2,912</td>
+        </tr>
+        <tr>
+          <td><code>110110300001</code></td>
+          <td>304#2B</td>
+          <td>DG202112160001</td>
+          <td class="qty">5</td>
+          <td class="qty">8,225</td>
+        </tr>
+        <tr>
+          <td><code>110110300001</code></td>
+          <td>304#2B</td>
+          <td>DG202112240001</td>
+          <td class="qty">1</td>
+          <td class="qty">1,645</td>
+        </tr>
+        <tr class="obsolete">
+          <td><code>110110300014</code></td>
+          <td>304#2B 作废</td>
+          <td>DG202204220002</td>
+          <td class="qty">20</td>
+          <td class="qty">26,000</td>
+        </tr>
+        <tr class="obsolete">
+          <td><code>110110300014</code></td>
+          <td>304#2B 作废</td>
+          <td>DG202204230003</td>
+          <td class="qty">2</td>
+          <td class="qty">2,600</td>
+        </tr>
+        <tr class="obsolete">
+          <td><code>110110300014</code></td>
+          <td>304#2B 作废</td>
+          <td>DG202204260001</td>
+          <td class="qty">4</td>
+          <td class="qty">5,200</td>
+        </tr>
+        <tr class="obsolete">
+          <td><code>110110300014</code></td>
+          <td>304#2B 作废</td>
+          <td>DG202204270001</td>
+          <td class="qty">2</td>
+          <td class="qty">2,600</td>
+        </tr>
+        <tr class="obsolete">
+          <td><code>110110300014</code></td>
+          <td>304#2B 作废</td>
+          <td>DG202204300001</td>
+          <td class="qty">3</td>
+          <td class="qty">3,900</td>
+        </tr>
+        <tr class="obsolete">
+          <td><code>110110300014</code></td>
+          <td>304#2B 作废</td>
+          <td>DG202205260002</td>
+          <td class="qty">13</td>
+          <td class="qty">20,020</td>
+        </tr>
+        <tr class="obsolete">
+          <td><code>110110300014</code></td>
+          <td>304#2B 作废</td>
+          <td>DG202206090004</td>
+          <td class="qty">3</td>
+          <td class="qty">4,620</td>
+        </tr>
+        <tr>
+          <td><code>110110300017</code></td>
+          <td>304#2B</td>
+          <td>DG202501220001</td>
+          <td class="qty">14</td>
+          <td class="qty">0</td>
+        </tr>
+        <tr>
+          <td><code>110110300017</code></td>
+          <td>304#2B</td>
+          <td>DG202502180002</td>
+          <td class="qty">4</td>
+          <td class="qty">0</td>
+        </tr>
+        <tr>
+          <td><code>110110300017</code></td>
+          <td>304#2B</td>
+          <td>DG202503010003</td>
+          <td class="qty">4</td>
+          <td class="qty">0</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    中山市感易厨卫实业有限公司 · 生成时间：2026-07-25
+  </div>
+</div>
+</body>
+</html>
