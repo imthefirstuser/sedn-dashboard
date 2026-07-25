@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>304#2B 采购明细看板</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: #f0f2f5; color: #333; padding: 20px; }
+.container { max-width: 1300px; margin: 0 auto; }
+.header { background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%); color: white; padding: 30px; border-radius: 12px; margin-bottom: 24px; }
+.header h1 { font-size: 28px; margin-bottom: 6px; }
+.header .subtitle { font-size: 14px; opacity: 0.85; }
+.stats-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 24px; }
+.stat-card { background: white; border-radius: 10px; padding: 18px 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.stat-card .label { font-size: 12px; color: #888; margin-bottom: 3px; }
+.stat-card .value { font-size: 26px; font-weight: 700; }
+.stat-card .value.blue { color: #1a73e8; }
+.stat-card .value.green { color: #27ae60; }
+.stat-card .value.orange { color: #e67e22; }
+.stat-card .value.red { color: #e74c3c; }
+.table-card { background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden; margin-bottom: 24px; }
+.table-card .card-header { padding: 16px 20px; border-bottom: 1px solid #eee; font-weight: 600; font-size: 16px; display: flex; justify-content: space-between; align-items: center; }
+.card-header .badge-count { background: #1a73e8; color: white; font-size: 12px; padding: 2px 10px; border-radius: 12px; }
+table { width: 100%; border-collapse: collapse; }
+th { background: #f8f9fa; padding: 10px 14px; text-align: left; font-size: 12px; color: #666; font-weight: 600; border-bottom: 2px solid #eee; white-space: nowrap; }
+td { padding: 10px 14px; font-size: 13px; border-bottom: 1px solid #f0f0f0; }
+tr:hover { background: #f0f4ff; }
+tr:nth-child(even) { background: #fafbfc; }
+tr:nth-child(even):hover { background: #f0f4ff; }
+.qty { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+.price { text-align: right; font-variant-numeric: tabular-nums; }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+.tag-ok { background: #e8f5e9; color: #27ae60; }
+.tag-partial { background: #fff3e0; color: #e67e22; }
+.tag-pending { background: #fce4ec; color: #e74c3c; }
+.tag-obsolete { background: #fde8e8; color: #c0392b; }
+.tag-spec { background: #e3f2fd; color: #1565c0; font-size: 11px; padding: 2px 6px; border-radius: 3px; }
+.text-mono { font-family: "SF Mono", "Consolas", monospace; font-size: 12px; }
+.footer { text-align: center; font-size: 12px; color: #999; margin-top: 20px; padding: 16px; }
+.price-up { color: #e74c3c; }
+.price-down { color: #27ae60; }
+.trend-chart { display: flex; align-items: flex-end; gap: 2px; height: 30px; margin-top: 4px; }
+.bar { width: 20px; border-radius: 2px 2px 0 0; min-height: 4px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>📋 304#2B 采购明细表</h1>
+    <div class="subtitle">数据来源：TPASYS DCSHDB（采购历史表）· 按采购日期降序排列</div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="label">采购记录总数</div>
+      <div class="value blue">13</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">涉及品号数</div>
+      <div class="value green">3</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">总采购量</div>
+      <div class="value orange">105 PCS</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">总已交量</div>
+      <div class="value green">77 PCS</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">未交量</div>
+      <div class="value red">28 PCS</div>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="card-header">
+      <span>📦 各品号采购汇总</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>品号</th>
+          <th>品名</th>
+          <th style="text-align:right">采购次数</th>
+          <th style="text-align:right">总采购量</th>
+          <th style="text-align:right">总已交量</th>
+          <th style="text-align:right">未交量</th>
+          <th>最近采购</th>
+          <th>最早采购</th>
+          <th>状态</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="text-mono">110110300017</span></td>
+          <td>304#2B</td>
+          <td class="qty">8</td>
+          <td class="qty">71.0</td>
+          <td class="qty">55.0</td>
+          <td class="qty price-down">16.0</td>
+          <td>2026-04-29</td>
+          <td>2025-02-19</td>
+          <td><span class="tag tag-partial">部分未交</span></td>
+        </tr>
+        <tr>
+          <td><span class="text-mono">110110300001</span></td>
+          <td>304#2B 委外覆膜</td>
+          <td class="qty">1</td>
+          <td class="qty">6.0</td>
+          <td class="qty">6.0</td>
+          <td class="qty price-down">0.0</td>
+          <td>2025-08-23</td>
+          <td>2025-08-23</td>
+          <td><span class="tag tag-ok">已交清</span></td>
+        </tr>
+        <tr>
+          <td><span class="text-mono">110110300014</span></td>
+          <td>304#2B <span class="tag tag-obsolete">作废</span></td>
+          <td class="qty">2</td>
+          <td class="qty">11.0</td>
+          <td class="qty">11.0</td>
+          <td class="qty price-down">0.0</td>
+          <td>2024-12-26</td>
+          <td>2024-12-05</td>
+          <td><span class="tag tag-ok">已交清</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-card">
+    <div class="card-header">
+      <span>📋 采购明细记录</span>
+      <span class="badge-count">共 13 条</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>采购单号</th>
+          <th>品号</th>
+          <th>品名 / 规格</th>
+          <th>采购日期</th>
+          <th style="text-align:right">数量</th>
+          <th style="text-align:right">单价</th>
+          <th style="text-align:right">含税金额</th>
+          <th style="text-align:right">已交量</th>
+          <th>状态</th>
+          <th>备注</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="text-mono">CG202604280011</span></td>
+          <td><span class="text-mono">110110300017</span></td>
+          <td>304#2B <span class="tag tag-spec">2440*1220*3.0双面2B（件板）</span></td>
+          <td>2026-04-29</td>
+          <td class="qty">10</td>
+          <td class="price">945.13</td>
+          <td class="price">10,680</td>
+          <td class="qty">10</td>
+          <td><span class="tag tag-ok">已交清</span></td>
+          <td>备安全库存</td>
+        </tr>
+        <tr>
+          <td><span class="text-mono">CG202604020007</span></td>
+          <td><span class="text-mono">110110300017</span></td>
+          <td>304#2B <span class="tag tag-spec">2440*1220*3.0双面2B（件板）</span></td>
+          <td>2026-04-03</td>
+          <td class="qty">12</td>
+          <td class="price">1,014.16</td>
+          <td class="price">13,752</td>
+          <td class="qty">12</td>
+          <td><span class="tag tag-ok">已交清</span></td>
+          <td>S26-03-02 SB11019B+备库存</td>
+        </tr>
+        <tr>
+          <td><span class="text-mono">CG202601040004</span></td>
+          <td><span class="text-mono">110110300017</span></td>
+          <td>304#2B <span class="tag tag-spec">2440*1220*3.0双面2B（件板）</span></td>
+          <td>2026-01-05</td>
+          <td class="qty">6</td>
+          <td class="price">1,033.63</td>
+          <td class="price">7,008</td>
+          <td class="qty">6</td>
+          <td><span class="tag tag-ok">已交清</span></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td><span class="text-mono">CG202508120002</span></td>
+          <td><span class="text-mono">110110300001</span></td>
+          <td>304#2B <span class="tag tag-spec">2440*1220*3.0(件板)委外覆膜</span></td>
+          <td>2025-08-23</td>
+          <td class="qty">6</td>
+          <td class="price">1,057.52</td>
+          <td class="price">7,170</td>
+          <td class="qty">6</td>
+          <td><span class="tag tag-ok">已交清</span></td>
+          <td>备库存</td>
+        </tr>
+        <tr>
+          <td><span class="text-mono">CG202506130015</span></td>
+          <td><span class="text-mono">110110300017</span></td>
+          <td>304#2B <span class="tag tag-spec">2440*1220*3.0双面2B（件板）</span></td>
+          <td>2025-06-14</td>
+          <td class="qty">2</td>
+          <td class="price">1,007.97</td>
+          <td class="price">2,278</td>
+          <td class="qty">2</td>
+          <td><span class="tag tag-ok">已交清</span></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td><span class="text-mono">CG202505210016</span></td>
+          <td><span class="text-mono">110110300017</span></td>
+          <td>304#2B <span class="tag tag-spec">2440*1220*3.0双面2B（件板）</span></td>
+          <td>2025-05-22</td>
+          <td class="qty">22</td>
+          <td class="price">411.99</td>
+          <td class="price">10,242</td>
+          <td class="qty">22</td>
+          <td><span class="tag tag-ok">已交清</span></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td><span class="text-mono">CG202505040001</span></td>
+          <td><span class="text-mono">110110300017</span></td>
+          <td>304#2B <span class="tag tag-spec">2440*1220*3.0双面2B（件板）</span></td>
+          <td>2025-05-05</td>
+          <td class="qty">3</td>
+          <td class="price">1,011.50</td>
+          <td class="price">3,429</td>
+          <td class="qty">3</td>
+          <td><span class="tag tag-ok">已交清</span></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td><span class="text-mono">CG202504020007</span></td>
+          <td><span class="text-mono">110110300017</span></td>
+          <td>304#2B <span class="tag tag-spec">2440*1220*3.0双面2B（件板）</span></td>
+          <td>2025-04-03</td>
+          <td class="qty">5</td>
+          <td class="price">1,007.08</td>
+          <td class="price">5,690</td>
+          <td class="qty">5</td>
+          <td><span class="tag tag-ok">已交清</span></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td><span class="text-mono">CG202503130005</span></td>
+          <td><span class="text-mono">110110300017</span></td>
+          <td>304#2B <span class="tag tag-spec">2440*1220*3.0（件板）</span></td>
+          <td>2025-03-14</td>
+          <td class="qty">4</td>
+          <td class="price">1,000.00</td>
+          <td class="price">4,520</td>
+          <td class="qty">0</td>
+          <td><span class="tag tag-pending">未交</span></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td><span class="text-mono">CG202502270018</span></td>
+          <td><span class="text-mono">110110300017</span></td>
+          <td>304#2B <span class="tag tag-spec">2440*1220*3.0（件板）</span></td>
+          <td>2025-02-28</td>
+          <td class="qty">10</td>
+          <td class="price">400.00</td>
+          <td class="price">4,520</td>
+          <td class="qty">0</td>
+          <td><span class="tag tag-pending">未交</span></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td><span class="text-mono">CG202502130020</span></td>
+          <td><span class="text-mono">110110300017</span></td>
+          <td>304#2B <span class="tag tag-spec">2440*1220*3.0（件板）</span></td>
+          <td>2025-02-19</td>
+          <td class="qty">14</td>
+          <td class="price">1,000.00</td>
+          <td class="price">15,820</td>
+          <td class="qty">0</td>
+          <td><span class="tag tag-pending">未交</span></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td><span class="text-mono">CG202412260031</span></td>
+          <td><span class="text-mono">110110300014</span></td>
+          <td>304#2B 作废 <span class="tag tag-spec">2440*1220*3.0(件板)</span></td>
+          <td>2024-12-26</td>
+          <td class="qty">7</td>
+          <td class="price">1,006.19</td>
+          <td class="price">7,959</td>
+          <td class="qty">7</td>
+          <td><span class="tag tag-ok">已交清</span></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td><span class="text-mono">CG202412050002</span></td>
+          <td><span class="text-mono">110110300014</span></td>
+          <td>304#2B 作废 <span class="tag tag-spec">2440*1220*3.0(件板)</span></td>
+          <td>2024-12-05</td>
+          <td class="qty">4</td>
+          <td class="price">968.14</td>
+          <td class="price">4,376</td>
+          <td class="qty">4</td>
+          <td><span class="tag tag-ok">已交清</span></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    中山市感易厨卫实业有限公司 · 数据源：DCSHDB（采购历史表）· 查询时间：2026-07-25
+  </div>
+</div>
+</body>
+</html>
