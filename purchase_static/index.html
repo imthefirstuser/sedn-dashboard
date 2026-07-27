@@ -110,12 +110,11 @@ function search(){
     $('resultPanel').classList.remove('show');
     $('resultPanel').innerHTML='';
     setStatus('正在查询 '+codes.length+' 个品号...');
-    var results=[];var loaded=0;
-    codes.forEach(function(code){
+    var results=new Array(codes.length);var loaded=0;
+    codes.forEach(function(code,idx){
         var item=code.trim();var prefix=getPrefix(item);
         loadChunk(prefix,function(data){
-            if(data&&data[item]){results.push({item_no:item,data:data[item]});}
-            else{results.push({item_no:item,data:null});}
+            results[idx]={item_no:item,data:data&&data[item]?data[item]:null};
             loaded++;
             if(loaded>=codes.length){setLoading(false);renderCards(results);}
             else{setStatus('查询中 '+loaded+'/'+codes.length+'...');}
