@@ -6,88 +6,79 @@
 <title>采购历史查询</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;background:#f0f2f5;color:#333;padding:15px;min-height:100vh}
-.container{max-width:1400px;margin:0 auto}
-.search-box{background:#fff;border-radius:10px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.08);margin-bottom:12px}
-.search-box h1{font-size:18px;margin-bottom:12px}
-.search-box h1 small{font-size:13px;color:#888;font-weight:400}
-.search-row{display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap}
-.search-row textarea{flex:1;min-width:250px;padding:9px 12px;border:1px solid #d9d9d9;border-radius:6px;font-size:14px;outline:none;resize:vertical;min-height:38px;font-family:inherit;line-height:1.5}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;background:#f0f2f5;color:#333;padding:12px 10px;min-height:100vh}
+.container{max-width:800px;margin:0 auto}
+.search-box{background:#fff;border-radius:10px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.08);margin-bottom:10px}
+.search-box h1{font-size:17px;margin-bottom:10px}
+.search-box h1 small{font-size:12px;color:#888;font-weight:400}
+.search-row textarea{width:100%;padding:8px 10px;border:1px solid #d9d9d9;border-radius:6px;font-size:14px;outline:none;resize:vertical;min-height:36px;font-family:inherit;line-height:1.5}
 .search-row textarea:focus{border-color:#1677ff;box-shadow:0 0 0 2px rgba(22,119,255,.15)}
-.search-row button{padding:9px 20px;border:none;border-radius:6px;font-size:14px;cursor:pointer}
-.btn-query{background:#1677ff;color:#fff}
+.btn-row{display:flex;gap:6px;margin-top:8px}
+.btn-row button{padding:8px 20px;border:none;border-radius:6px;font-size:14px;cursor:pointer}
+.btn-query{background:#1677ff;color:#fff;flex:1}
 .btn-query:hover{background:#4096ff}
+.btn-query:disabled{background:#a0c4ff;cursor:not-allowed}
 .btn-clear{background:#f5f5f5;color:#666}
 .btn-clear:hover{background:#e8e8e8}
-.status{margin-top:10px;font-size:13px;color:#888;display:flex;align-items:center;gap:5px}
-.status .spinner{display:none;width:16px;height:16px;border:2px solid #e8e8e8;border-top-color:#1677ff;border-radius:50%;animation:spin .6s linear infinite}
+.hint{font-size:11px;color:#bbb;margin-top:4px}
+.status{margin-top:8px;font-size:13px;color:#888;display:flex;align-items:center;gap:5px}
+.status .spinner{display:none;width:14px;height:14px;border:2px solid #e8e8e8;border-top-color:#1677ff;border-radius:50%;animation:spin .6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .status.loading .spinner{display:inline-block}
-.hint{font-size:12px;color:#bbb;margin-top:4px}
-
-.result-panel{display:none}
+.result-panel{display:none;background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.08);overflow:hidden}
 .result-panel.show{display:block}
-.summary-table-wrap{background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.08);overflow-x:auto}
-.summary-table{width:100%;border-collapse:collapse;font-size:12px;white-space:nowrap}
-.summary-table th{background:#fafafa;padding:7px 10px;text-align:center;border-bottom:2px solid #e8e8e8;font-weight:600;position:sticky;top:0;z-index:10}
-.summary-table td{padding:6px 10px;text-align:center;border-bottom:1px solid #f5f5f5}
-.summary-table tr:hover{background:#f5f7fa}
-.summary-table td:first-child{text-align:left;font-weight:500;font-family:"SF Mono","Cascadia Code",monospace}
-.summary-table td:nth-child(2){text-align:left;max-width:150px;overflow:hidden;text-overflow:ellipsis}
-.summary-table .th-grp{background:#e6f4ff;font-size:11px;color:#1677ff}
-td.num{font-family:"SF Mono","Cascadia Code",monospace}
-td.warn{color:#ff4d4f;font-weight:600}
-.empty-state{text-align:center;padding:60px 20px;color:#bbb}
-.empty-state .icon{font-size:48px;margin-bottom:12px}
-.empty-state p{font-size:15px}
-.hidden{display:none}
-.footer{text-align:center;font-size:11px;color:#bbb;margin-top:15px;padding-bottom:15px}
+
+/* 品号卡片 */
+.card{border-bottom:1px solid #f0f0f0}
+.card:last-child{border-bottom:none}
+.card-header{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;cursor:pointer;transition:background .15s;-webkit-tap-highlight-color:transparent}
+.card-header:hover{background:#f5f7fa}
+.card-header:active{background:#e8e8e8}
+.card-header .left{flex:1;min-width:0}
+.card-header .left .code{font-weight:600;font-size:14px;font-family:"SF Mono","Cascadia Code",monospace}
+.card-header .left .name{font-size:12px;color:#888;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card-header .right{text-align:right;flex-shrink:0;margin-left:8px}
+.card-header .right .price{font-weight:600;font-size:13px;font-family:monospace;color:#1677ff}
+.card-header .right .price-na{font-size:11px;color:#ccc}
+.card-header .right .arrow{font-size:10px;color:#bbb;margin-left:4px;transition:transform .2s}
+.card.open .card-header .right .arrow{transform:rotate(180deg)}
+
+/* 折叠内容 */
+.card-body{display:none;padding:0 14px 14px;background:#fafbfc}
+.card.open .card-body{display:block}
+.period-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+@media(max-width:480px){.period-grid{grid-template-columns:1fr 1fr}}
+.period-block{background:#fff;border-radius:6px;padding:8px 10px;border:1px solid #eee;font-size:12px}
+.period-block .p-title{font-size:11px;font-weight:600;color:#1677ff;margin-bottom:4px;padding-bottom:3px;border-bottom:1px solid #e8e8e8}
+.period-block .row{display:flex;justify-content:space-between;padding:2px 0}
+.period-block .row .l{color:#888}
+.period-block .row .v{font-weight:500;font-family:monospace}
+.period-block .row .v-na{color:#ccc}
+.recent-title{font-size:12px;font-weight:600;margin-bottom:4px;color:#666}
+.recent-table{width:100%;border-collapse:collapse;font-size:11px}
+.recent-table th{background:#f0f0f0;padding:4px 6px;text-align:center;font-weight:500}
+.recent-table td{padding:3px 6px;text-align:center;border-bottom:1px solid #eee;font-family:monospace}
+.no-data-row{text-align:center;padding:20px;color:#ccc;font-size:13px}
+.footer{text-align:center;font-size:11px;color:#bbb;margin-top:12px;padding-bottom:10px}
 </style>
 </head>
 <body>
 <div class="container">
 <div class="search-box">
-    <h1>&#128203; 采购历史查询 <small>批量查品号近半年/一年/两年汇总</small></h1>
+    <h1>&#128203; 采购历史查询</h1>
     <div class="search-row">
-        <textarea id="searchInput" placeholder="输入品号（多个用逗号/空格/换行分隔）&#10;如: 110110120397 110101120191 110304000022" rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();search()}"></textarea>
-        <div style="display:flex;flex-direction:column;gap:6px">
-            <button class="btn-query" id="queryBtn" onclick="search()">查询</button>
-            <button class="btn-clear" onclick="clearAll()">清空</button>
-        </div>
+        <textarea id="searchInput" placeholder="输入品号，多个用逗号、空格或换行分隔&#10;如: 110110120397 110101120191 110304000022" rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();search()}"></textarea>
     </div>
-    <div class="hint">支持批量：品号之间用逗号、空格、换行分隔。Shift+Enter 换行，Enter 直接查询。</div>
+    <div class="btn-row">
+        <button class="btn-query" id="queryBtn" onclick="search()">&#128269; 查询</button>
+        <button class="btn-clear" onclick="clearAll()">清空</button>
+    </div>
+    <div class="hint">多个品号用逗号、空格或换行分隔。Shift+Enter 换行，Enter 查询。</div>
     <div class="status" id="status"><span class="spinner"></span><span id="statusText">输入品号查询</span></div>
 </div>
 
-<div class="result-panel" id="resultPanel">
-    <div class="summary-table-wrap">
-    <table class="summary-table">
-        <thead>
-        <tr>
-            <th rowspan="2">#</th>
-            <th rowspan="2">品号</th>
-            <th rowspan="2">品名</th>
-            <th rowspan="2">含税单价</th>
-            <th colspan="5" class="th-grp">近半年(180天)</th>
-            <th colspan="5" class="th-grp">近一年(365天)</th>
-            <th colspan="5" class="th-grp">近两年(730天)</th>
-        </tr>
-        <tr>
-            <th>次数</th><th>总用量</th><th>总金额</th><th>次均用量</th><th>次均金额</th>
-            <th>次数</th><th>总用量</th><th>总金额</th><th>次均用量</th><th>次均金额</th>
-            <th>次数</th><th>总用量</th><th>总金额</th><th>次均用量</th><th>次均金额</th>
-        </tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-    </table>
-    </div>
-</div>
-
-<div id="emptyState" class="empty-state hidden">
-    <div class="icon">&#128203;</div>
-    <p id="emptyText">输入品号开始查询</p>
-</div>
-<div class="footer">数据来源：ERP DCSHDB 采购明细表</div>
+<div class="result-panel" id="resultPanel"></div>
+<div id="emptyState" class="empty-state hidden" style="text-align:center;padding:40px 20px;color:#bbb;display:none"><p id="emptyText">输入品号开始查询</p></div>
 </div>
 
 <script>
@@ -97,152 +88,128 @@ var loadingChunks = {};
 
 function $(id){return document.getElementById(id)}
 
-function setLoading(l){
-    $('status').classList.toggle('loading',l);
-    $('queryBtn').disabled=l;
-}
+function setLoading(l){$('status').classList.toggle('loading',l);$('queryBtn').disabled=l;}
 function setStatus(m){$('statusText').textContent=m;$('status').classList.remove('loading');}
 
-// 加载索引
 fetch('purchase_idx.json').then(function(r){return r.json()}).then(function(data){
-    data.forEach(function(it){idxData.push({item_no:it[0], name:it[1]||'', spec:it[2]||''});});
-    setStatus('已加载 '+idxData.length+' 个品号索引');
+    data.forEach(function(it){idxData.push({item_no:it[0],name:it[1]||'',spec:it[2]||''});});
+    setStatus('已加载索引，共 '+idxData.length+' 个品号');
 });
 
-// 加载分片
-function loadChunk(prefix, callback){
-    if (dataCache[prefix] !== undefined) { callback(dataCache[prefix]); return; }
-    if (loadingChunks[prefix]) { setTimeout(function(){loadChunk(prefix, callback);},50); return; }
-    loadingChunks[prefix] = true;
+function loadChunk(prefix,callback){
+    if(dataCache[prefix]!==undefined){callback(dataCache[prefix]);return;}
+    if(loadingChunks[prefix]){setTimeout(function(){loadChunk(prefix,callback);},50);return;}
+    loadingChunks[prefix]=true;
     fetch('data_'+prefix+'.json').then(function(r){return r.json()}).then(function(data){
-        dataCache[prefix] = data;
-        loadingChunks[prefix] = false;
-        callback(data);
+        dataCache[prefix]=data;loadingChunks[prefix]=false;callback(data);
     }).catch(function(){
-        if (prefix !== 'other') {
-            loadChunk('other', callback);
-        } else {
-            loadingChunks[prefix] = false;
-            callback(null);
-        }
+        if(prefix!=='other'){loadChunk('other',callback);}else{loadingChunks[prefix]=false;callback(null);}
     });
 }
+function getPrefix(s){return s.length>=4?s.substring(0,4):s;}
 
-function getPrefix(itemNo){
-    if (itemNo.length >= 4) return itemNo.substring(0,4);
-    return itemNo;
-}
-
-function fmt(v){
-    if (v==null||v===0) return '-';
-    return Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:4});
-}
-function fmty(v){
-    if (v==null||v===0) return '-';
-    return '\u00A5'+Number(v).toLocaleString();
-}
+function fmt(v){if(v==null||v===0)return'-';return Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:4});}
+function fmty(v){if(v==null||v===0)return'-';return '\u00A5'+Number(v).toLocaleString();}
 
 function search(){
-    var raw = $('searchInput').value.trim();
-    if (!raw) { setStatus('请输入品号'); return; }
-    // 按逗号、空格、换行、分号、tab 分隔
-    var codes = raw.split(/[,;\s\n\r\t]+/).filter(function(s){return s.trim().length>0;});
-    if (codes.length === 0) { setStatus('未识别到有效品号'); return; }
-    // 去重
-    var seen = {};
-    codes = codes.filter(function(c){var k=c.trim(); if(seen[k]) return false; seen[k]=true; return true;});
-
+    var raw=$('searchInput').value.trim();
+    if(!raw){setStatus('请输入品号');return;}
+    var codes=raw.split(/[,;\s\n\r\t]+/).filter(function(s){return s.trim().length>0;});
+    if(codes.length===0){setStatus('未识别到有效品号');return;}
+    var seen={};codes=codes.filter(function(c){var k=c.trim();if(seen[k])return false;seen[k]=true;return true;});
     setLoading(true);
     $('resultPanel').classList.remove('show');
-    $('emptyState').classList.add('hidden');
+    $('resultPanel').innerHTML='';
     setStatus('正在查询 '+codes.length+' 个品号...');
 
-    // 逐步加载每个品号的数据
-    var results = [];
-    var loaded = 0;
-    var failed = 0;
-
-    codes.forEach(function(code, idx){
-        var item = code.trim();
-        var prefix = getPrefix(item);
-        loadChunk(prefix, function(data){
-            if (data && data[item]) {
-                results.push({item_no: item, data: data[item]});
-            } else {
-                results.push({item_no: item, data: null});
-                failed++;
-            }
+    var results=[];var loaded=0;
+    codes.forEach(function(code){
+        var item=code.trim();var prefix=getPrefix(item);
+        loadChunk(prefix,function(data){
+            if(data&&data[item]){results.push({item_no:item,data:data[item]});}
+            else{results.push({item_no:item,data:null});}
             loaded++;
-            if (loaded >= codes.length) {
+            if(loaded>=codes.length){
                 setLoading(false);
-                renderTable(results);
-            } else {
-                setStatus('正在查询 '+loaded+'/'+codes.length+'...');
-            }
+                renderCards(results);
+            }else{setStatus('查询中 '+loaded+'/'+codes.length+'...');}
         });
     });
 }
 
-function renderTable(results){
-    var tbody = $('tableBody');
-    if (results.length === 0) {
-        $('emptyState').classList.remove('hidden');
-        $('emptyText').textContent = '未找到任何品号数据';
-        return;
-    }
+function renderCards(results){
+    var rp=$('resultPanel');
+    if(results.length===0){setStatus('未找到数据');return;}
 
-    // 先找到品名信息
-    var html = '';
-    results.forEach(function(r, i){
-        var d = r.data;
-        var info = null;
-        for (var j = 0; j < idxData.length; j++) {
-            if (idxData[j].item_no === r.item_no) { info = idxData[j]; break; }
-        }
+    var html='';
+    results.forEach(function(r,i){
+        var d=r.data;
+        var info=null;
+        for(var j=0;j<idxData.length;j++){if(idxData[j].item_no===r.item_no){info=idxData[j];break;}}
+        var name=info?info.name:'';
+        var spec=info?info.spec:'';
 
-        if (!d) {
-            // 无数据行
-            html += '<tr><td>'+(i+1)+'</td><td>'+r.item_no+'</td><td>'+(info?info.name:'')+'</td><td class="num warn">\u2716 \u65E0\u91C7\u8D2D\u6570\u636E</td>';
-            html += '<td colspan="14" style="color:#ccc">\u2014</td></tr>';
+        if(!d){
+            html+='<div class="card"><div class="card-header" onclick="toggleCard(this)"><div class="left"><div class="code">'+r.item_no+'</div><div class="name">'+(name||'')+'</div></div><div class="right"><span class="price-na">无采购数据</span><span class="arrow">&#9660;</span></div></div></div>';
             return;
         }
 
-        var name = info ? info.name : (d.n||'');
-        var spec = info ? info.spec : (d.s||'');
-        var unitPrice = d.u || 0;
+        var up=d.u?fmty(d.u):'<span style="color:#ccc">-</span>';
+        var periods=[
+            {k:'h',l:'近半年(180天)'},
+            {k:'o',l:'近一年(365天)'},
+            {k:'t',l:'近两年(730天)'}
+        ];
+        var periodHtml=periods.map(function(p){
+            var s=d[p.k]||{};
+            var v=function(x){return x!==undefined&&x!==null&&x!==0?x:'-'};
+            return '<div class="period-block"><div class="p-title">'+p.l+'</div>'+
+                '<div class="row"><span class="l">采购次数</span><span class="v'+(s.orders?'':' v-na')+'">'+v(s.orders)+'</span></div>'+
+                '<div class="row"><span class="l">总用量</span><span class="v'+(s.total_qty?'':' v-na')+'">'+(s.total_qty?fmt(s.total_qty):'-')+'</span></div>'+
+                '<div class="row"><span class="l">总金额</span><span class="v'+(s.total_amt?'':' v-na')+'">'+(s.total_amt?fmty(s.total_amt):'-')+'</span></div>'+
+                '<div class="row"><span class="l">次均用量</span><span class="v'+(s.avg_qty?'':' v-na')+'">'+(s.avg_qty?fmt(s.avg_qty):'-')+'</span></div>'+
+                '<div class="row"><span class="l">次均金额</span><span class="v'+(s.avg_amt?'':' v-na')+'">'+(s.avg_amt?fmty(s.avg_amt):'-')+'</span></div></div>';
+        }).join('');
 
-        function periodCells(s){
-            if (!s || s.orders===0){
-                return '<td class="num">-</td><td class="num">-</td><td class="num">-</td><td class="num">-</td><td class="num">-</td>';
-            }
-            return '<td class="num">'+(s.orders||'-')+'</td>'+
-                '<td class="num">'+fmt(s.total_qty)+'</td>'+
-                '<td class="num">'+fmty(s.total_amt)+'</td>'+
-                '<td class="num">'+fmt(s.avg_qty)+'</td>'+
-                '<td class="num">'+fmty(s.avg_amt)+'</td>';
+        var recentHtml='';
+        if(d.r&&d.r.length>0){
+            recentHtml='<div class="recent-title">最近采购记录</div><table class="recent-table"><thead><tr><th>日期</th><th>数量</th><th>单价</th><th>金额</th></tr></thead><tbody>'+
+                d.r.map(function(x){return '<tr><td>'+x.d+'</td><td>'+fmt(x.q)+'</td><td>'+fmty(x.a/x.q)+'</td><td>'+fmty(x.a)+'</td></tr>';}).join('')+
+                '</tbody></table>';
         }
 
-        html += '<tr>'+
-            '<td>'+(i+1)+'</td>'+
-            '<td>'+r.item_no+'</td>'+
-            '<td>'+name+'</td>'+
-            '<td class="num">'+(unitPrice>0?fmty(unitPrice):'-')+'</td>'+
-            periodCells(d.h)+
-            periodCells(d.o)+
-            periodCells(d.t)+
-            '</tr>';
+        html+='<div class="card" data-total="'+(d.c||0)+'">'+
+            '<div class="card-header" onclick="toggleCard(this)">'+
+                '<div class="left"><div class="code">'+(i+1)+'. '+r.item_no+' <span style="font-weight:400;font-size:12px;color:#888">'+(d.c||0)+'条</span></div><div class="name">'+(name||'')+' '+(spec||'')+'</div></div>'+
+                '<div class="right"><span class="price">'+up+'</span><span class="arrow">&#9660;</span></div>'+
+            '</div>'+
+            '<div class="card-body">'+periodHtml+recentHtml+'</div></div>';
     });
 
-    tbody.innerHTML = html;
-    $('resultPanel').classList.add('show');
-    setStatus('查询完成：'+results.length+' 个品号'+(results.filter(function(r){return r.data===null;}).length>0?'，其中 '+(results.filter(function(r){return r.data===null;}).length)+' 个无数据':''));
+    rp.innerHTML=html;
+    rp.classList.add('show');
+    // 默认展开第一个
+    var firstBody=rp.querySelector('.card .card-body');
+    var firstHeader=rp.querySelector('.card .card-header');
+    if(firstBody&&firstHeader){firstHeader.parentNode.classList.add('open');firstBody.style.display='block';}
+    setStatus('查询完成：'+results.length+' 个品号');
+}
+
+function toggleCard(el){
+    var card=el.parentNode;
+    var body=card.querySelector('.card-body');
+    if(card.classList.contains('open')){
+        card.classList.remove('open');
+        body.style.display='none';
+    }else{
+        card.classList.add('open');
+        body.style.display='block';
+    }
 }
 
 function clearAll(){
-    $('searchInput').value = '';
-    $('searchInput').focus();
-    $('resultPanel').classList.remove('show');
-    $('emptyState').classList.add('hidden');
+    $('searchInput').value='';$('searchInput').focus();
+    $('resultPanel').classList.remove('show');$('resultPanel').innerHTML='';
     setStatus('输入品号查询');
 }
 </script>
