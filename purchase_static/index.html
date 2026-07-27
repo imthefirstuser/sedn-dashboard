@@ -10,7 +10,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans S
 .container{max-width:800px;margin:0 auto}
 .search-box{background:#fff;border-radius:10px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.08);margin-bottom:10px}
 .search-box h1{font-size:17px;margin-bottom:10px}
-.search-box h1 small{font-size:12px;color:#888;font-weight:400}
 .search-row textarea{width:100%;padding:8px 10px;border:1px solid #d9d9d9;border-radius:6px;font-size:14px;outline:none;resize:vertical;min-height:36px;font-family:inherit;line-height:1.5}
 .search-row textarea:focus{border-color:#1677ff;box-shadow:0 0 0 2px rgba(22,119,255,.15)}
 .btn-row{display:flex;gap:6px;margin-top:8px}
@@ -29,9 +28,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans S
 .result-panel.show{display:block}
 .card{border-bottom:1px solid #f0f0f0}
 .card:last-child{border-bottom:none}
-.card-header{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;cursor:pointer;transition:background .15s;-webkit-tap-highlight-color:transparent}
+.card-header{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .card-header:hover{background:#f5f7fa}
-.card-header:active{background:#e8e8e8}
 .card-header .left{flex:1;min-width:0}
 .card-header .left .code{font-weight:600;font-size:14px;font-family:"SF Mono","Cascadia Code",monospace}
 .card-header .left .name{font-size:12px;color:#888;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -54,7 +52,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans S
 .recent-table{width:100%;border-collapse:collapse;font-size:11px}
 .recent-table th{background:#f0f0f0;padding:4px 6px;text-align:center;font-weight:500}
 .recent-table td{padding:3px 6px;text-align:center;border-bottom:1px solid #eee;font-family:monospace}
-.no-data-row{text-align:center;padding:20px;color:#ccc;font-size:13px}
 .footer{text-align:center;font-size:11px;color:#bbb;margin-top:12px;padding-bottom:10px}
 </style>
 </head>
@@ -72,16 +69,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans S
     <div class="hint">多个品号用逗号、空格或换行分隔。Shift+Enter 换行，Enter 查询。</div>
     <div class="status" id="status"><span class="spinner"></span><span id="statusText">输入品号查询</span></div>
 </div>
-
 <div class="result-panel" id="resultPanel"></div>
-<div id="emptyState" class="empty-state hidden" style="text-align:center;padding:40px 20px;color:#bbb;display:none"><p id="emptyText">输入品号开始查询</p></div>
 </div>
 
 <script>
-var idxData = [];
-var dataCache = {};
-var loadingChunks = {};
-
+var idxData=[];
+var dataCache={};
+var loadingChunks={};
 function $(id){return document.getElementById(id)}
 function setLoading(l){$('status').classList.toggle('loading',l);$('queryBtn').disabled=l;}
 function setStatus(m){$('statusText').textContent=m;$('status').classList.remove('loading');}
@@ -116,7 +110,6 @@ function search(){
     $('resultPanel').classList.remove('show');
     $('resultPanel').innerHTML='';
     setStatus('正在查询 '+codes.length+' 个品号...');
-
     var results=[];var loaded=0;
     codes.forEach(function(code){
         var item=code.trim();var prefix=getPrefix(item);
@@ -124,10 +117,8 @@ function search(){
             if(data&&data[item]){results.push({item_no:item,data:data[item]});}
             else{results.push({item_no:item,data:null});}
             loaded++;
-            if(loaded>=codes.length){
-                setLoading(false);
-                renderCards(results);
-            }else{setStatus('查询中 '+loaded+'/'+codes.length+'...');}
+            if(loaded>=codes.length){setLoading(false);renderCards(results);}
+            else{setStatus('查询中 '+loaded+'/'+codes.length+'...');}
         });
     });
 }
@@ -147,19 +138,20 @@ function renderCards(results){
             return;
         }
         var up=d.u?fmty(d.u):'<span style="color:#ccc">-</span>';
-        var periods=[
-            {k:'h',l:'近半年(180天)'},
-            {k:'o',l:'近一年(365天)'},
-            {k:'t',l:'近两年(730天)'}
-        ];
+        var periods=[{k:'h',l:'近半年(180天)'},{k:'o',l:'近一年(365天)'},{k:'t',l:'近两年(730天)'}];
         var periodHtml=periods.map(function(p){
             var s=d[p.k]||{};
+            var modeHtml='';
+            if(s.unit_price_mode&&s.unit_price_mode.length>0){
+                modeHtml='<div style="margin-top:6px;padding-top:4px;border-top:1px dashed #eee;font-size:11px"><span style="color:#888">每件金额(众数)</span></div>'+
+                    s.unit_price_mode.map(function(m,i){return '<div class="row"><span class="l" style="font-size:10px">第'+(i+1)+'众数 ('+m.count+'次)</span><span class="v">'+fmty(m.price)+'</span></div>';}).join('');
+            }
             return '<div class="period-block"><div class="p-title">'+p.l+'</div>'+
                 '<div class="row"><span class="l">采购次数</span><span class="v'+(s.orders?'':' v-na')+'">'+(s.orders||'-')+'</span></div>'+
                 '<div class="row"><span class="l">总用量</span><span class="v'+(s.total_qty?'':' v-na')+'">'+(s.total_qty?fmt(s.total_qty):'-')+'</span></div>'+
                 '<div class="row"><span class="l">总金额</span><span class="v'+(s.total_amt?'':' v-na')+'">'+(s.total_amt?fmty(s.total_amt):'-')+'</span></div>'+
                 '<div class="row"><span class="l">月均用量</span><span class="v'+(s.monthly_qty?'':' v-na')+'">'+(s.monthly_qty?fmt(s.monthly_qty):'-')+'</span></div>'+
-                '<div class="row"><span class="l">每件金额</span><span class="v'+(s.avg_unit_amt?'':' v-na')+'">'+(s.avg_unit_amt?fmty(s.avg_unit_amt):'-')+'</span></div></div>';
+                modeHtml+'</div>';
         }).join('');
         var recentHtml='';
         if(d.r&&d.r.length>0){
@@ -170,28 +162,22 @@ function renderCards(results){
         html+='<div class="card" data-total="'+(d.c||0)+'">'+
             '<div class="card-header" onclick="toggleCard(this)">'+
                 '<div class="left"><div class="code">'+(i+1)+'. '+r.item_no+' <span style="font-weight:400;font-size:12px;color:#888">'+(d.c||0)+'条</span></div><div class="name">'+(name||'')+' '+(spec||'')+'</div></div>'+
-                '<div class="right"><span class="price">'+up+'</span><span class="arrow">&#9660;</span></div>'+
-            '</div>'+
+                '<div class="right"><span class="price">'+up+'</span><span class="arrow">&#9660;</span></div></div>'+
             '<div class="card-body">'+periodHtml+recentHtml+'</div></div>';
     });
     rp.innerHTML=html;
     rp.classList.add('show');
-    var firstBody=rp.querySelector('.card .card-body');
-    var firstHeader=rp.querySelector('.card .card-header');
-    if(firstBody&&firstHeader){firstHeader.parentNode.classList.add('open');firstBody.style.display='block';}
+    var fb=rp.querySelector('.card .card-body');
+    var fh=rp.querySelector('.card .card-header');
+    if(fb&&fh){fh.parentNode.classList.add('open');fb.style.display='block';}
     setStatus('查询完成：'+results.length+' 个品号');
 }
 
 function toggleCard(el){
     var card=el.parentNode;
     var body=card.querySelector('.card-body');
-    if(card.classList.contains('open')){
-        card.classList.remove('open');
-        body.style.display='none';
-    }else{
-        card.classList.add('open');
-        body.style.display='block';
-    }
+    if(card.classList.contains('open')){card.classList.remove('open');body.style.display='none';}
+    else{card.classList.add('open');body.style.display='block';}
 }
 
 function clearAll(){
