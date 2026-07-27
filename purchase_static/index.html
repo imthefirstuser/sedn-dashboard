@@ -89,7 +89,7 @@ function loadChunk(prefix,callback){
     if(dataCache[prefix]!==undefined){callback(dataCache[prefix]);return;}
     if(loadingChunks[prefix]){setTimeout(function(){loadChunk(prefix,callback);},50);return;}
     loadingChunks[prefix]=true;
-    fetch('data_'+prefix+'.json').then(function(r){return r.json()}).then(function(data){
+    fetch('data_'+prefix+'.json?ver=3').then(function(r){return r.json()}).then(function(data){
         dataCache[prefix]=data;loadingChunks[prefix]=false;callback(data);
     }).catch(function(){
         if(prefix!=='other'){loadChunk('other',callback);}else{loadingChunks[prefix]=false;callback(null);}
