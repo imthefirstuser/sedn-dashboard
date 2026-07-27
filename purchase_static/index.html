@@ -80,19 +80,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans S
     <div class="item-header" id="itemHeader"></div>
     <div class="card-grid" id="cardGrid"></div>
     <div class="recent-title">&#128196; 最近采购记录</div>
-    <table class="recent-table"><thead><tr><th>日期</th><th>数量</th><th>金额(含税)</th></tr></thead><tbody id="recentBody"></tbody></table>
+    <table class="recent-table"><thead><tr><th>日期</th><th>数量</th><th>含税单价</th><th>金额(含税)</th></tr></thead><tbody id="recentBody"></tbody></table>
 </div>
 
 <div id="emptyState" class="empty-state hidden">
     <div class="icon">&#128269;</div>
     <p id="emptyText">输入品号开始查询</p>
 </div>
-<div class="footer">感易厨卫实业有限公司 &middot; 2026-07-27 08:36</div>
+<div class="footer">感易厨卫实业有限公司 &middot; 2026-07-27 08:46</div>
 </div>
 
 <script>
 var TOTAL_ITEMS = 16169;
-var GENERATED_AT = '2026-07-27 08:36';
+var GENERATED_AT = '2026-07-27 08:46';
 var IDX_MODE = 'single';
 
 var idxData = [];
@@ -234,7 +234,8 @@ function render(found, d) {
         {k:'o',l:'近一年(365天)'},
         {k:'t',l:'近两年(730天)'}
     ];
-    cg.innerHTML = periods.map(function(p){
+    var unitPriceRow = d.u ? '<div class="row" style="display:flex;gap:16px;font-size:13px;margin-bottom:12px;padding:8px 12px;background:#fff7e6;border-radius:6px;"><span class="l" style="color:#888">最新含税单价</span><span class="v" style="font-weight:600;font-family:monospace">'+fmty(d.u)+'</span></div>' : '';
+    cg.innerHTML = unitPriceRow + periods.map(function(p){
         var s = d[p.k];
         if (!s) return '';
         return '<div class="summary-card"><h3>'+p.l+'</h3>'+
@@ -246,7 +247,7 @@ function render(found, d) {
     }).join('');
 
     rb.innerHTML = (d.r||[]).map(function(r){
-        return '<tr><td>'+r.d+'</td><td>'+fmt(r.q)+'</td><td>'+fmty(r.a)+'</td></tr>';
+        return '<tr><td>'+r.d+'</td><td>'+fmt(r.q)+'</td><td>'+fmty(r.a / r.q)+'</td><td>'+fmty(r.a)+'</td></tr>';
     }).join('');
 
     rp.classList.add('visible');
