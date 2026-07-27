@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>采购历史查询 — 感易厨卫</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;
+    background:#f0f2f5;color:#333;padding:20px;min-height:100vh
+}
+.container{max-width:1000px;margin:0 auto}
+.search-box{
+    background:#fff;border-radius:12px;padding:24px;
+    box-shadow:0 1px 3px rgba(0,0,0,.08);margin-bottom:16px
+}
+.search-box h1{font-size:20px;margin-bottom:16px}
+.search-box h1 small{font-size:14px;color:#888;font-weight:400}
+.search-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.search-row input{
+    flex:1;min-width:200px;padding:10px 14px;
+    border:1px solid #d9d9d9;border-radius:8px;font-size:15px;
+    outline:none;transition:border-color .2s,box-shadow .2s
+}
+.search-row input:focus{border-color:#1677ff;box-shadow:0 0 0 2px rgba(22,119,255,.15)}
+.search-row input::placeholder{color:#bbb}
+.search-row button{padding:10px 24px;border:none;border-radius:8px;font-size:15px;cursor:pointer;transition:all .2s}
+.btn-query{background:#1677ff;color:#fff}
+.btn-query:hover{background:#4096ff}
+.btn-query:disabled{background:#a0c4ff;cursor:not-allowed}
+.btn-clear{background:#f5f5f5;color:#666}
+.btn-clear:hover{background:#e8e8e8}
+.status{margin-top:12px;font-size:13px;color:#888;display:flex;align-items:center;gap:6px}
+.status .spinner{display:none;width:16px;height:16px;border:2px solid #e8e8e8;border-top-color:#1677ff;border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.status.loading .spinner{display:inline-block}
+.result-panel{background:#fff;border-radius:12px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,.08);display:none}
+.result-panel.visible{display:block}
+.item-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid #f0f0f0;flex-wrap:wrap;gap:8px}
+.item-header h2{font-size:18px}
+.item-header .meta{font-size:13px;color:#888}
+.item-header .meta span{margin-right:16px}
+.item-header .badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:500}
+.badge-total{background:#e6f4ff;color:#1677ff;margin-left:8px}
+.card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+@media(max-width:768px){.card-grid{grid-template-columns:1fr}}
+.summary-card{background:#fafbfc;border-radius:10px;padding:16px;border:1px solid #f0f0f0}
+.summary-card h3{font-size:13px;font-weight:600;color:#666;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #e8e8e8}
+.summary-card .stat-row{display:flex;justify-content:space-between;padding:4px 0;font-size:13px;line-height:1.6}
+.summary-card .stat-row .label{color:#888}
+.summary-card .stat-row .value{font-weight:600;font-family:"SF Mono","Cascadia Code",monospace}
+.recent-title{font-size:14px;font-weight:600;margin-bottom:8px;color:#333}
+.recent-table{width:100%;border-collapse:collapse;font-size:13px}
+.recent-table th{background:#fafafa;padding:8px 12px;text-align:center;border-bottom:2px solid #e8e8e8;font-weight:600}
+.recent-table td{padding:6px 12px;text-align:center;border-bottom:1px solid #f5f5f5}
+.recent-table tr:hover{background:#f5f7fa}
+.empty-state{text-align:center;padding:48px 20px;color:#bbb}
+.empty-state .icon{font-size:48px;margin-bottom:12px}
+.empty-state p{font-size:15px}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="search-box">
+    <h1>📋 采购历史查询 <small>按品号查近半年/一年/两年汇总</small></h1>
+    <div class="search-row">
+        <input type="text" id="itemNoInput" placeholder="输入品号，如 110110120397" onkeydown="if(event.key==='Enter')query()" autofocus>
+        <button class="btn-query" id="queryBtn" onclick="query()">查询</button>
+        <button class="btn-clear" onclick="clearAll()">清空</button>
+    </div>
+    <div class="status" id="status">
+        <span class="spinner"></span>
+        <span id="statusText">输入品号后点查询或按 Enter</span>
+    </div>
+</div>
+<div class="result-panel" id="resultPanel">
+    <div class="item-header" id="itemHeader"></div>
+    <div class="card-grid" id="cardGrid"></div>
+    <div class="recent-title">📄 最近采购记录</div>
+    <table class="recent-table"><thead><tr><th>日期</th><th>数量</th><th>金额(含税)</th></tr></thead><tbody id="recentBody"></tbody></table>
+</div>
+<div id="emptyState" class="empty-state hidden">
+    <div class="icon">🔍</div>
+    <p id="emptyText">输入品号开始查询</p>
+</div>
+</div>
+<script>
+var API_HOST = window.location.hostname === 'imthefirstuser.github.io'
+    ? 'http://' + prompt('请输入服务器IP地址（内网IP，如 192.168.1.100）:', '192.168.1.100') + ':8766'
+    : '';
+
+function $(id){return document.getElementById(id)}
+function setLoading(l){$('status').classList.toggle('loading',l);$('queryBtn').disabled=l;$('statusText').textContent=l?'查询中...':''}
+function fmt(v){if(v==null||v===0)return '-';return v.toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:4})}
+function ft(v){if(v==null||v===0)return '-';return v.toLocaleString('zh-CN')}
+function query(){
+    var n=$('itemNoInput').value.trim()
+    if(!n){$('statusText').textContent='请输入品号';return}
+    setLoading(true);$('resultPanel').classList.remove('visible');$('emptyState').classList.add('hidden')
+    var url = API_HOST ? API_HOST + '/api/purchase' : '/api/purchase'
+    fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({item_no:n})})
+    .then(function(r){return r.json()})
+    .then(function(resp){
+        setLoading(false)
+        if(!resp.success){showError(resp.error||'查询失败');return}
+        var d=resp.data
+        if(!d.found){showEmpty('未找到品号 "'+n+'"');return}
+        render(d)
+    })
+    .catch(function(err){setLoading(false);showError('查询失败：'+err.message)})
+}
+function render(d){
+    $('itemHeader').innerHTML='<div><h2>'+d.item_no+'</h2><div class="meta"><span>'+d.name+'</span><span>'+(d.spec||'')+'</span><span class="badge badge-total">共 '+ft(d.total_records)+' 条记录</span></div></div><div style="font-size:12px;color:#bbb">更新：'+d.generated_at+'</div>'
+    var periods=[{k:'half_year',l:'近半年(180天)'},{k:'one_year',l:'近一年(365天)'},{k:'two_year',l:'近两年(730天)'}]
+    $('cardGrid').innerHTML=periods.map(function(p){
+        var s=d[p.k]
+        return '<div class="summary-card"><h3>'+p.l+'</h3>'+
+            '<div class="stat-row"><span class="label">采购次数</span><span class="value">'+ft(s.orders)+'</span></div>'+
+            '<div class="stat-row"><span class="label">总用量</span><span class="value">'+fmt(s.total_qty)+'</span></div>'+
+            '<div class="stat-row"><span class="label">总金额</span><span class="value">¥'+fmt(s.total_amt)+'</span></div>'+
+            '<div class="stat-row"><span class="label">次均用量</span><span class="value">'+fmt(s.avg_qty)+'</span></div>'+
+            '<div class="stat-row"><span class="label">次均金额</span><span class="value">¥'+fmt(s.avg_amt)+'</span></div></div>'
+    }).join('')
+    $('recentBody').innerHTML=d.recent.map(function(r){return '<tr><td>'+r.date+'</td><td>'+fmt(r.qty)+'</td><td>¥'+fmt(r.amt)+'</td></tr>'}).join('')
+    $('resultPanel').classList.add('visible');$('emptyState').classList.add('hidden');$('statusText').textContent='✅ 找到 '+d.item_no+' '+d.name+'，共 '+d.total_records+' 条记录'
+}
+function showEmpty(m){$('resultPanel').classList.remove('visible');$('emptyState').classList.remove('hidden');$('emptyText').textContent=m;$('statusText').textContent=m}
+function showError(m){$('resultPanel').classList.remove('visible');$('emptyState').classList.remove('hidden');$('emptyText').innerHTML='❌ '+m;$('statusText').textContent='❌ '+m}
+function clearAll(){$('itemNoInput').value='';$('itemNoInput').focus();$('resultPanel').classList.remove('visible');$('emptyState').classList.add('hidden');$('statusText').textContent='输入品号后点查询或按 Enter'}
+</script>
+</body>
+</html>
