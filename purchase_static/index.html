@@ -86,7 +86,7 @@ function $(id){return document.getElementById(id)}
 function setLoading(l){$('status').classList.toggle('loading',l);$('queryBtn').disabled=l;}
 function setStatus(m){$('statusText').textContent=m;$('status').classList.remove('loading');}
 
-fetch('purchase_idx.json').then(function(r){return r.json()}).then(function(data){
+fetch('purchase_idx.json?ver=2').then(function(r){return r.json()}).then(function(data){
     data.forEach(function(it){idxData.push({item_no:it[0],name:it[1]||'',spec:it[2]||''});});
     setStatus('已加载索引，共 '+idxData.length+' 个品号');
 });
