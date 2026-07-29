@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>排产看板 v10</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;background:#f0f2f5;color:#333;padding:15px;min-height:100vh}
+.container{max-width:1400px;margin:0 auto}
+.header{background:#fff;border-radius:10px;padding:16px 20px;box-shadow:0 1px 3px rgba(0,0,0,.08);margin-bottom:10px}
+.header h1{font-size:18px;margin-bottom:8px}
+.stats{display:flex;gap:10px;flex-wrap:wrap}
+.stat-item{background:#f5f7fa;padding:6px 14px;border-radius:6px;font-size:12px;display:flex;align-items:center;gap:5px}
+.stat-item .l{color:#888}
+.stat-item .v{font-weight:700;color:#333}
+.tab-bar{display:flex;gap:2px;margin-bottom:0}
+.tab-btn{padding:8px 18px;font-size:13px;cursor:pointer;border:none;background:#e8e8e8;color:#888;border-radius:6px 6px 0 0}
+.tab-btn.active{background:#fff;color:#1677ff;font-weight:600}
+.tab-btn:hover{background:#ddd}
+.tab-content{display:none;background:#fff;border-radius:0 6px 6px 6px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.08);overflow-x:auto}
+.tab-content.active{display:block}
+table{width:100%;border-collapse:collapse;font-size:11px;white-space:nowrap}
+th{background:#2c3e50;color:#fff;padding:6px 8px;text-align:center;font-weight:600;position:sticky;top:0;z-index:10;font-size:10px}
+td{padding:5px 8px;text-align:center;border-bottom:1px solid #eee}
+tr:hover{background:#f0f4ff}
+tr:nth-child(even){background:#fafbfc}
+tr:nth-child(even):hover{background:#f0f4ff}
+td.oid{font-family:"SF Mono","Cascadia Code",monospace;font-size:10px;color:#666}
+td.del{color:#e74c3c;font-weight:600}
+td.na{color:#ddd}
+td.hasdate{font-weight:500;color:#2c3e50}
+.day-summary{cursor:pointer}
+.day-summary:hover{background:#e6f4ff}
+.day-expand td{padding:0}
+.day-expand table{margin:0}
+.footer{text-align:center;font-size:11px;color:#bbb;margin-top:12px;padding-bottom:10px}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+    <h1>排产看板 v10</h1>
+    <div class="stats">
+        <div class="stat-item"><span class="l">时间</span><span class="v">__GENERATED_AT__</span></div>
+        <div class="stat-item"><span class="l">批次数</span><span class="v">__BATCH_COUNT__</span></div>
+        <div class="stat-item"><span class="l">总件数</span><span class="v">__TOTAL_QTY__</span></div>
+        <div class="stat-item"><span class="l">排产天数</span><span class="v">__TOTAL_DAYS__</span></div>
+        <div class="stat-item"><span class="l">工艺</span><span class="v">__PROCESS_FLOW__</span></div>
+        <div class="stat-item"><span class="l">产能</span><span class="v">__CAPACITY_INFO__</span></div>
+    </div>
+</div>
+
+<div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab(0)">批次汇总</button>
+    <button class="tab-btn" onclick="switchTab(1)">每日明细</button>
+    <button class="tab-btn" onclick="switchTab(2)">排产顺序</button>
+    <button class="tab-btn" onclick="switchTab(3)">每日型号汇总</button>
+</div>
+
+<div class="tab-content active" id="tab0">
+<table>
+<thead><tr>__BATCH_HEADERS__</tr></thead>
+<tbody>__BATCH_ROWS__</tbody>
+</table>
+</div>
+
+<div class="tab-content" id="tab1">
+<table>
+<thead><tr>__DAILY_HEADERS__</tr></thead>
+<tbody>__DAILY_ROWS__</tbody>
+</table>
+</div>
+
+<div class="tab-content" id="tab2">
+<div class="section-title">排产顺序</div>
+__OVERDUE_ALERT__
+<table>
+<thead><tr>__ORDER_HEADERS__</tr></thead>
+<tbody>__ORDER_ROWS__</tbody>
+</table>
+</div>
+
+<div class="tab-content" id="tab3">
+<table>
+<thead><tr>__MODEL_HEADERS__</tr></thead>
+<tbody>__MODEL_ROWS__</tbody>
+</table>
+</div>
+
+<div class="footer">感易厨卫实业有限公司 · schedule_v10</div>
+</div>
+
+<script>
+function switchTab(i){
+    document.querySelectorAll('.tab-btn').forEach(function(b,j){b.classList.toggle('active',j===i)});
+    document.querySelectorAll('.tab-content').forEach(function(c,j){c.classList.toggle('active',j===i)});
+}
+function toggleDay(el){
+    var tr=el.parentNode;
+    var expand=tr.nextElementSibling;
+    while(expand && expand.classList.contains('day-expand')){
+        var d=expand.style.display;
+        expand.style.display=d==='none'?'':'none';
+        el.textContent=d==='none'?'▼ '+el.textContent.slice(2):'▶ '+el.textContent.slice(2);
+        break;
+    }
+}
+</script>
+</body>
+</html>
