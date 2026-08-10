@@ -248,27 +248,40 @@ function render() {
   document.getElementById('orders').innerHTML = '<div class="zoom-box">' + (html || '<div style="color:var(--text-muted);padding:24px 0;text-align:center;font-size:13px">无匹配订单</div>') + '</div>';
   if (typeof zoomReset === 'function') zoomReset();
 }
-// ---- 订单区双指捏合缩放 (仅订单列表, 其他区域不动) ----
-var zscale = 1, zpinching = false, zlastDist = 0, zstartScale = 1;
-function _tDist(t) { var a=t[0],b=t[1]; return Math.hypot(a.clientX-b.clientX, a.clientY-b.clientY); }
-function zoomReset() { zscale = 1; zpinching = false; var z=document.querySelector('#orders .zoom-box'); if(z) z.style.zoom = 1; }
+// ---- 订单区双指捏合缩放 (transform GPU加速, 不重排不卡顿) ----
+var zScale=1, zPinching=false, zLastDist=0, zStartScale=1, zBaseH=0;
+function zDist(t) { var a=t[0],b=t[1]; return Math.hypot(a.clientX-b.clientX, a.clientY-b.clientY); }
+function zApply() {
+  var o=document.getElementById('orders'); if(!o) return;
+  var z=o.querySelector('.zoom-box'); if(!z) return;
+  z.style.transform='scale('+zScale+')'; z.style.transformOrigin='0 0';
+}
+function zTrackSize() {
+  var o=document.getElementById('orders'); if(!o) return;
+  var z=o.querySelector('.zoom-box'); if(!z) return;
+  o.style.height=(z.scrollHeight*zScale)+'px';
+  o.style.width=(z.scrollWidth*zScale)+'px';
+}
+function zoomReset() {
+  zScale=1; zPinching=false; zBaseH=0;
+  var o=document.getElementById('orders');
+  if(o){ o.style.height='auto'; o.style.width='auto'; var z=o.querySelector('.zoom-box'); if(z) z.style.transform=''; }
+}
 (function(){
-  var orders = document.getElementById('orders');
-  if (!orders) return;
-  orders.addEventListener('touchstart', function(e){
-    if (e.touches.length >= 2) { zpinching = true; zlastDist = _tDist(e.touches); zstartScale = zscale; e.preventDefault(); }
-    else if (e.touches.length < 2) { zpinching = false; }
+  var o=document.getElementById('orders'); if(!o) return;
+  o.addEventListener('touchstart', function(e){
+    if(e.touches.length>=2){ zPinching=true; zLastDist=zDist(e.touches); zStartScale=zScale; e.preventDefault(); }
+    else if(e.touches.length<2){ zPinching=false; }
   }, {passive:false});
-  orders.addEventListener('touchmove', function(e){
-    if (zpinching && e.touches.length >= 2) {
+  o.addEventListener('touchmove', function(e){
+    if(zPinching && e.touches.length>=2){
       e.preventDefault();
-      var d = _tDist(e.touches);
-      if (d < 1) return;
-      zscale = Math.max(0.6, Math.min(3, zstartScale * (d / zlastDist)));
-      var z = orders.querySelector('.zoom-box'); if(z) z.style.zoom = zscale;
+      var d=zDist(e.touches); if(d<1) return;
+      zScale=Math.max(0.6, Math.min(3, zStartScale*(d/zLastDist)));
+      zApply(); if(zScale>1.01) zTrackSize(); else zTrackSize();
     }
   }, {passive:false});
-  orders.addEventListener('touchend', function(){ zpinching = false; }, {passive:true});
+  o.addEventListener('touchend', function(){ zPinching=false; zTrackSize(); }, {passive:true});
 })();
 render();
 </script>
