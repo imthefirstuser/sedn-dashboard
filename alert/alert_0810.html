@@ -22,8 +22,8 @@
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5;padding:32px 0}
-#orders{overflow:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y}
-.zoom-box{zoom:1;transform-origin:0 0}
+
+
 .app{max-width:1050px;margin:0 auto;padding:0 20px}
 .header{margin-bottom:24px}
 .header h1{font-size:17px;font-weight:500;letter-spacing:-0.01em;color:var(--text);margin-bottom:3px}
@@ -245,44 +245,9 @@ function render() {
     return '<div class="block' + dim + '"><div class="block-header"><div class="block-order">' + o.order_no + '</div><div class="block-meta">交期 <span class="due">' + (o.delivery || '—') + '</span></div></div><table class="order-table" style="font-size:11px"><tr><th>产品</th><th>数量</th><th>路线</th><th>表面</th><th>当前工序</th><th>板材</th><th>镭射</th><th>平面打磨</th><th>内角磨</th><th>打毛刺</th><th>推砂</th><th>PVD</th><th>包装</th><th>中转仓入库</th><th>PVD</th><th>成品仓入库</th><th>完成情况</th></tr>' + rows + '</table></div>';
   }).join('');
   
-  document.getElementById('orders').innerHTML = '<div class="zoom-box">' + (html || '<div style="color:var(--text-muted);padding:24px 0;text-align:center;font-size:13px">无匹配订单</div>') + '</div>';
-  if (typeof zoomReset === 'function') zoomReset();
+  document.getElementById('orders').innerHTML = html || '<div style="color:var(--text-muted);padding:24px 0;text-align:center;font-size:13px">无匹配订单</div>';
 }
-// ---- 订单区双指捏合缩放 (transform GPU加速, 不重排不卡顿) ----
-var zScale=1, zPinching=false, zLastDist=0, zStartScale=1, zBaseH=0;
-function zDist(t) { var a=t[0],b=t[1]; return Math.hypot(a.clientX-b.clientX, a.clientY-b.clientY); }
-function zApply() {
-  var o=document.getElementById('orders'); if(!o) return;
-  var z=o.querySelector('.zoom-box'); if(!z) return;
-  z.style.transform='scale('+zScale+')'; z.style.transformOrigin='0 0';
-}
-function zTrackSize() {
-  var o=document.getElementById('orders'); if(!o) return;
-  var z=o.querySelector('.zoom-box'); if(!z) return;
-  o.style.height=(z.scrollHeight*zScale)+'px';
-  o.style.width=(z.scrollWidth*zScale)+'px';
-}
-function zoomReset() {
-  zScale=1; zPinching=false; zBaseH=0;
-  var o=document.getElementById('orders');
-  if(o){ o.style.height='auto'; o.style.width='auto'; var z=o.querySelector('.zoom-box'); if(z) z.style.transform=''; }
-}
-(function(){
-  var o=document.getElementById('orders'); if(!o) return;
-  o.addEventListener('touchstart', function(e){
-    if(e.touches.length>=2){ zPinching=true; zLastDist=zDist(e.touches); zStartScale=zScale; e.preventDefault(); }
-    else if(e.touches.length<2){ zPinching=false; }
-  }, {passive:false});
-  o.addEventListener('touchmove', function(e){
-    if(zPinching && e.touches.length>=2){
-      e.preventDefault();
-      var d=zDist(e.touches); if(d<1) return;
-      zScale=Math.max(0.6, Math.min(3, zStartScale*(d/zLastDist)));
-      zApply(); if(zScale>1.01) zTrackSize(); else zTrackSize();
-    }
-  }, {passive:false});
-  o.addEventListener('touchend', function(){ zPinching=false; zTrackSize(); }, {passive:true});
-})();
+
 render();
 </script>
 </body>
