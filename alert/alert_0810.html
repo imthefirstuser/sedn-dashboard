@@ -72,8 +72,10 @@ body{padding:20px 0}
 .stat-value{font-size:22px}
 .controls{flex-wrap:wrap}
 .controls input{max-width:100%}
-.block{overflow-x:auto;-webkit-overflow-scrolling:touch}
-.order-table{width:max-content;min-width:100%}
+.order-table{width:100%;table-layout:fixed;word-break:break-word;font-size:8px}
+.order-table th{font-size:8px;white-space:normal;text-align:center}
+.order-table td{font-size:8px;padding:2px 1px;text-align:center;white-space:normal!important;word-break:break-word!important}
+.order-table td:first-child{font-size:8.5px;text-align:left}
 .block-header{flex-wrap:wrap;gap:4px}
 }
 </style>
