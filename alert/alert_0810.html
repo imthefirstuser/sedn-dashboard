@@ -67,15 +67,16 @@ td.mute{color:var(--text-muted)}
 .dim{opacity:0.4}
 .completed{font-size:12px;color:var(--text-muted);padding:12px 0 0;border-top:1px solid var(--border-light);margin-top:20px}
 @media(max-width:640px){
-body{padding:20px 0}
+body{padding:20px 0;overflow-x:hidden}
 .stats-line{gap:12px;flex-wrap:wrap}
 .stat-value{font-size:22px}
 .controls{flex-wrap:wrap}
 .controls input{max-width:100%}
-.order-table{width:100%;table-layout:fixed;word-break:break-word;font-size:8px}
-.order-table th{font-size:8px;white-space:normal;text-align:center}
-.order-table td{font-size:8px;padding:2px 1px;text-align:center;white-space:normal!important;word-break:break-word!important}
-.order-table td:first-child{font-size:8.5px;text-align:left}
+.block{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.order-table{width:max-content;min-width:100%;word-break:break-word;font-size:9px}
+.order-table th{font-size:8px;white-space:nowrap;text-align:center;padding:3px 2px}
+.order-table td{font-size:9px;padding:2px 2px;text-align:center;white-space:normal!important;word-break:break-word!important}
+.order-table td:first-child{font-size:9px;text-align:left}
 .block-header{flex-wrap:wrap;gap:4px}
 }
 </style>
