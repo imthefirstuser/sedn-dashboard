@@ -186,7 +186,7 @@ function render() {
         };
         const ship = (p.can_ship || '—').slice(0,10);
         const sc = p.product_status === 'danger' ? 'style="color:var(--red);font-weight:600"' : p.product_status === 'critical' ? 'style="color:var(--red)"' : p.product_status === 'warning' ? 'style="color:rgba(196,58,49,0.7)"' : '';
-        rows += '<tr' + productBg(p) + '><td>' + (p.model || '?') + '</td><td>' + (p.surface || '—') + '</td><td ' + sc + '>' + (p.current_step || '—') + '</td>' + fd(p.transit_diff) + fd(p.pvd_diff) + (p.pkg_diff === 0 ? '<td class="pos">0</td>' : '<td class="neg">' + (p.pkg_diff === null || p.pkg_diff === undefined ? '—' : (Number.isInteger(p.pkg_diff) ? p.pkg_diff : p.pkg_diff.toFixed(1))) + '</td>') + doneCell(p) + '</tr>';
+        rows += '<tr' + productBg(p) + '><td style="width:140px;min-width:140px;max-width:140px;word-break:break-word;vertical-align:top">' + (p.model || '?') + '</td><td>' + (p.surface || '—') + '</td><td ' + sc + '>' + (p.current_step || '—') + '</td>' + fd(p.transit_diff) + fd(p.pvd_diff) + (p.pkg_diff === 0 ? '<td class="pos">0</td>' : '<td class="neg">' + (p.pkg_diff === null || p.pkg_diff === undefined ? '—' : (Number.isInteger(p.pkg_diff) ? p.pkg_diff : p.pkg_diff.toFixed(1))) + '</td>') + doneCell(p) + '</tr>';
       }
       return '<div class="block' + dim + '"><div class="block-header"><div class="block-order">' + o.order_no + '</div><div class="block-meta">交期 <span class="due">' + (o.delivery || '—') + '</span></div></div><table class="order-table"><tr><th>产品</th><th>表面</th><th>当前工序</th><th>中转仓</th><th>PVD</th><th>成品仓入库</th><th>完成情况</th></tr>' + rows + '</table></div>';
     }
@@ -234,7 +234,7 @@ function render() {
         }
       }
       
-      rows += '<tr' + productBg(p) + '><td>' + (p.model || '?') + '</td><td style="text-align:center">' + qty + '</td><td style="text-align:center;font-size:10px">' + route + '</td><td>' + (p.surface || '—') + '</td><td ' + sc + '>' + (p.current_step || '—') + '</td>' + stepCells + fd(p.transit_diff) + fd(p.pvd_diff) + (p.pkg_diff === 0 ? '<td class="pos">0</td>' : '<td class="neg">' + (p.pkg_diff === null || p.pkg_diff === undefined ? '—' : (Number.isInteger(p.pkg_diff) ? p.pkg_diff : p.pkg_diff.toFixed(1))) + '</td>') + doneCell(p) + '</tr>';
+      rows += '<tr' + productBg(p) + '><td style="width:140px;min-width:140px;max-width:140px;word-break:break-word;vertical-align:top">' + (p.model || '?') + '</td><td style="text-align:center">' + qty + '</td><td style="text-align:center;font-size:10px">' + route + '</td><td>' + (p.surface || '—') + '</td><td ' + sc + '>' + (p.current_step || '—') + '</td>' + stepCells + fd(p.transit_diff) + fd(p.pvd_diff) + (p.pkg_diff === 0 ? '<td class="pos">0</td>' : '<td class="neg">' + (p.pkg_diff === null || p.pkg_diff === undefined ? '—' : (Number.isInteger(p.pkg_diff) ? p.pkg_diff : p.pkg_diff.toFixed(1))) + '</td>') + doneCell(p) + '</tr>';
     }
     return '<div class="block' + dim + '"><div class="block-header"><div class="block-order">' + o.order_no + '</div><div class="block-meta">交期 <span class="due">' + (o.delivery || '—') + '</span></div></div><table class="order-table" style="font-size:11px"><tr><th>产品</th><th>数量</th><th>路线</th><th>表面</th><th>当前工序</th><th>板材</th><th>镭射</th><th>平面打磨</th><th>内角磨</th><th>打毛刺</th><th>推砂</th><th>PVD</th><th>包装</th><th>中转仓</th><th>PVD</th><th>成品仓入库</th><th>完成情况</th></tr>' + rows + '</table></div>';
   }).join('');
