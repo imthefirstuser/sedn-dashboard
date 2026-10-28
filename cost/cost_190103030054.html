@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>成本明细 — SB1893(0310004)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F4F3F0;
+  --surface: #FFFFFF;
+  --border: #E6E5E0;
+  --border-light: #EFEEEA;
+  --text: #1C1B1A;
+  --text-secondary: #6B6A66;
+  --text-muted: #A3A29E;
+  --green: #1B8A3D;
+  --red: #C43A31;
+  --amber: #C4872B;
+  --blue: #3B7DD8;
+  --font: 'Inter', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.6;padding:32px 0}
+.app{max-width:960px;margin:0 auto;padding:0 20px}
+.header{margin-bottom:28px}
+.header h1{font-size:20px;font-weight:500;letter-spacing:-0.02em;margin-bottom:2px}
+.header .code{font-size:13px;color:var(--text-muted);margin-bottom:4px}
+.header .spec{font-size:12px;color:var(--text-secondary)}
+.summary-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px}
+.card{background:var(--surface);border:1px solid var(--border);padding:14px 16px}
+.card .label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+.card .value{font-size:22px;font-weight:500;font-feature-settings:"tnum" 1}
+.card .sub{font-size:11px;color:var(--text-muted);margin-top:2px}
+.section{margin-bottom:28px}
+.section-title{font-size:13px;font-weight:500;color:var(--text-secondary);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border-light)}
+.section-title .badge{display:inline-block;font-size:10px;padding:1px 6px;margin-left:6px;border-radius:2px}
+.badge.green{background:#E8F5E9;color:var(--green)}
+.badge.red{background:#FFEBEE;color:var(--red)}
+table{width:100%;border-collapse:collapse;font-size:12px;background:var(--surface);border:1px solid var(--border)}
+th{background:var(--surface);color:var(--text-muted);font-weight:400;padding:8px 10px;text-align:right;font-size:10px;letter-spacing:0.3px;white-space:nowrap;border-bottom:1px solid var(--border)}
+th:first-child{text-align:left}
+td{padding:6px 10px;text-align:right;font-feature-settings:"tnum" 1;border-bottom:1px solid var(--border-light)}
+td:first-child{text-align:left;font-weight:450;white-space:nowrap}
+td:last-child{font-size:10px;color:var(--text-muted);max-width:250px;overflow:hidden;text-overflow:ellipsis}
+tr:last-child td{border-bottom:none}
+tr.subtotal td{font-weight:500;border-top:1px solid var(--border);background:#FAFAF8}
+tr.scrap td{color:var(--green)}
+tr.total td{font-weight:600;border-top:2px solid var(--text);background:#FAFAF8}
+tr.missing td{color:var(--red)}
+.summary-table{width:100%;border-collapse:collapse;font-size:13px;background:var(--surface);border:1px solid var(--border)}
+.summary-table td{padding:8px 12px;border-bottom:1px solid var(--border-light)}
+.summary-table td:first-child{text-align:left;color:var(--text-secondary)}
+.summary-table td:last-child{text-align:right;font-weight:500;font-feature-settings:"tnum" 1}
+.summary-table tr.total td{border-top:2px solid var(--text);font-weight:600;font-size:15px}
+.summary-table tr.total td:last-child{color:var(--green)}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--border-light);font-size:11px;color:var(--text-muted);text-align:center}
+@media(max-width:640px){body{padding:20px 0}.summary-cards{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="header">
+  <h1>SB1893(0310004)</h1>
+  <div class="code">品号 190103030054</div>
+  <div class="spec">540*440*200,枪灰</div>
+</div>
+
+
+<div style="background:#FFF4E5;border:1px solid #F0A05A;border-left:4px solid #E67E22;padding:14px 18px;margin-bottom:22px">
+  <div style="font-weight:600;color:#B35C00;margin-bottom:8px">⚠ 该品号在 ERP 里没有 BOM，算不出成本</div>
+  <div style="font-size:12px;line-height:1.9;color:#6b5a45">
+    <div>· 判定口径：以本成品品号为父件查 <code>SGMQAB</code>（ERP 物料清单表），<b>一条子件记录都没有</b>。</div>
+    <div>· 后果：成本引擎展开 BOM 后拿不到任何物料，无法算材料费、废料、委外费；本页下方所有成本项都是空。</div>
+    <div>· <b>本页不显示 0 元，也不做估算</b>：0 元代表「算不出来」，不是「不要钱」，
+        更不能被报价模式当成真实成本乘利润率。</div>
+    <div>· 常见原因：① 同一系列的左/右件只给其中一个建了 BOM；② 新品尚未录入 BOM；③ 该品号属配件/散件而非整盆。</div>
+    <div>· 怎么修：由技术/ERP 侧在 <code>SGMQAB</code> 给本品号建 BOM，建好后重跑
+        <code>gen_cost_pages.py --item &lt;品号&gt;</code>，本页会自动变成正常成本页。</div>
+  </div>
+</div>
+
+<div class="summary-cards">
+  <div class="card">
+    <div class="label">原料成本</div>
+    <div class="value" style="color:var(--text)">—</div>
+    <div class="sub">0项有价 · 0项缺价</div>
+  </div>
+  <div class="card">
+    <div class="label">废料回收</div>
+    <div class="value" style="color:var(--green)">—</div>
+    <div class="sub">无废料</div>
+  </div>
+  <div class="card">
+    <div class="label">净原料成本</div>
+    <div class="value" style="color:var(--text)">—</div>
+  </div>
+  <div class="card">
+    <div class="label">总成本</div>
+    <div class="value" style="color:var(--red)">无法计算</div>
+    <div class="sub">元/件</div>
+    
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">
+    ① 原料成本
+    <span class="badge green">0项有价</span>
+    <span class="badge red">0项缺价</span>
+  </div>
+  <table>
+    <tr><th>类型</th><th>物料</th><th>规格</th><th>用量</th><th>含税单价</th><th>含税金额</th><th>来源</th></tr>
+
+    <tr class="subtotal"><td colspan="5"><strong>小计</strong></td><td><strong>—</strong></td><td>0项有价 / 0项缺价</td></tr>
+  </table>
+</div>
+
+
+
+<div class="section">
+  <div class="section-title">② 生产人工成本 <span style="font-size:10px;color:var(--text-muted);font-weight:400">A路线</span></div>
+  <table class="labor-table">
+    <tr><th>工序</th><th>单价</th></tr>
+    <tr class=""><td>镭射</td><td style="text-align:right;font-feature-settings:"tnum" 1">0.75</td></tr>
+    <tr class=""><td>激光打标</td><td style="text-align:right;font-feature-settings:"tnum" 1">0.35</td></tr>
+    <tr class=""><td>冲压</td><td style="text-align:right;font-feature-settings:"tnum" 1">2.20</td></tr>
+    <tr class=""><td>折弯</td><td style="text-align:right;font-feature-settings:"tnum" 1">2.20</td></tr>
+    <tr class=""><td>撕胶纸</td><td style="text-align:right;font-feature-settings:"tnum" 1">0.50</td></tr>
+    <tr class=""><td>组盆</td><td style="text-align:right;font-feature-settings:"tnum" 1">3.00</td></tr>
+    <tr class=""><td>滚边压角</td><td style="text-align:right;font-feature-settings:"tnum" 1">1.44</td></tr>
+    <tr class=""><td>自动焊</td><td style="text-align:right;font-feature-settings:"tnum" 1">1.44</td></tr>
+    <tr class=""><td>机器拉三角</td><td style="text-align:right;font-feature-settings:"tnum" 1">1.44</td></tr>
+    <tr class=""><td>组三角</td><td style="text-align:right;font-feature-settings:"tnum" 1">1.44</td></tr>
+    <tr class="subtotal"><td>焊马仔</td><td style="text-align:right;font-feature-settings:"tnum" 1">1.32</td></tr>
+    <tr class=""><td>平面粗磨</td><td style="text-align:right;font-feature-settings:"tnum" 1">6.50</td></tr>
+    <tr class=""><td>打毛刺</td><td style="text-align:right;font-feature-settings:"tnum" 1">1.10</td></tr>
+    <tr class=""><td>磨内角</td><td style="text-align:right;font-feature-settings:"tnum" 1">1.10</td></tr>
+    <tr class=""><td>过砂带</td><td style="text-align:right;font-feature-settings:"tnum" 1">1.10</td></tr>
+    <tr class=""><td>倒角</td><td style="text-align:right;font-feature-settings:"tnum" 1">1.10</td></tr>
+    <tr class=""><td>拉丝</td><td style="text-align:right;font-feature-settings:"tnum" 1">10.00</td></tr>
+    <tr class=""><td>推砂</td><td style="text-align:right;font-feature-settings:"tnum" 1">2.50</td></tr>
+    <tr class=""><td>拉角</td><td style="text-align:right;font-feature-settings:"tnum" 1">1.50</td></tr>
+    <tr class=""><td>喷漆</td><td style="text-align:right;font-feature-settings:"tnum" 1">2.34</td></tr>
+    <tr class=""><td>贴消音胶</td><td style="text-align:right;font-feature-settings:"tnum" 1">0.50</td></tr>
+    <tr class="subtotal"><td>贴马仔</td><td style="text-align:right;font-feature-settings:"tnum" 1">1.00</td></tr>
+    <tr class=""><td>清洁装袋</td><td style="text-align:right;font-feature-settings:"tnum" 1">1.00</td></tr>
+    <tr class=""><td>激光LOGO</td><td style="text-align:right;font-feature-settings:"tnum" 1">0.35</td></tr>
+    <tr class=""><td>包装</td><td style="text-align:right;font-feature-settings:"tnum" 1">2.85</td></tr>
+    <tr class=""><td>其他辅助</td><td style="text-align:right;font-feature-settings:"tnum" 1">0.65</td></tr>
+    <tr class="subtotal"><td><strong>合计</strong></td><td style="text-align:right"><strong>44.98</strong></td></tr>
+  </table>
+</div>
+
+<div class="section">
+  <div class="section-title">③ 管理人工成本 <span style="font-size:10px;color:var(--text-muted);font-weight:400">10部门</span></div>
+  <table class="labor-table">
+    <tr><th>部门</th><th>成本</th></tr>
+    <tr><td>PMC</td><td style="text-align:right;font-feature-settings:"tnum" 1">2.50</td></tr>
+    <tr><td>品质</td><td style="text-align:right;font-feature-settings:"tnum" 1">3.20</td></tr>
+    <tr><td>工程</td><td style="text-align:right;font-feature-settings:"tnum" 1">2.80</td></tr>
+    <tr><td>仓库</td><td style="text-align:right;font-feature-settings:"tnum" 1">2.50</td></tr>
+    <tr><td>采购</td><td style="text-align:right;font-feature-settings:"tnum" 1">2.50</td></tr>
+    <tr><td>业务</td><td style="text-align:right;font-feature-settings:"tnum" 1">3.50</td></tr>
+    <tr><td>人事行政</td><td style="text-align:right;font-feature-settings:"tnum" 1">2.48</td></tr>
+    <tr><td>财务</td><td style="text-align:right;font-feature-settings:"tnum" 1">2.50</td></tr>
+    <tr><td>生产管理</td><td style="text-align:right;font-feature-settings:"tnum" 1">3.00</td></tr>
+    <tr><td>设备</td><td style="text-align:right;font-feature-settings:"tnum" 1">2.50</td></tr>
+    <tr class="subtotal"><td><strong>合计</strong></td><td style="text-align:right"><strong>27.48</strong></td></tr>
+  </table>
+</div>
+<div class="section">
+  <div class="section-title">⑤ 成本汇总</div>
+  <table class="summary-table">
+    <tr class=""><td>原料成本</td><td>0.00</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">0项有价，0项缺价</td></tr>
+    <tr class=""><td>净原料成本</td><td>**0.00**</td><td></td></tr>
+    <tr class=""><td>生产人工</td><td>**44.98**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">A路线 28道工序</td></tr>
+    <tr class=""><td>管理人工</td><td>**27.48**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">10部门分摊</td></tr>
+    <tr class="total" style="color:var(--red)"><td>**总成本**</td><td>**无法计算**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">本型号 ERP 无 BOM，算不出材料成本</td></tr>
+
+  </table>
+</div>
+
+<div class="footer">
+  数据来源：BOM递归 + DCSHCB最近采购价 | 生成时间：2026-10-28 16:13
+</div>
+
+</div>
+</body>
+</html>
