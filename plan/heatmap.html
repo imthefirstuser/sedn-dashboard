@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8"><title>计划完成时间 每日负荷热力图</title>
+<style>
+ body{background:#0f1419;color:#d8dee9;font-family:-apple-system,"Microsoft YaHei",sans-serif;margin:0;padding:24px}
+ h1{font-size:18px;font-weight:600;margin:0 0 4px}
+ .sub{color:#7b8794;font-size:12px;margin-bottom:18px}
+ .wrap{display:grid;grid-template-columns:64px 1fr;gap:2px;align-items:center}
+ .rowlbl{font-size:12px;color:#9aa5b1;text-align:right;padding-right:8px;white-space:nowrap}
+ .cells{display:grid;gap:2px}
+ .cell{height:26px;border-radius:3px;position:relative;cursor:default}
+ .cell span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+   font-size:10px;color:#fff;text-shadow:0 1px 2px #000}
+ .axis{display:grid;gap:2px;margin-left:72px;font-size:10px;color:#7b8794}
+ .legend{display:flex;gap:14px;margin-top:18px;font-size:12px;color:#9aa5b1;flex-wrap:wrap}
+ .card{background:#171c22;border:1px solid #232a32;border-radius:8px;padding:14px;margin-top:18px}
+ .kpi{display:flex;gap:26px;flex-wrap:wrap}
+ .kpi div{font-size:13px}
+ .kpi b{display:block;font-size:20px;color:#e5e9f0;margin-top:2px}
+</style></head><body>
+<h1>计划完成时间 · 每日负荷热力图</h1>
+<div class="sub" id="sub"></div>
+<div class="wrap" id="grid"></div>
+<div class="axis" id="axis"></div>
+<div class="card"><div class="kpi" id="kpi"></div></div>
+<div class="legend">
+ <span>色深 = 当天该工序计划数量，取五道里最大值归一</span>
+ <span>鼠标悬停看具体数量</span>
+</div>
+<script>
+const D = {"procs": ["镭射", "平面打磨", "推砂", "PVD", "包装"], "series": [{"date": "2026-10-20", "w": 1, "镭射": 414, "平面打磨": 472, "推砂": 175, "PVD": 0, "包装": 0, "合计": 1061}, {"date": "2026-10-21", "w": 2, "镭射": 377, "平面打磨": 0, "推砂": 98, "PVD": 0, "包装": 0, "合计": 475}, {"date": "2026-10-22", "w": 3, "镭射": 180, "平面打磨": 0, "推砂": 0, "PVD": 0, "包装": 0, "合计": 180}, {"date": "2026-10-23", "w": 4, "镭射": 194, "平面打磨": 137, "推砂": 139, "PVD": 10, "包装": 10, "合计": 490}, {"date": "2026-10-24", "w": 5, "镭射": 263, "平面打磨": 796, "推砂": 51, "PVD": 0, "包装": 0, "合计": 1110}, {"date": "2026-10-25", "w": 6, "镭射": 702, "平面打磨": 462, "推砂": 58, "PVD": 0, "包装": 0, "合计": 1222}, {"date": "2026-10-26", "w": 0, "镭射": 976, "平面打磨": 0, "推砂": 72, "PVD": 3, "包装": 0, "合计": 1051}, {"date": "2026-10-27", "w": 1, "镭射": 666, "平面打磨": 411, "推砂": 346, "PVD": 0, "包装": 0, "合计": 1423}, {"date": "2026-10-28", "w": 2, "镭射": 67, "平面打磨": 456, "推砂": 51, "PVD": 0, "包装": 54, "合计": 628}, {"date": "2026-10-29", "w": 3, "镭射": 294, "平面打磨": 464, "推砂": 0, "PVD": 0, "包装": 11, "合计": 769}, {"date": "2026-10-30", "w": 4, "镭射": 777, "平面打磨": 566, "推砂": 0, "PVD": 0, "包装": 96, "合计": 1439}, {"date": "2026-10-31", "w": 5, "镭射": 315, "平面打磨": 0, "推砂": 477, "PVD": 0, "包装": 0, "合计": 792}, {"date": "2026-11-01", "w": 6, "镭射": 432, "平面打磨": 401, "推砂": 239, "PVD": 98, "包装": 0, "合计": 1170}, {"date": "2026-11-02", "w": 0, "镭射": 2016, "平面打磨": 400, "推砂": 10, "PVD": 22, "包装": 41, "合计": 2489}, {"date": "2026-11-03", "w": 1, "镭射": 363, "平面打磨": 305, "推砂": 38, "PVD": 0, "包装": 0, "合计": 706}, {"date": "2026-11-04", "w": 2, "镭射": 1174, "平面打磨": 0, "推砂": 300, "PVD": 40, "包装": 0, "合计": 1514}, {"date": "2026-11-05", "w": 3, "镭射": 665, "平面打磨": 244, "推砂": 441, "PVD": 20, "包装": 271, "合计": 1641}, {"date": "2026-11-06", "w": 4, "镭射": 295, "平面打磨": 399, "推砂": 199, "PVD": 0, "包装": 0, "合计": 893}, {"date": "2026-11-07", "w": 5, "镭射": 513, "平面打磨": 392, "推砂": 396, "PVD": 50, "包装": 908, "合计": 2259}, {"date": "2026-11-08", "w": 6, "镭射": 468, "平面打磨": 180, "推砂": 462, "PVD": 0, "包装": 62, "合计": 1172}, {"date": "2026-11-09", "w": 0, "镭射": 588, "平面打磨": 194, "推砂": 0, "PVD": 40, "包装": 72, "合计": 894}, {"date": "2026-11-10", "w": 1, "镭射": 616, "平面打磨": 343, "推砂": 411, "PVD": 0, "包装": 147, "合计": 1517}, {"date": "2026-11-11", "w": 2, "镭射": 504, "平面打磨": 504, "推砂": 456, "PVD": 2800, "包装": 557, "合计": 4821}, {"date": "2026-11-12", "w": 3, "镭射": 420, "平面打磨": 598, "推砂": 464, "PVD": 0, "包装": 0, "合计": 1482}, {"date": "2026-11-13", "w": 4, "镭射": 494, "平面打磨": 756, "推砂": 504, "PVD": 76, "包装": 831, "合计": 2661}, {"date": "2026-11-14", "w": 5, "镭射": 624, "平面打磨": 844, "推砂": 391, "PVD": 0, "包装": 3823, "合计": 5682}, {"date": "2026-11-15", "w": 6, "镭射": 588, "平面打磨": 962, "推砂": 399, "PVD": 0, "包装": 1762, "合计": 3711}, {"date": "2026-11-16", "w": 0, "镭射": 0, "平面打磨": 777, "推砂": 682, "PVD": 0, "包装": 112, "合计": 1571}, {"date": "2026-11-17", "w": 1, "镭射": 0, "平面打磨": 315, "推砂": 934, "PVD": 0, "包装": 0, "合计": 1249}, {"date": "2026-11-18", "w": 2, "镭射": 0, "平面打磨": 437, "推砂": 377, "PVD": 0, "包装": 919, "合计": 1733}, {"date": "2026-11-19", "w": 3, "镭射": 0, "平面打磨": 504, "推砂": 400, "PVD": 0, "包装": 15, "合计": 919}, {"date": "2026-11-20", "w": 4, "镭射": 0, "平面打磨": 435, "推砂": 481, "PVD": 0, "包装": 0, "合计": 916}, {"date": "2026-11-21", "w": 5, "镭射": 0, "平面打磨": 416, "推砂": 264, "PVD": 71, "包装": 0, "合计": 751}, {"date": "2026-11-22", "w": 6, "镭射": 0, "平面打磨": 324, "推砂": 305, "PVD": 0, "包装": 80, "合计": 709}, {"date": "2026-11-23", "w": 0, "镭射": 0, "平面打磨": 612, "推砂": 756, "PVD": 0, "包装": 0, "合计": 1368}, {"date": "2026-11-24", "w": 1, "镭射": 0, "平面打磨": 713, "推砂": 619, "PVD": 0, "包装": 642, "合计": 1974}, {"date": "2026-11-25", "w": 2, "镭射": 0, "平面打磨": 1115, "推砂": 524, "PVD": 0, "包装": 0, "合计": 1639}, {"date": "2026-11-26", "w": 3, "镭射": 0, "平面打磨": 468, "推砂": 562, "PVD": 0, "包装": 0, "合计": 1030}, {"date": "2026-11-27", "w": 4, "镭射": 0, "平面打磨": 588, "推砂": 238, "PVD": 268, "包装": 0, "合计": 1094}, {"date": "2026-11-28", "w": 5, "镭射": 0, "平面打磨": 616, "推砂": 488, "PVD": 592, "包装": 756, "合计": 2452}, {"date": "2026-11-29", "w": 6, "镭射": 0, "平面打磨": 560, "推砂": 504, "PVD": 337, "包装": 0, "合计": 1401}, {"date": "2026-11-30", "w": 0, "镭射": 0, "平面打磨": 1008, "推砂": 682, "PVD": 0, "包装": 998, "合计": 2688}, {"date": "2026-12-01", "w": 1, "镭射": 0, "平面打磨": 594, "推砂": 496, "PVD": 0, "包装": 262, "合计": 1352}, {"date": "2026-12-02", "w": 2, "镭射": 0, "平面打磨": 218, "推砂": 504, "PVD": 133, "包装": 1632, "合计": 2487}, {"date": "2026-12-03", "w": 3, "镭射": 0, "平面打磨": 406, "推砂": 294, "PVD": 0, "包装": 0, "合计": 700}, {"date": "2026-12-04", "w": 4, "镭射": 0, "平面打磨": 0, "推砂": 485, "PVD": 0, "包装": 0, "合计": 485}, {"date": "2026-12-05", "w": 5, "镭射": 0, "平面打磨": 0, "推砂": 492, "PVD": 0, "包装": 1219, "合计": 1711}, {"date": "2026-12-06", "w": 6, "镭射": 0, "平面打磨": 0, "推砂": 378, "PVD": 0, "包装": 248, "合计": 626}, {"date": "2026-12-07", "w": 0, "镭射": 0, "平面打磨": 0, "推砂": 274, "PVD": 0, "包装": 0, "合计": 274}, {"date": "2026-12-08", "w": 1, "镭射": 0, "平面打磨": 0, "推砂": 513, "PVD": 0, "包装": 1532, "合计": 2045}, {"date": "2026-12-09", "w": 2, "镭射": 0, "平面打磨": 0, "推砂": 468, "PVD": 0, "包装": 0, "合计": 468}, {"date": "2026-12-10", "w": 3, "镭射": 0, "平面打磨": 0, "推砂": 613, "PVD": 144, "包装": 0, "合计": 757}, {"date": "2026-12-11", "w": 4, "镭射": 0, "平面打磨": 0, "推砂": 616, "PVD": 1014, "包装": 468, "合计": 2098}, {"date": "2026-12-12", "w": 5, "镭射": 0, "平面打磨": 0, "推砂": 504, "PVD": 0, "包装": 588, "合计": 1092}, {"date": "2026-12-13", "w": 6, "镭射": 0, "平面打磨": 0, "推砂": 266, "PVD": 0, "包装": 1001, "合计": 1267}, {"date": "2026-12-14", "w": 0, "镭射": 0, "平面打磨": 0, "推砂": 420, "PVD": 0, "包装": 1028, "合计": 1448}, {"date": "2026-12-15", "w": 1, "镭射": 0, "平面打磨": 0, "推砂": 510, "PVD": 774, "包装": 86, "合计": 1370}, {"date": "2026-12-16", "w": 2, "镭射": 0, "平面打磨": 0, "推砂": 302, "PVD": 0, "包装": 1008, "合计": 1310}, {"date": "2026-12-17", "w": 3, "镭射": 0, "平面打磨": 0, "推砂": 388, "PVD": 160, "包装": 734, "合计": 1282}, {"date": "2026-12-18", "w": 4, "镭射": 0, "平面打磨": 0, "推砂": 396, "PVD": 416, "包装": 0, "合计": 812}, {"date": "2026-12-19", "w": 5, "镭射": 0, "平面打磨": 0, "推砂": 0, "PVD": 300, "包装": 224, "合计": 524}, {"date": "2026-12-20", "w": 6, "镭射": 0, "平面打磨": 0, "推砂": 0, "PVD": 324, "包装": 786, "合计": 1110}, {"date": "2026-12-21", "w": 0, "镭射": 0, "平面打磨": 0, "推砂": 0, "PVD": 28, "包装": 731, "合计": 759}, {"date": "2026-12-22", "w": 1, "镭射": 0, "平面打磨": 0, "推砂": 0, "PVD": 0, "包装": 740, "合计": 740}, {"date": "2026-12-23", "w": 2, "镭射": 0, "平面打磨": 0, "推砂": 588, "PVD": 0, "包装": 1196, "合计": 1784}, {"date": "2026-12-24", "w": 3, "镭射": 0, "平面打磨": 0, "推砂": 234, "PVD": 513, "包装": 0, "合计": 747}, {"date": "2026-12-25", "w": 4, "镭射": 0, "平面打磨": 0, "推砂": 516, "PVD": 0, "包装": 0, "合计": 516}, {"date": "2026-12-26", "w": 5, "镭射": 0, "平面打磨": 0, "推砂": 0, "PVD": 338, "包装": 0, "合计": 338}, {"date": "2026-12-27", "w": 6, "镭射": 0, "平面打磨": 0, "推砂": 0, "PVD": 350, "包装": 513, "合计": 863}, {"date": "2026-12-28", "w": 0, "镭射": 0, "平面打磨": 0, "推砂": 0, "PVD": 0, "包装": 1785, "合计": 1785}, {"date": "2026-12-29", "w": 1, "镭射": 0, "平面打磨": 0, "推砂": 0, "PVD": 0, "包装": 916, "合计": 916}, {"date": "2026-12-31", "w": 3, "镭射": 0, "平面打磨": 0, "推砂": 0, "PVD": 390, "包装": 0, "合计": 390}, {"date": "2027-01-02", "w": 5, "镭射": 0, "平面打磨": 0, "推砂": 0, "PVD": 0, "包装": 510, "合计": 510}], "tot": {"镭射": 14985, "平面打磨": 20392, "推砂": 23250, "PVD": 9311, "包装": 29374}, "range": "2026-10-20 ~ 2027-01-02"};
+const procs = D.procs, series = D.series;
+const maxAll = Math.max(1, ...series.flatMap(r => procs.map(p => r[p])));
+const grid = document.getElementById('grid');
+const axis = document.getElementById('axis');
+grid.style.gridTemplateColumns = '64px 1fr';
+document.getElementById('sub').textContent =
+  D.range + ' · 共 ' + series.length + ' 天 · 数量 = 中间仓未完成数 × 水槽数';
+function color(v){
+  if(!v) return '#1b2129';
+  const t = Math.min(1, Math.log10(1+v)/Math.log10(1+maxAll));
+  const a = 0.12 + t*0.88;
+  return `rgba(56,189,248,${a.toFixed(3)})`;
+}
+procs.forEach(p => {
+  const l = document.createElement('div'); l.className='rowlbl'; l.textContent=p; grid.appendChild(l);
+  const c = document.createElement('div'); c.className='cells';
+  c.style.gridTemplateColumns = `repeat(${series.length},1fr)`;
+  series.forEach(r => {
+    const cell=document.createElement('div'); cell.className='cell';
+    cell.style.background = color(r[p]);
+    cell.title = `${r.date} ${p}：${r[p]}`;
+    if(r[p] && series.length<=40){const s=document.createElement('span');s.textContent=r[p];cell.appendChild(s);}
+    c.appendChild(cell);
+  });
+  grid.appendChild(c);
+});
+const tc = document.createElement('div'); tc.className='rowlbl'; tc.textContent='合计'; grid.appendChild(tc);
+const cc = document.createElement('div'); cc.className='cells';
+cc.style.gridTemplateColumns = `repeat(${series.length},1fr)`;
+const maxT = Math.max(1, ...series.map(r=>r.合计));
+series.forEach(r => {
+  const cell=document.createElement('div'); cell.className='cell';
+  const t = Math.min(1, r.合计/maxT);
+  cell.style.background = `rgba(251,146,60,${(0.1+t*0.85).toFixed(3)})`;
+  cell.title = `${r.date} 合计：${r.合计}`;
+  cc.appendChild(cell);
+});
+grid.appendChild(cc);
+axis.style.gridTemplateColumns = `repeat(${series.length},1fr)`;
+series.forEach(r => {const a=document.createElement('div');a.textContent=r.date.slice(5);a.style.textAlign='center';axis.appendChild(a);});
+const kpi = document.getElementById('kpi');
+kpi.innerHTML = '<div>区间合计<b>' + series.reduce((s,r)=>s+r.合计,0).toLocaleString() + '</b></div>' +
+  procs.map(p=>`<div>${p}<b>${D.tot[p].toLocaleString()}</b></div>`).join('');
+</script></body></html>
