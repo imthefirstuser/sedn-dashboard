@@ -68,6 +68,20 @@ tr.missing td{color:var(--red)}
   <div class="spec">748*438*180,环保钢/拉丝,56件/卡板，销货后作废</div>
 </div>
 
+
+<div style="background:#FFF4E5;border:1px solid #F0A05A;border-left:4px solid #E67E22;padding:14px 18px;margin-bottom:22px">
+  <div style="font-weight:600;color:#B35C00;margin-bottom:8px">⚠ 该品号在 ERP 里没有 BOM，算不出成本</div>
+  <div style="font-size:12px;line-height:1.9;color:#6b5a45">
+    <div>· 判定口径：以本成品品号为父件查 <code>SGMQAB</code>（ERP 物料清单表），<b>一条子件记录都没有</b>。</div>
+    <div>· 后果：成本引擎展开 BOM 后拿不到任何物料，无法算材料费、废料、委外费；本页下方所有成本项都是空。</div>
+    <div>· <b>本页不显示 0 元，也不做估算</b>：0 元代表「算不出来」，不是「不要钱」，
+        更不能被报价模式当成真实成本乘利润率。</div>
+    <div>· 常见原因：① 同一系列的左/右件只给其中一个建了 BOM；② 新品尚未录入 BOM；③ 该品号属配件/散件而非整盆。</div>
+    <div>· 怎么修：由技术/ERP 侧在 <code>SGMQAB</code> 给本品号建 BOM，建好后重跑
+        <code>gen_cost_pages.py --item &lt;品号&gt;</code>，本页会自动变成正常成本页。</div>
+  </div>
+</div>
+
 <div class="summary-cards">
   <div class="card">
     <div class="label">原料成本</div>
@@ -85,7 +99,7 @@ tr.missing td{color:var(--red)}
   </div>
   <div class="card">
     <div class="label">总成本</div>
-    <div class="value" style="color:var(--green)">72.46</div>
+    <div class="value" style="color:var(--red)">无法计算</div>
     <div class="sub">元/件</div>
     
   </div>
@@ -164,13 +178,13 @@ tr.missing td{color:var(--red)}
     <tr class=""><td>净原料成本</td><td>**0.00**</td><td></td></tr>
     <tr class=""><td>生产人工</td><td>**44.98**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">A路线 28道工序</td></tr>
     <tr class=""><td>管理人工</td><td>**27.48**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">10部门分摊</td></tr>
-    <tr class="total"><td>**总成本**</td><td>**72.46**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">元/件</td></tr>
+    <tr class="total" style="color:var(--red)"><td>**总成本**</td><td>**无法计算**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">本型号 ERP 无 BOM，算不出材料成本</td></tr>
 
   </table>
 </div>
 
 <div class="footer">
-  数据来源：BOM递归 + DCSHCB最近采购价 | 生成时间：2026-10-28 10:32
+  数据来源：BOM递归 + DCSHCB最近采购价 | 生成时间：2026-11-02 11:23
 </div>
 
 </div>
