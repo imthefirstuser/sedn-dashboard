@@ -72,21 +72,21 @@ tr.missing td{color:var(--red)}
 <div class="summary-cards">
   <div class="card">
     <div class="label">原料成本</div>
-    <div class="value" style="color:var(--text)">166.55</div>
+    <div class="value" style="color:var(--text)">173.02</div>
     <div class="sub">15项有价 · 0项缺价</div>
   </div>
   <div class="card">
     <div class="label">废料回收</div>
-    <div class="value" style="color:var(--green)">−12.29</div>
-    <div class="sub">304 1.834kg × 6.7元/kg</div>
+    <div class="value" style="color:var(--green)">−3.81</div>
+    <div class="sub">304 0.568kg × 6.7元/kg</div>
   </div>
   <div class="card">
     <div class="label">净原料成本</div>
-    <div class="value" style="color:var(--text)">154.26</div>
+    <div class="value" style="color:var(--text)">169.21</div>
   </div>
   <div class="card">
     <div class="label">总成本</div>
-    <div class="value" style="color:var(--green)">233.19</div>
+    <div class="value" style="color:var(--green)">248.14</div>
     <div class="sub">元/件</div>
     
   </div>
@@ -116,8 +116,8 @@ tr.missing td{color:var(--red)}
     <tr class=""><td>包材</td><td>纸箱</td><td style="font-size:11px;color:var(--text-muted)">735*495*248(内尺寸）,K=K,SB1404浅金印刷要求</td><td>1.00 PCS</td><td>11.03/PCS</td><td>11.03</td><td style="font-size:10px;max-width:250px">110401000207</td></tr>
     <tr class=""><td>包材</td><td>胶袋</td><td style="font-size:11px;color:var(--text-muted)">1100*1050（开口在1050）</td><td>1.00 PCS</td><td>1.20/PCS</td><td>1.20</td><td style="font-size:10px;max-width:250px">110415000021</td></tr>
 
-    <tr class="subtotal"><td colspan="5"><strong>小计</strong></td><td><strong>166.55</strong></td><td>15项有价 / 0项缺价</td></tr>
-    <tr class="scrap"><td colspan="5">废料回收（镭射切角）</td><td>−12.29</td><td>304 1.834kg × 6.7元/kg（吨价÷2）</td></tr>
+    <tr class="subtotal"><td colspan="5"><strong>小计</strong></td><td><strong>173.02</strong></td><td>15项有价 / 0项缺价</td></tr>
+    <tr class="scrap"><td colspan="5">废料回收（镭射切角）</td><td>−3.81</td><td>304 0.568kg × 6.7元/kg（吨价÷2）</td></tr>
   </table>
 </div>
 
@@ -126,9 +126,19 @@ tr.missing td{color:var(--red)}
     <div class="section-title">废料回收明细</div>
     <table>
       <tr><th>废料类型</th><th>说明</th><th>重量(kg)</th><th>单价</th><th>金额</th></tr>
-      <tr><td>第二刀</td><td>镭射切角 (坯料−展开面积)</td><td style="text-align:right">1.834</td><td style="text-align:right">6.7元/kg（吨价÷2）</td><td style="text-align:right;color:var(--green)">12.29</td></tr>
-      <tr class="subtotal"><td colspan="3">合计</td><td></td><td style="text-align:right;color:var(--green)"><strong>−12.29</strong></td></tr>
+      <tr><td>第二刀</td><td>镭射切角 (坯料−展开面积)</td><td style="text-align:right">0.568</td><td style="text-align:right">6.7元/kg（吨价÷2）</td><td style="text-align:right;color:var(--green)">3.81</td></tr>
+      <tr class="subtotal"><td colspan="3">合计</td><td></td><td style="text-align:right;color:var(--green)"><strong>−3.81</strong></td></tr>
     </table>
+    <div style="margin-top:14px;padding:14px 18px;background:#F7F9FC;border-left:3px solid #4A90D9;font-size:12px;line-height:2;color:#3a4a5c">
+      <div style="font-weight:600;margin-bottom:6px">怎么算的</div>
+      <div>① <b>坯料面积</b> ＝ 大板规格 × 一开几用量 → <b>959,200 mm²</b></div>
+      <div>② <b>展开面积</b>（成品需要的料）→ <b>899,536 mm²</b></div>
+      <div>③ <b>废料面积</b> ＝ 坯料 − 展开 ＝ 959,200 − 899,536 = <b>59,664 mm²</b></div>
+      <div>④ <b>废料体积</b> ＝ 废料面积 × 料厚 ＝ 59,664 × 1.2 ÷ 1000 = <b>72 cm³</b></div>
+      <div>⑤ <b>废料重量</b> ＝ 体积 × 304密度 7.93 g/cm³ ÷ 1000 = <b>0.568 kg</b></div>
+      <div>⑥ <b>回收金额</b> ＝ 重量 0.568 kg × 单价 6.7 元/kg＝ <b>3.81 元</b></div>
+      <div style="margin-top:6px;color:#7a8a9a">废料单价 ＝ 主材吨价 ÷ 2（即按半价回收废料）</div>
+    </div>
   </div>
 
 <div class="section">
@@ -183,21 +193,29 @@ tr.missing td{color:var(--red)}
   </table>
 </div>
 <div class="section">
+  <div class="section-title">④ 委外加工费 <span style="font-size:10px;color:var(--text-muted);font-weight:400">最新委外单价</span></div>
+  <table>
+    <tr><th>品号</th><th>品名</th><th>规格</th><th>用量</th><th>加工费单价</th><th>加工费金额</th><th>供应商/日期</th></tr>
+    <tr><td>110110120099</td><td>304#单面拉丝</td><td style="font-size:11px;color:var(--text-muted)">2180*880*1.2</td><td>0.50</td><td>12.95</td><td>6.47</td><td style="font-size:10px;max-width:250px">精确匹配 110110120099 含税¥12.95</td></tr>
+    <tr class="subtotal"><td colspan="5"><strong>合计</strong></td><td><strong>6.47</strong></td><td></td></tr>
+  </table>
+</div>
+<div class="section">
   <div class="section-title">⑤ 成本汇总</div>
   <table class="summary-table">
-    <tr class=""><td>原料成本</td><td>166.55</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">15项有价，0项缺价</td></tr>
-    <tr class=""><td>废料回收</td><td>−12.29</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">304 1.834kg × 6.7元/kg（吨价÷2）</td></tr>
-    <tr class=""><td>净原料成本</td><td>**154.26**</td><td></td></tr>
-    <tr class=""><td>主材委外费</td><td>**6.47**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">精确匹配 110110120099 含税¥12.95 ×0.5</td></tr>
+    <tr class=""><td>原料成本</td><td>173.02</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">15项有价，0项缺价</td></tr>
+    <tr class=""><td>废料回收</td><td>−3.81</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">304 0.568kg × 6.7元/kg（吨价÷2）</td></tr>
+    <tr class=""><td>净原料成本</td><td>**169.21**</td><td></td></tr>
+    <tr class=""><td>委外加工费</td><td>**6.47**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">1项委外</td></tr>
     <tr class=""><td>生产人工</td><td>**44.98**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">A路线 28道工序</td></tr>
     <tr class=""><td>管理人工</td><td>**27.48**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">10部门分摊</td></tr>
-    <tr class="total"><td>**总成本**</td><td>**233.19**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">元/件</td></tr>
+    <tr class="total"><td>**总成本**</td><td>**248.14**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">元/件</td></tr>
 
   </table>
 </div>
 
 <div class="footer">
-  数据来源：BOM递归 + DCSHCB最近采购价 | 生成时间：2026-11-02 11:28
+  数据来源：BOM递归 + DCSHCB最近采购价 | 生成时间：2026-11-03 10:40
 </div>
 
 </div>

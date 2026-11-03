@@ -72,7 +72,7 @@ tr.missing td{color:var(--red)}
 <div class="summary-cards">
   <div class="card">
     <div class="label">原料成本</div>
-    <div class="value" style="color:var(--text)">123.97</div>
+    <div class="value" style="color:var(--text)">144.51</div>
     <div class="sub">34项有价 · 1项缺价</div>
   </div>
   <div class="card">
@@ -82,7 +82,7 @@ tr.missing td{color:var(--red)}
   </div>
   <div class="card">
     <div class="label">净原料成本</div>
-    <div class="value" style="color:var(--text)">116.69</div>
+    <div class="value" style="color:var(--text)">137.23</div>
   </div>
   <div class="card">
     <div class="label">总成本</div>
@@ -136,7 +136,7 @@ tr.missing td{color:var(--red)}
     <tr class=""><td>包材</td><td>纸箱</td><td style="font-size:11px;color:var(--text-muted)">580*535*225(内尺寸）,K=K,（0440004）03版本客户印刷要求</td><td>1.00 PCS</td><td>8.45/PCS</td><td>8.45</td><td style="font-size:10px;max-width:250px">110401000965</td></tr>
     <tr class="missing"><td>配件</td><td>溢水片底座</td><td style="font-size:11px;color:var(--text-muted)">40*6,（冲压后再拉丝）黑色+防指纹油</td><td>1.00 PCS</td><td>—</td><td>—</td><td style="font-size:10px;max-width:250px">185800050031</td></tr>
 
-    <tr class="subtotal"><td colspan="5"><strong>小计</strong></td><td><strong>123.97</strong></td><td>34项有价 / 1项缺价</td></tr>
+    <tr class="subtotal"><td colspan="5"><strong>小计</strong></td><td><strong>144.51</strong></td><td>34项有价 / 1项缺价</td></tr>
     <tr class="scrap"><td colspan="5">废料回收（镭射切角）</td><td>−7.28</td><td>304 1.086kg × 6.7元/kg（吨价÷2）</td></tr>
   </table>
 </div>
@@ -149,6 +149,16 @@ tr.missing td{color:var(--red)}
       <tr><td>第二刀</td><td>镭射切角 (坯料−展开面积)</td><td style="text-align:right">1.086</td><td style="text-align:right">6.7元/kg（吨价÷2）</td><td style="text-align:right;color:var(--green)">7.28</td></tr>
       <tr class="subtotal"><td colspan="3">合计</td><td></td><td style="text-align:right;color:var(--green)"><strong>−7.28</strong></td></tr>
     </table>
+    <div style="margin-top:14px;padding:14px 18px;background:#F7F9FC;border-left:3px solid #4A90D9;font-size:12px;line-height:2;color:#3a4a5c">
+      <div style="font-weight:600;margin-bottom:6px">怎么算的</div>
+      <div>① <b>坯料面积</b> ＝ 大板规格 × 一开几用量 → <b>678,000 mm²</b></div>
+      <div>② <b>展开面积</b>（成品需要的料）→ <b>541,100 mm²</b></div>
+      <div>③ <b>废料面积</b> ＝ 坯料 − 展开 ＝ 678,000 − 541,100 = <b>136,900 mm²</b></div>
+      <div>④ <b>废料体积</b> ＝ 废料面积 × 料厚 ＝ 136,900 × 1.0 ÷ 1000 = <b>137 cm³</b></div>
+      <div>⑤ <b>废料重量</b> ＝ 体积 × 304密度 7.93 g/cm³ ÷ 1000 = <b>1.086 kg</b></div>
+      <div>⑥ <b>回收金额</b> ＝ 重量 1.086 kg × 单价 6.7 元/kg＝ <b>7.28 元</b></div>
+      <div style="margin-top:6px;color:#7a8a9a">废料单价 ＝ 主材吨价 ÷ 2（即按半价回收废料）</div>
+    </div>
   </div>
 
 <div class="section">
@@ -210,27 +220,27 @@ tr.missing td{color:var(--red)}
     <tr><td>186000050067</td><td>A009下水器花篮</td><td style="font-size:11px;color:var(--text-muted)">黑色+防指纹油</td><td>1.00 PCS</td><td>0.97</td><td>0.97</td><td style="font-size:10px;max-width:250px">SGL0040 20260911</td></tr>
     <tr><td>186000050068</td><td>A009下水器主体杯</td><td style="font-size:11px;color:var(--text-muted)">黑色+防指纹油</td><td>1.00 PCS</td><td>0.97</td><td>0.97</td><td style="font-size:10px;max-width:250px">SGL0040 20261010</td></tr>
     <tr><td>186000050064</td><td>A047 下水器 车加工提手</td><td style="font-size:11px;color:var(--text-muted)">黑色+防指纹油</td><td>1.00 PCS</td><td>0.49</td><td>0.49</td><td style="font-size:10px;max-width:250px">SGL0040 20260911</td></tr>
-    <tr class="subtotal"><td colspan="5"><strong>合计</strong></td><td><strong>15.43</strong></td><td></td></tr>
+    <tr><td>110110120053</td><td>304#单面拉丝</td><td style="font-size:11px;color:var(--text-muted)">1660*880*1.2</td><td>0.50</td><td>10.21</td><td>5.11</td><td style="font-size:10px;max-width:250px">精确匹配 110110120053 含税¥10.21</td></tr>
+    <tr class="subtotal"><td colspan="5"><strong>合计</strong></td><td><strong>20.54</strong></td><td></td></tr>
   </table>
 </div>
 <div class="section">
   <div class="section-title">⑤ 成本汇总</div>
   <table class="summary-table">
-    <tr class=""><td>原料成本</td><td>123.97</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">34项有价，1项缺价</td></tr>
+    <tr class=""><td>原料成本</td><td>144.51</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">34项有价，1项缺价</td></tr>
     <tr class=""><td>废料回收</td><td>−7.28</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">304 1.086kg × 6.7元/kg（吨价÷2）</td></tr>
-    <tr class=""><td>净原料成本</td><td>**116.69**</td><td></td></tr>
-    <tr class=""><td>委外加工费</td><td>**15.43**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">4项委外</td></tr>
-    <tr class=""><td>主材委外费</td><td>**5.11**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">精确匹配 110110120053 含税¥10.21 ×0.5</td></tr>
+    <tr class=""><td>净原料成本</td><td>**137.23**</td><td></td></tr>
+    <tr class=""><td>委外加工费</td><td>**20.54**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">5项委外</td></tr>
     <tr class=""><td>生产人工</td><td>**44.98**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">A路线 28道工序</td></tr>
     <tr class=""><td>管理人工</td><td>**27.48**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">10部门分摊</td></tr>
     <tr class="total" style="color:var(--red)"><td>**总成本**</td><td>**异常**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">有 1 项缺价，成本不完整</td></tr>
-    <tr class=""><td>实际</td><td>**209.69**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">元/件（缺价项未计入）</td></tr>
+    <tr class=""><td>实际</td><td>**230.23**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">元/件（缺价项未计入）</td></tr>
 
   </table>
 </div>
 
 <div class="footer">
-  数据来源：BOM递归 + DCSHCB最近采购价 | 生成时间：2026-11-02 11:20
+  数据来源：BOM递归 + DCSHCB最近采购价 | 生成时间：2026-11-03 10:33
 </div>
 
 </div>

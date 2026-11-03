@@ -77,12 +77,12 @@ tr.missing td{color:var(--red)}
   </div>
   <div class="card">
     <div class="label">废料回收</div>
-    <div class="value" style="color:var(--green)">−11.96</div>
-    <div class="sub">304 1.661kg × 7.2元/kg</div>
+    <div class="value" style="color:var(--green)">−1.79</div>
+    <div class="sub">304 0.249kg × 7.2元/kg</div>
   </div>
   <div class="card">
     <div class="label">净原料成本</div>
-    <div class="value" style="color:var(--text)">92.11</div>
+    <div class="value" style="color:var(--text)">102.28</div>
   </div>
   <div class="card">
     <div class="label">总成本</div>
@@ -114,7 +114,7 @@ tr.missing td{color:var(--red)}
     <tr class="missing"><td>包材</td><td>蜂窝板</td><td style="font-size:11px;color:var(--text-muted)">420*440*10,250克，8孔(长宽公差+0/-5，厚度公差+0/-1)</td><td>1.00 PCS</td><td>—</td><td>—</td><td style="font-size:10px;max-width:250px">110400000052</td></tr>
 
     <tr class="subtotal"><td colspan="5"><strong>小计</strong></td><td><strong>104.07</strong></td><td>9项有价 / 3项缺价</td></tr>
-    <tr class="scrap"><td colspan="5">废料回收（镭射切角）</td><td>−11.96</td><td>304 1.661kg × 7.2元/kg（吨价÷2）</td></tr>
+    <tr class="scrap"><td colspan="5">废料回收（镭射切角）</td><td>−1.79</td><td>304 0.249kg × 7.2元/kg（吨价÷2）</td></tr>
   </table>
 </div>
 
@@ -123,9 +123,19 @@ tr.missing td{color:var(--red)}
     <div class="section-title">废料回收明细</div>
     <table>
       <tr><th>废料类型</th><th>说明</th><th>重量(kg)</th><th>单价</th><th>金额</th></tr>
-      <tr><td>第二刀</td><td>镭射切角 (坯料−展开面积)</td><td style="text-align:right">1.661</td><td style="text-align:right">7.2元/kg（吨价÷2）</td><td style="text-align:right;color:var(--green)">11.96</td></tr>
-      <tr class="subtotal"><td colspan="3">合计</td><td></td><td style="text-align:right;color:var(--green)"><strong>−11.96</strong></td></tr>
+      <tr><td>第二刀</td><td>镭射切角 (坯料−展开面积)</td><td style="text-align:right">0.249</td><td style="text-align:right">7.2元/kg（吨价÷2）</td><td style="text-align:right;color:var(--green)">1.79</td></tr>
+      <tr class="subtotal"><td colspan="3">合计</td><td></td><td style="text-align:right;color:var(--green)"><strong>−1.79</strong></td></tr>
     </table>
+    <div style="margin-top:14px;padding:14px 18px;background:#F7F9FC;border-left:3px solid #4A90D9;font-size:12px;line-height:2;color:#3a4a5c">
+      <div style="font-weight:600;margin-bottom:6px">怎么算的</div>
+      <div>① <b>坯料面积</b> ＝ 大板规格 × 一开几用量 → <b>703,375 mm²</b></div>
+      <div>② <b>展开面积</b>（成品需要的料）→ <b>677,229 mm²</b></div>
+      <div>③ <b>废料面积</b> ＝ 坯料 − 展开 ＝ 703,375 − 677,229 = <b>26,146 mm²</b></div>
+      <div>④ <b>废料体积</b> ＝ 废料面积 × 料厚 ＝ 26,146 × 1.2 ÷ 1000 = <b>31 cm³</b></div>
+      <div>⑤ <b>废料重量</b> ＝ 体积 × 304密度 7.93 g/cm³ ÷ 1000 = <b>0.249 kg</b></div>
+      <div>⑥ <b>回收金额</b> ＝ 重量 0.249 kg × 单价 7.2 元/kg＝ <b>1.79 元</b></div>
+      <div style="margin-top:6px;color:#7a8a9a">废料单价 ＝ 主材吨价 ÷ 2（即按半价回收废料）</div>
+    </div>
   </div>
 
 <div class="section">
@@ -183,18 +193,18 @@ tr.missing td{color:var(--red)}
   <div class="section-title">⑤ 成本汇总</div>
   <table class="summary-table">
     <tr class=""><td>原料成本</td><td>104.07</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">9项有价，3项缺价</td></tr>
-    <tr class=""><td>废料回收</td><td>−11.96</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">304 1.661kg × 7.2元/kg（吨价÷2）</td></tr>
-    <tr class=""><td>净原料成本</td><td>**92.11**</td><td></td></tr>
+    <tr class=""><td>废料回收</td><td>−1.79</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">304 0.249kg × 7.2元/kg（吨价÷2）</td></tr>
+    <tr class=""><td>净原料成本</td><td>**102.28**</td><td></td></tr>
     <tr class=""><td>生产人工</td><td>**44.98**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">A路线 28道工序</td></tr>
     <tr class=""><td>管理人工</td><td>**27.48**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">10部门分摊</td></tr>
     <tr class="total" style="color:var(--red)"><td>**总成本**</td><td>**异常**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">有 3 项缺价，成本不完整</td></tr>
-    <tr class=""><td>实际</td><td>**164.57**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">元/件（缺价项未计入）</td></tr>
+    <tr class=""><td>实际</td><td>**174.74**</td><td style="font-size:11px;color:var(--text-muted);padding-left:12px">元/件（缺价项未计入）</td></tr>
 
   </table>
 </div>
 
 <div class="footer">
-  数据来源：BOM递归 + DCSHCB最近采购价 | 生成时间：2026-11-02 11:27
+  数据来源：BOM递归 + DCSHCB最近采购价 | 生成时间：2026-11-03 10:38
 </div>
 
 </div>
