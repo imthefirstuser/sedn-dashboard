@@ -1,0 +1,71 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>ST6072 BOM 材料成本</title>
+<style>:root{--bg:#F4F3F0;--surface:#FFF;--border:#E6E5E0;--border-light:#EFEEEA;--text:#1C1B1A;
+--text-secondary:#6B6A66;--text-muted:#A3A29E;--green:#1B8A3D;--red:#C43A31;--amber:#C4872B;--blue:#3B7DD8;
+--font:'Inter',-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;padding:32px 0}
+.app{max-width:1000px;margin:0 auto;padding:0 20px}
+.header{margin-bottom:22px}.header .code{font-size:13px;color:var(--text-muted)}
+.header h1{font-size:20px;font-weight:500;margin-bottom:4px;line-height:1.35}
+.header .spec{font-size:12px;color:var(--text-secondary)}
+.header .order{font-size:12px;color:var(--text-secondary);margin-top:6px;padding:6px 10px;background:#FFF;border-left:2px solid var(--blue);display:inline-block}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.card{background:var(--surface);border:1px solid var(--border);padding:14px 16px}
+.card .label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.card .value{font-size:22px;font-weight:500;font-feature-settings:"tnum" 1}
+.card .sub{font-size:11px;color:var(--text-muted);margin-top:2px}
+.card.green .value{color:var(--green)}.card.red .value{color:var(--red)}
+.section{margin-bottom:24px}
+.section-title{font-size:13px;font-weight:500;color:var(--text-secondary);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border-light)}
+.section-title .hint{font-size:11px;color:var(--text-muted);font-weight:400;margin-left:8px}
+.badge{float:right;font-size:10px;padding:1px 6px;border-radius:2px;font-weight:400}
+.badge.green{background:#E8F5E9;color:var(--green)}.badge.red{background:#FFEBEE;color:var(--red)}
+table{width:100%;border-collapse:collapse;font-size:12px;background:var(--surface);border:1px solid var(--border)}
+th{color:var(--text-muted);font-weight:400;padding:8px 10px;text-align:right;font-size:10px;white-space:nowrap;border-bottom:1px solid var(--border)}
+th:first-child{text-align:left}
+td{padding:6px 10px;text-align:right;font-feature-settings:"tnum" 1;border-bottom:1px solid var(--border-light)}
+td:first-child{text-align:left;font-weight:450}
+td.mono{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--text-secondary)}
+td.spec{font-size:10px;color:var(--text-muted);text-align:left;max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+tr.subtotal td{font-weight:500;border-top:1px solid var(--border);background:#FAFAF8}
+tr.missing td{color:var(--red);background:#FFF8F7}
+.summary-table td{padding:8px 12px;font-size:13px}
+.summary-table td:nth-child(2){text-align:right;font-weight:500;width:110px}
+.summary-table td:nth-child(3){width:150px}
+.summary-table tr.total td{border-top:2px solid var(--text);font-weight:600;font-size:15px;background:#FAFAF8}
+.summary-table tr.total td:nth-child(2){color:var(--green)}
+.pbar{display:inline-block;width:70px;height:5px;background:#EFEEEA;vertical-align:middle;margin-right:6px}
+.pbar span{display:block;height:5px;background:var(--blue)}
+.ppct{font-size:10px;color:var(--text-muted)}
+.note{background:var(--surface);border:1px solid var(--border);padding:14px 16px;font-size:12px;color:var(--text-secondary);margin-top:6px}
+.note b{color:var(--text)}.note ul{margin:6px 0 0 18px}.note li{margin-bottom:3px}
+.footer{margin-top:22px;padding-top:14px;border-top:1px solid var(--border-light);font-size:11px;color:var(--text-muted);text-align:center}
+.back{position:fixed;top:14px;right:18px;font-size:11px;color:var(--text-muted);text-decoration:none;background:#fff;border:1px solid var(--border);padding:4px 10px}
+@media(max-width:760px){.cards{grid-template-columns:repeat(2,1fr)}}</style></head><body><a class="back" href="index.html">← 返回汇总</a><div class="app">
+<div class="header"><div class="code">690400010003</div><h1>ST6072</h1>
+<div class="spec">规格 / 表面：拉丝、使用报废纸箱、1件/箱　·　BOM 版本：SGMQAB 现行　·　生成 2026-11-09 09:31</div>
+<div class="order">最近订单：2026-04-13，累计 4 件</div></div>
+<div class="cards">
+<div class="card green"><div class="label">BOM 材料合计</div><div class="value">¥8.75</div><div class="sub">单套 · 含税采购价</div></div>
+<div class="card"><div class="label">材料小计</div><div class="value">¥8.75</div><div class="sub">+ 委外加工 ¥0.00</div></div>
+<div class="card"><div class="label">展开子件</div><div class="value">4</div><div class="sub">3 项有价</div></div>
+<div class="card red"><div class="label">缺价项</div><div class="value">1</div><div class="sub">待补价</div></div>
+</div>
+<div class="section"><div class="section-title">棒料型材<span class="hint">铜棒 / POM / PP 棒 / 板材，按重量或长度计</span><span class="badge green">1 项 / 1 有价</span></div><table><thead><tr><th>品名</th><th>品号</th><th>规格</th><th>用量</th><th>单价</th><th>金额</th></tr></thead><tbody><tr class=""><td>SUS304实心棒φ20</td><td class="mono">610103000002</td><td class="spec">L=6 M</td><td>0.1996</td><td>43.11</td><td><b>8.60</b></td></tr><tr class="subtotal"><td colspan="5">棒料型材小计</td><td>8.60</td></tr></tbody></table></div><div class="section"><div class="section-title">五金件<span class="hint">螺丝 / 垫片 / 扎带 / 重锤 / 六角匙</span><span class="badge green">2 项 / 2 有价</span></div><table><thead><tr><th>品名</th><th>品号</th><th>规格</th><th>用量</th><th>单价</th><th>金额</th></tr></thead><tbody><tr class=""><td>十字沉头机丝</td><td class="mono">610800000108</td><td class="spec">M5*12</td><td>1</td><td>0.12</td><td><b>0.12</b></td></tr><tr class=""><td>不锈钢垫片</td><td class="mono">610800000167</td><td class="spec">M5*9*1</td><td>1</td><td>0.03</td><td><b>0.03</b></td></tr><tr class="subtotal"><td colspan="5">五金件小计</td><td>0.15</td></tr></tbody></table></div><div class="section"><div class="section-title">其他<span class="hint"></span><span class="badge red">1 项 / 0 有价</span></div><table><thead><tr><th>品名</th><th>品号</th><th>规格</th><th>用量</th><th>单价</th><th>金额</th></tr></thead><tbody><tr class="missing"><td>方孔座（ST6070-01-02）</td><td class="mono">610400000012</td><td class="spec">客供</td><td>1</td><td>—</td><td><b>—</b></td></tr><tr class="subtotal"><td colspan="5">其他小计</td><td>—</td></tr></tbody></table></div>
+<div class="section"><div class="section-title">主材委外加工费<span class="hint">SGMREA 委外含税单价，按 BOM 出件因子摊分</span><span class="badge green">0 项</span></div>
+<table><thead><tr><th>品名</th><th>品号</th><th>规格</th><th>用量</th><th>单价</th><th>金额</th></tr></thead>
+<tbody><tr class="subtotal"><td colspan="5">委外加工小计</td><td>—</td></tr></tbody></table></div>
+<div class="section"><div class="section-title">汇总</div><table class="summary-table"><tbody>
+<tr><td>棒料型材（1 项）</td><td>8.60</td><td><div class="pbar"><span style="width:98.3%"></span></div><span class="ppct">98.3%</span></td></tr><tr><td>五金件（2 项）</td><td>0.15</td><td><div class="pbar"><span style="width:1.7%"></span></div><span class="ppct">1.7%</span></td></tr><tr><td>其他（1 项）</td><td>—</td><td><div class="pbar"><span style="width:0.0%"></span></div><span class="ppct">0.0%</span></td></tr>
+<tr><td>主材委外加工费（0 项）</td><td>—</td><td><div class="pbar"><span style="width:0.0%"></span></div><span class="ppct">0.0%</span></td></tr>
+<tr class="total"><td>BOM 材料合计</td><td>¥8.75</td><td></td></tr></tbody></table></div>
+<div class="note"><b>这份表只算 BOM 里要花的钱</b>：物料本身 + 主材委外加工费，<b>不含组装人工、不含废料回收</b>。<br><b>数据来源：</b>
+<ul><li><b>子件与用量</b>：SGMQAB 逐层递归展开，用量 = 组成量 ÷ 底数 × 上层用量。</li>
+<li><b>单价</b>：TPADEA.DEA075（最近进价·含税）优先，为空回退 DEA023。</li>
+<li><b>委外加工费</b>：SGMREA.REA063 含税单价 × BOM 出件因子，单独列。</li></ul>
+
+<b>零价 / 缺价：</b>方孔座（ST6070-01-02）（610400000012）。</div>
+<div class="note" style="margin-top:10px">金额按<b>逐行 2 位取整</b>累加，本页各分项可直接加平；与成本引擎未取整累加（含推算板材后 ¥8.75）一致。</div>
+<div class="footer">4 项 BOM · 材料 ¥8.75 + 委外 ¥0.00 = ¥8.75 · 数据来源 SDSY 实时库</div>
+</div></body></html>
