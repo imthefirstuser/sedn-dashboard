@@ -1,0 +1,75 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>690400010001 ST6070 成本</title><style>:root{--bg:#F4F3F0;--surface:#FFF;--border:#E6E5E0;--border-light:#EFEEEA;--text:#1C1B1A;
+--text-secondary:#6B6A66;--text-muted:#A3A29E;--green:#1B8A3D;--red:#C43A31;--amber:#C4872B;--blue:#3B7DD8;
+--font:'Inter',-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;padding:32px 0}
+.app{max-width:1080px;margin:0 auto;padding:0 20px}
+.header{margin-bottom:22px}.header .code{font-size:13px;color:var(--text-muted)}
+.header h1{font-size:20px;font-weight:500;margin-bottom:4px;line-height:1.35}
+.header .spec{font-size:12px;color:var(--text-secondary)}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.card{background:var(--surface);border:1px solid var(--border);padding:14px 16px}
+.card .label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.card .value{font-size:22px;font-weight:500;font-feature-settings:"tnum" 1}
+.card .sub{font-size:11px;color:var(--text-muted);margin-top:2px}
+.card.green .value{color:var(--green)}.card.red .value{color:var(--red)}
+.card.blue .value{color:var(--blue)}.card.amber .value{color:var(--amber)}
+.section{margin-bottom:24px}
+.section-title{font-size:13px;font-weight:500;color:var(--text-secondary);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border-light)}
+.section-title .hint{font-size:11px;color:var(--text-muted);font-weight:400;margin-left:8px}
+table{width:100%;border-collapse:collapse;font-size:12px;background:var(--surface);border:1px solid var(--border)}
+th{color:var(--text-muted);font-weight:400;padding:8px 10px;text-align:right;font-size:10px;white-space:nowrap;border-bottom:1px solid var(--border)}
+th:first-child{text-align:left}
+td{padding:5px 10px;text-align:right;font-feature-settings:"tnum" 1;border-bottom:1px solid var(--border-light)}
+td:first-child{text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:330px}
+td.mono{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--text-secondary)}
+td.spec{font-size:10px;color:var(--text-muted);text-align:left;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+td .ind{font-family:ui-monospace,Menlo,monospace;color:#C9C8C3;font-size:11px;white-space:pre}
+td.b{color:var(--text)}
+td.m{color:var(--text-secondary)}
+tr.diff td.m{color:var(--green);font-weight:500}
+tr.lv0 td{background:#FAFAF8;font-weight:500}
+tr.total td{font-weight:600;font-size:13px;border-top:2px solid var(--text);background:#FAFAF8;padding:9px 10px}
+tr.total td.m{color:var(--green)}
+.note{background:var(--surface);border:1px solid var(--border);padding:14px 16px;font-size:12px;color:var(--text-secondary);margin-top:6px}
+.note b{color:var(--text)}
+.footer{margin-top:22px;padding-top:14px;border-top:1px solid var(--border-light);font-size:11px;color:var(--text-muted);text-align:center}
+@media(max-width:760px){.cards{grid-template-columns:repeat(2,1fr)}}
+
+.badge{float:right;font-size:10px;padding:1px 6px;border-radius:2px;font-weight:400;background:#E8F5E9;color:var(--green)}
+tr.subtotal td{font-weight:500;border-top:1px solid var(--border);background:#FAFAF8}
+.summary-table{width:100%;border-collapse:collapse;font-size:12px;background:var(--surface);border:1px solid var(--border)}
+.summary-table td{padding:8px 12px;font-size:13px;border-bottom:1px solid var(--border-light);text-align:left}
+.summary-table td:nth-child(2),.summary-table td:nth-child(3){text-align:right;font-weight:500;width:110px;font-feature-settings:"tnum" 1}
+.summary-table td:nth-child(4){width:180px;text-align:right}
+.summary-table tr.total td{border-top:2px solid var(--text);font-weight:600;font-size:15px;background:#FAFAF8}
+.summary-table tr.total td:nth-child(2){color:var(--green)}
+.summary-table tr.total td:nth-child(3){color:var(--blue)}
+.pbar{display:inline-block;width:70px;height:5px;background:#EFEEEA;vertical-align:middle;margin-right:6px}
+.pbar span{display:block;height:5px;background:var(--blue)}
+.ppct{font-size:10px;color:var(--text-muted)}
+</style></head><body><div class="app">
+<div class="header"><div class="code">690400010001</div><h1>ST6070</h1>
+<div class="spec">拉丝、使用报废纸箱、1件/箱　·　BOM 版本：SGMQAB 现行　·　材料口径（不含工时、表面处理）</div></div>
+<div class="cards">
+<div class="card green"><div class="label">采购版合计</div><div class="value">¥5.47</div><div class="sub">有价取采购价，不往下拆</div></div>
+<div class="card blue"><div class="label">自制版合计</div><div class="value">¥5.47</div><div class="sub">有 BOM 的拆到原材料</div></div>
+<div class="card amber"><div class="label">自制 − 采购</div><div class="value">+0.00</div><div class="sub">自制材料价差</div></div>
+<div class="card"><div class="label">计价项 / 缺价</div><div class="value">7</div><div class="sub">2 项待补价</div></div>
+</div>
+<div class="section"><div class="section-title">棒料型材<span class="badge">2 项</span></div><table><thead><tr><th>品名</th><th>品号</th><th>规格</th><th>用量</th><th>采购版</th><th>自制版</th></tr></thead><tbody><tr><td title="SUS304实心棒φ20">SUS304实心棒φ20</td><td class="mono">610103000002</td><td class="spec">L=6 M</td><td>0.0458</td><td>1.97</td><td class="m">1.97</td></tr><tr><td title="SUS304实心棒φ19">SUS304实心棒φ19</td><td class="mono">610103000053</td><td class="spec">L=6 M</td><td>0.0342</td><td>1.49</td><td class="m">1.49</td></tr><tr class="subtotal"><td colspan="4">棒料型材 小计</td><td>3.47</td><td class="m">3.47</td></tr></tbody></table></div>
+<div class="section"><div class="section-title">板材<span class="badge">1 项</span></div><table><thead><tr><th>品名</th><th>品号</th><th>规格</th><th>用量</th><th>采购版</th><th>自制版</th></tr></thead><tbody><tr><td title="SUS304不锈钢板">SUS304不锈钢板</td><td class="mono">610105000007</td><td class="spec">2.0、边料</td><td>1.0000</td><td>0.00</td><td class="m">0.00</td></tr><tr class="subtotal"><td colspan="4">板材 小计</td><td>0.00</td><td class="m">0.00</td></tr></tbody></table></div>
+<div class="section"><div class="section-title">橡胶密封<span class="badge">1 项</span></div><table><thead><tr><th>品名</th><th>品号</th><th>规格</th><th>用量</th><th>采购版</th><th>自制版</th></tr></thead><tbody><tr><td title="不锈钢垫片">不锈钢垫片</td><td class="mono">610800000167</td><td class="spec">M5*9*1</td><td>1.0000</td><td>0.03</td><td class="m">0.03</td></tr><tr class="subtotal"><td colspan="4">橡胶密封 小计</td><td>0.03</td><td class="m">0.03</td></tr></tbody></table></div>
+<div class="section"><div class="section-title">五金件<span class="badge">1 项</span></div><table><thead><tr><th>品名</th><th>品号</th><th>规格</th><th>用量</th><th>采购版</th><th>自制版</th></tr></thead><tbody><tr><td title="十字沉头机丝">十字沉头机丝</td><td class="mono">610800000108</td><td class="spec">M5*12</td><td>1.0000</td><td>0.12</td><td class="m">0.12</td></tr><tr class="subtotal"><td colspan="4">五金件 小计</td><td>0.12</td><td class="m">0.12</td></tr></tbody></table></div>
+<div class="section"><div class="section-title">其他<span class="badge">2 项</span></div><table><thead><tr><th>品名</th><th>品号</th><th>规格</th><th>用量</th><th>采购版</th><th>自制版</th></tr></thead><tbody><tr><td title="SUS304有缝管φ20*2">SUS304有缝管φ20*2</td><td class="mono">610102000034</td><td class="spec">L=6 M</td><td>0.1176</td><td>1.84</td><td class="m">1.84</td></tr><tr><td title="方孔座（ST6070-01-02）">方孔座（ST6070-01-02）</td><td class="mono">610400000012</td><td class="spec">客供</td><td>1.0000</td><td>0.00</td><td class="m">0.00</td></tr><tr class="subtotal"><td colspan="4">其他 小计</td><td>1.84</td><td class="m">1.84</td></tr></tbody></table></div>
+<div class="section"><div class="section-title">汇总</div>
+<table class="summary-table"><tbody><tr><td>棒料型材（2 项）</td><td>3.47</td><td class="m">3.47</td><td><div class="pbar"><span style="width:63.4%"></span></div><span class="ppct">63.4%</span></td></tr><tr><td>其他（2 项）</td><td>1.84</td><td class="m">1.84</td><td><div class="pbar"><span style="width:33.7%"></span></div><span class="ppct">33.7%</span></td></tr><tr><td>五金件（1 项）</td><td>0.12</td><td class="m">0.12</td><td><div class="pbar"><span style="width:2.3%"></span></div><span class="ppct">2.3%</span></td></tr><tr><td>橡胶密封（1 项）</td><td>0.03</td><td class="m">0.03</td><td><div class="pbar"><span style="width:0.6%"></span></div><span class="ppct">0.6%</span></td></tr><tr><td>板材（1 项）</td><td>0.00</td><td class="m">0.00</td><td><div class="pbar"><span style="width:0.0%"></span></div><span class="ppct">0.0%</span></td></tr><tr class="total"><td>BOM 材料合计</td><td>¥5.47</td><td>¥5.47</td><td></td></tr></tbody></table></div>
+<div class="note">
+<b>采购版</b>：有 BOM 且有采购价的件直接取该价，不往下拆；无 BOM 取采购价。<br>
+<b>自制版</b>：凡有 BOM 的件全部拆到原材料，只有无 BOM 的件回落采购价，委外加工费照计。<br>
+绿色行为两版价格不同的件（既可外购也可自制）。各分类、各明细行均可直接纵向加平；用量沿 BOM 逐层连乘。
+</div>
+<div class="footer">7 个计价项 · 采购版 ¥5.47 / 自制版 ¥5.47 · 数据来源 SDSY 实时库</div>
+</div></body></html>
