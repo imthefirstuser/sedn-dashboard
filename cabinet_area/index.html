@@ -123,6 +123,9 @@ const CRAFT = [
   {id:"cnDoor",   name:"转角方格门",     v:0, u:"", opts:[0,1], lbls:["无门(盲角)","单门"]},
   {id:"cnW2Ref",  name:"W2 计量起点",    v:0, u:"", opts:[0,1], lbls:["转角方格外端(净长)","相邻墙内角(含方格)"]},
   {id:"hjSingle", name:"门铰·每扇单开",  v:2, u:"件", grp:"hw"},
+  {id:"hjThresh", name:"门铰·加铰门高门槛", v:900, u:"mm", grp:"hw"},
+  {id:"hjStep",   name:"门铰·每加一铰门高步长", v:300, u:"mm", grp:"hw"},
+  {id:"hjMax",    name:"门铰·每扇最多",  v:6, u:"件", grp:"hw"},
   {id:"hjFlip",   name:"门铰·每扇翻门",  v:0, u:"件", grp:"hw"},
   {id:"rlDrawer", name:"轨道·每个抽屉",  v:1, u:"副", grp:"hw"},
   {id:"rlBasket", name:"轨道·每个拉篮",  v:1, u:"副", grp:"hw"},
@@ -176,10 +179,21 @@ function doorLeaves(c){
                            : (c.doors==="对开"?2:1);
   return n*seg;
 }
+function leafHeight(c){
+  const fi = c.form==="吊柜" ? 2 : (c.form==="高柜" ? 3 : 1);
+  const dh = (c.form==="高柜" ? V("H"+fi)/2 : V("H"+fi)) - V("G");
+  return dh;
+}
+function hingePerLeaf(c){
+  const base=+V("hjSingle"), th=+V("hjThresh")||900, st=+V("hjStep")||300, mx=+V("hjMax")||6;
+  const h=leafHeight(c);
+  if(h<=th) return base;
+  return Math.min(base + Math.ceil((h-th)/st), mx);
+}
 function hingeDefault(c){
   if(c.doors==="无门") return 0;
   if(c.doors==="翻门") return +V("hjFlip")*(c.form==="高柜"?2:1)*(c.conf_==="转角"?2:1);
-  return doorLeaves(c)*(+V("hjSingle"));
+  return doorLeaves(c)*hingePerLeaf(c);
 }
 function railDefault(c){
   if(c.conf_==="抽屉") return (+c.drawers||0)*(+V("rlDrawer"));
