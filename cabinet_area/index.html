@@ -121,7 +121,13 @@ const CRAFT = [
   {id:"cnBack",   name:"转角背板片数",   v:2, u:"片", opts:[1,2]},
   {id:"cnOver",   name:"转角背板重叠扣减", v:18, u:"mm"},
   {id:"cnDoor",   name:"转角方格门",     v:0, u:"", opts:[0,1], lbls:["无门(盲角)","单门"]},
-  {id:"cnW2Ref",  name:"W2 计量起点",    v:0, u:"", opts:[0,1], lbls:["转角方格外端(净长)","相邻墙内角(含方格)"]}
+  {id:"cnW2Ref",  name:"W2 计量起点",    v:0, u:"", opts:[0,1], lbls:["转角方格外端(净长)","相邻墙内角(含方格)"]},
+  {id:"hjSingle", name:"门铰·每扇单开",  v:2, u:"件", grp:"hw"},
+  {id:"hjFlip",   name:"门铰·每扇翻门",  v:0, u:"件", grp:"hw"},
+  {id:"rlDrawer", name:"轨道·每个抽屉",  v:1, u:"副", grp:"hw"},
+  {id:"rlBasket", name:"轨道·每个拉篮",  v:1, u:"副", grp:"hw"},
+  {id:"hjPrice",  name:"门铰单价",       v:0, u:"元/件", grp:"hwp"},
+  {id:"rlPrice",  name:"轨道单价",       v:0, u:"元/副", grp:"hwp"}
 ];
 
 const LS="cabP5";
@@ -161,6 +167,27 @@ let S = JSON.parse(localStorage.getItem("cabU5")||"null") || SEED.map((c,i)=>({
   doors:(c.label==="BIN"||c.label==="D/W")?"无门":(i===6?"对开":"单门"),
   shelves:1,drawers:3
 }));
+
+/* ================= 五金：门铰 / 轨道（默认按门扇数·抽屉数推，可逐柜改） ================= */
+function doorLeaves(c){
+  if(c.doors==="无门") return 0;
+  const seg = c.form==="高柜" ? 2 : 1;
+  let n = c.conf_==="转角" ? ((c.doors==="对开"?4:2) + (+V("cnDoor")===1?1:0))
+                           : (c.doors==="对开"?2:1);
+  return n*seg;
+}
+function hingeDefault(c){
+  if(c.doors==="无门") return 0;
+  if(c.doors==="翻门") return +V("hjFlip")*(c.form==="高柜"?2:1)*(c.conf_==="转角"?2:1);
+  return doorLeaves(c)*(+V("hjSingle"));
+}
+function railDefault(c){
+  if(c.conf_==="抽屉") return (+c.drawers||0)*(+V("rlDrawer"));
+  if(c.conf_==="拉篮") return 1*(+V("rlBasket"));
+  return 0;
+}
+const hingeOf = c => (c.hj==null ? hingeDefault(c) : +c.hj);
+const railOf  = c => (c.rl==null ? railDefault(c) : +c.rl);
 
 /* ================= 算法：逐块板真实尺寸（宽×高×块数） ================= */
 function parts(c){
@@ -239,6 +266,12 @@ function renderParams(){
               : `<input class="n" type="number" step="0.5" value="${o.v}" onchange="setV('craft',${idx},+this.value)">`) +
       `</td><td></td></tr>`;
   });
+  r += `<tr class="grp"><td colspan="3">五金（按件，不计面积）</td></tr>`;
+  ST.craft.filter(o=>o.grp).forEach(o=>{
+    const idx=ST.craft.indexOf(o);
+    r += `<tr><td>${o.name}<span class="badge">${o.u}</span></td>
+      <td><input class="n" type="number" step="0.5" value="${o.v}" onchange="setV('craft',${idx},+this.value)"></td><td></td></tr>`;
+  });
   ptab.innerHTML = r;
 }
 function setV(g,i,v){ ST[g][i].v=v; saveST(); render() }
@@ -297,6 +330,8 @@ function render(){
         ${c.conf_==="层板"?`<div><label>层板数</label><input type="number" value="${c.shelves}" onchange="up(${i},'shelves',+this.value)"></div>`:""}
         ${c.conf_==="抽屉"?`<div><label>抽屉数</label><input type="number" value="${c.drawers}" onchange="up(${i},'drawers',+this.value)"></div>`:""}
         ${c.conf_==="转角"?`<div><label>回转长 W2 (mm)</label><input type="number" value="${c.leg2||0}" onchange="up(${i},'leg2',+this.value)"></div>`:""}
+        <div><label>门铰 (件)${c.hj==null?" · 自动":""}</label><input type="number" value="${hingeOf(c)}" onchange="up(${i},'hj',this.value===''?null:+this.value)"></div>
+        <div><label>轨道 (副)${c.rl==null?" · 自动":""}</label><input type="number" value="${railOf(c)}" onchange="up(${i},'rl',this.value===''?null:+this.value)"></div>
       </div>
       <div class="split">${ps.map(p=>`<div class="kv"><span>${(ST.part.find(q=>q.id===p.id)||{name:p.id}).name} ${pv(p.id).t}mm · ${p.w}×${p.h}${p.q>1?"×"+p.q:""}</span><span class="area">${p.area.toFixed(3)} ㎡</span></div>`).join("")}</div>
     </div>`;
@@ -313,9 +348,14 @@ function render(){
     const m=pr>0? g2.a*pr:0; ta+=g2.a; tm+=m;
     rows+=`<tr><td>${nm} ${g2.t}mm</td><td>${g2.a.toFixed(3)}</td><td>${pr?"¥"+m.toFixed(0):"—"}</td></tr>`;
   });
+  let hq=0,rq=0;
+  S.forEach(c=>{hq+=hingeOf(c); rq+=railOf(c);});
+  const hm = hq*(+V("hjPrice")) + rq*(+V("rlPrice"));
+  rows+=`<tr><td>门铰</td><td>${hq} 件</td><td>${+V("hjPrice")?("¥"+(hq*+V("hjPrice")).toFixed(0)):"—"}</td></tr>`;
+  rows+=`<tr><td>轨道</td><td>${rq} 副</td><td>${+V("rlPrice")?("¥"+(rq*+V("rlPrice")).toFixed(0)):"—"}</td></tr>`;
   totals.innerHTML=`<tr><th>板件 / 板厚</th><th>㎡</th><th>金额</th></tr>`+rows;
   grand.textContent=ta.toFixed(3)+" ㎡";
-  money.textContent=tm>0? "¥"+tm.toFixed(0) : "填单价后显示";
+  money.textContent=(tm+hm)>0? "¥"+(tm+hm).toFixed(0) : "填单价后显示";
   localStorage.setItem("cabU5",JSON.stringify(S));
 }
 
@@ -323,6 +363,7 @@ function jump(i){const el=document.getElementById("c"+i);el.scrollIntoView({beha
   document.querySelectorAll(".card").forEach(e=>e.classList.remove("on"));el.classList.add("on");}
 function up(i,k,v){
   S[i][k]=v;
+  if(k==="conf_"||k==="doors"||k==="form"||k==="drawers"){ S[i].hj=null; S[i].rl=null; }
   if(k==="conf_"){
     if(v==="抽屉" && !(+S[i].drawers>0)) S[i].drawers=3;
     if(v!=="抽屉") S[i].drawers=0;
