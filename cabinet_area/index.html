@@ -56,11 +56,11 @@ details summary{cursor:pointer;padding:9px 12px;background:var(--panel2);font-we
 <body>
 <header>
   <h1>橱柜柜体设定</h1>
-  <span class="sub">9 个地柜逐格配置 · 所有参数（尺寸/板厚/单价/抽屉工艺）统一在右侧参数表 · 实时重算</span>
+  <span class="sub">立面1（5790）+ 立面2（1675）共 11 个地柜逐格配置 · 转角 590 两面墙共用只算一次 · 参数统一在右侧参数表</span>
 </header>
 
-<div class="plan"><svg id="svg" viewBox="0 0 1180 560" width="100%" height="470"></svg></div>
-<div class="hint">按图上实宽绘制；深灰竖条=见光板，两端 50mm 填充。格里：编号 / 宽 / 构型 / 门板 / 图上标注。</div>
+<div class="plan"><svg id="svg" viewBox="0 0 1180 780" width="100%" height="660"></svg></div>
+<div class="hint">按图上实宽绘制；深灰竖条=18mm 见光板，两端 50mm 填充，虚线块=两墙共用转角。格里：编号 / 宽 / 构型 / 门板 / 图上标注。</div>
 
 <div class="wrap">
   <div class="left" id="list"></div>
@@ -133,7 +133,7 @@ const CRAFT = [
   {id:"rlPrice",  name:"轨道单价",       v:0, u:"元/副", grp:"hwp"}
 ];
 
-const LS="cabP5";
+const LS="cabP6";
 let ST = (()=>{ const s=JSON.parse(localStorage.getItem(LS)||"null")||{};
   return {
     size: SIZE.map(d=>({...d, v: (s.size&&s.size[d.id]!=null)?s.size[d.id]:d.v})),
@@ -149,27 +149,30 @@ function saveST(){ localStorage.setItem(LS, JSON.stringify({
   craft:Object.fromEntries(ST.craft.map(o=>[o.id,o.v]))
 }))}
 
-/* ================= 图上实读的 9 个地柜分格 ================= */
+/* ================= 图上实读：立面1（5790）+ 立面2（1675）地柜分格 ================= */
+/* 立面1 底部：50 | 367 734 900 734 367 450 900 610 590 | 50，另两端 18mm 见光板
+   立面2 底部：50 | 590(与立面1 共用转角) 493 492 | 50 —— 590 只在立面1 计一次 */
 const SEED = [
-  {w:367, label:"ADJ",  cls:"",      conf:"图上标注(疑)"},
-  {w:734, label:"DRY",  cls:"",      conf:"图上标注(疑)"},
-  {w:900, label:"HIGH", cls:"",      conf:"图上标注(疑)"},
-  {w:734, label:"DRY",  cls:"",      conf:"图上标注(疑)"},
-  {w:367, label:"ADJ",  cls:"",      conf:"图上标注(疑)"},
-  {w:450, label:"BIN",  cls:"white", conf:"图上标注"},
-  {w:900, label:"",     cls:"white", conf:"图上未标(双开)"},
-  {w:610, label:"D/W",  cls:"white", conf:"图上标注"},
-  {w:590, label:"",     cls:"white", conf:"图上未标(转角?)"}
+  {el:"E1", pos:"E1-1", w:367, label:"ADJ",  cls:"",      conf:"图上标注(疑)", conf_:"层板", doors:"单门"},
+  {el:"E1", pos:"E1-2", w:734, label:"DRY",  cls:"",      conf:"图上标注(疑)", conf_:"层板", doors:"单门"},
+  {el:"E1", pos:"E1-3", w:900, label:"HIGH", cls:"",      conf:"图上标注(疑)", conf_:"层板", doors:"对开"},
+  {el:"E1", pos:"E1-4", w:734, label:"DRY",  cls:"",      conf:"图上标注(疑)", conf_:"层板", doors:"单门"},
+  {el:"E1", pos:"E1-5", w:367, label:"ADJ",  cls:"",      conf:"图上标注(疑)", conf_:"层板", doors:"单门"},
+  {el:"E1", pos:"E1-6", w:450, label:"BIN",  cls:"white", conf:"图上标注",    conf_:"空位", doors:"无门"},
+  {el:"E1", pos:"E1-7", w:900, label:"",     cls:"white", conf:"图上未标(双开)", conf_:"层板", doors:"对开"},
+  {el:"E1", pos:"E1-8", w:610, label:"D/W",  cls:"white", conf:"图上标注",    conf_:"空位", doors:"无门"},
+  {el:"E1", pos:"E1-9", w:590, label:"",     cls:"white", conf:"图上未标(转角)", conf_:"转角", doors:"单门"},
+  {el:"E2", pos:"E2-2", w:493, label:"BT",   cls:"",      conf:"图上标注",    conf_:"层板", doors:"单门"},
+  {el:"E2", pos:"E2-3", w:492, label:"BT",   cls:"",      conf:"图上标注",    conf_:"层板", doors:"对开"}
 ];
+const E2_SHARED = 590;   // 立面2 左端的转角柜与 E1-9 共用，只画不计
 const FORM=["落地柜","吊柜","高柜"], CONF=["层板","抽屉","拉篮","转角","空位"], DOOR=["单门","对开","翻门","无门"];
 const COLOR={"层板":"#1e3a5f","抽屉":"#1f4d3a","拉篮":"#4a3a6b","转角":"#5c3a1e","空位":"#3a2426"};
 
-let S = JSON.parse(localStorage.getItem("cabU5")||"null") || SEED.map((c,i)=>({
-  w:c.w,label:c.label,cls:c.cls,conf:c.conf,form:"落地柜",
-  conf_:(c.label==="BIN"||c.label==="D/W")?"空位":"层板",
-  doors:(c.label==="BIN"||c.label==="D/W")?"无门":(i===6?"对开":"单门"),
-  shelves:1,drawers:3
+let S = JSON.parse(localStorage.getItem("cabU6")||"null") || SEED.map(c=>({
+  ...c, form:"落地柜", shelves:1, drawers:0, vis:0, leg2:0, hj:null, rl:null
 }));
+if(!Array.isArray(S) || S.length!==SEED.length) S = SEED.map(c=>({...c, form:"落地柜", shelves:1, drawers:0, vis:0, leg2:0, hj:null, rl:null}));
 
 /* ================= 五金：门铰 / 轨道（默认按门扇数·抽屉数推，可逐柜改） ================= */
 function doorLeaves(c){
@@ -293,46 +296,66 @@ function setT(i,v){ ST.part[i].t=v; saveST(); render() }
 function setPrice(i,v){ ST.part[i].price=v; saveST(); render() }
 
 function render(){
-  const G=V("GB"), X0=40, SC=0.185;
-  const yUpp=30, yMid=yUpp+1350*SC, yGeo=yMid+750*SC;
-  const hG=760*SC, hK=120*SC, yK=yGeo+hG, gbW=G*SC;
-  let x=X0;
-  let s=`<text x="8" y="${yUpp+14}" fill="#6b7885" font-size="11">吊柜区</text>
-    <rect x="${X0}" y="${yUpp}" width="${5790*SC}" height="${1350*SC}" fill="#12171d" stroke="#2a333d"/>
-    <text x="${X0+8}" y="${yUpp+16}" fill="#55636f" font-size="11">上部 1350（吊柜/烟机区，暂未配置）</text>
-    <rect x="${X0}" y="${yMid}" width="${5790*SC}" height="${750*SC}" fill="#0d1218"/>
-    <text x="${X0+8}" y="${yMid+16}" fill="#55636f" font-size="11">台面以上 750（背墙/水槽区）</text>
-    <line x1="${X0}" y1="${yGeo}" x2="${X0+5790*SC}" y2="${yGeo}" stroke="#4a5a6a" stroke-width="3"/>
-    <text x="${X0-30}" y="${yGeo+hG/2}" fill="#6b7885" font-size="11" text-anchor="middle" transform="rotate(-90 ${X0-30} ${yGeo+hG/2})">地柜 760</text>
-    <rect x="${X0}" y="${yGeo}" width="${50*SC}" height="${hG+hK}" fill="#20262e" stroke="#2a333d"/>`;
-  x=X0+50*SC;
-  S.forEach((c,i)=>{
+  const G=V("GB"), X0=40, SC=0.185, hG=760*SC, hK=120*SC, gbW=G*SC;
+  const yUpp=26, yMid=yUpp+1350*SC, yGeo=yMid+750*SC, yK=yGeo+hG;
+  const y2Upp=yK+hK+74, y2Mid=y2Upp+1350*SC, y2Geo=y2Mid+750*SC, y2K=y2Geo+hG;
+
+  const cellSvg=(c,i,x,y)=>{
     const w=+c.w*SC, fill=COLOR[c.conf_]||"#1e3a5f";
-    s+=`<g class="cell" onclick="jump(${i})">
-      <rect x="${x}" y="${yGeo}" width="${w}" height="${hG}" fill="${fill}" stroke="#3b4956"/>
-      <text x="${x+w/2}" y="${yGeo+hG*0.30}" fill="#cfe3fa" font-size="12" text-anchor="middle" font-weight="600">${i+1}</text>
-      <text x="${x+w/2}" y="${yGeo+hG*0.48}" fill="#9fb6cc" font-size="10" text-anchor="middle">${c.w}</text>
-      <text x="${x+w/2}" y="${yGeo+hG*0.64}" fill="#e6edf3" font-size="10" text-anchor="middle">${c.conf_}</text>
-      <text x="${x+w/2}" y="${yGeo+hG*0.78}" fill="#8b98a5" font-size="9" text-anchor="middle">${c.doors}</text>
-      ${c.label?`<text x="${x+w/2}" y="${yGeo+hG*0.92}" fill="${c.cls==="white"?"#e6edf3":"#f59e0b"}" font-size="10" text-anchor="middle">${c.label}</text>`:""}
+    return `<g class="cell" onclick="jump(${i})">
+      <rect x="${x}" y="${y}" width="${w}" height="${hG}" fill="${fill}" stroke="#3b4956"/>
+      <text x="${x+w/2}" y="${y+hG*0.26}" fill="#cfe3fa" font-size="12" text-anchor="middle" font-weight="600">${i+1}</text>
+      <text x="${x+w/2}" y="${y+hG*0.44}" fill="#9fb6cc" font-size="10" text-anchor="middle">${c.w}</text>
+      <text x="${x+w/2}" y="${y+hG*0.60}" fill="#e6edf3" font-size="10" text-anchor="middle">${c.conf_}</text>
+      <text x="${x+w/2}" y="${y+hG*0.74}" fill="#8b98a5" font-size="9" text-anchor="middle">${c.doors}</text>
+      ${c.label?`<text x="${x+w/2}" y="${y+hG*0.88}" fill="${c.cls==="white"?"#e6edf3":"#f59e0b"}" font-size="10" text-anchor="middle">${c.label}</text>`:""}
       ${c.doors==="无门"?"":(c.doors==="对开"
-        ? `<line x1="${x+w/2}" y1="${yGeo+18}" x2="${x+w/2}" y2="${yGeo+hG-6}" stroke="#7d8b98"/>`
-        : `<line x1="${x+3}" y1="${yGeo+18}" x2="${x+w-3}" y2="${yGeo+hG-6}" stroke="#5a6a78" stroke-width="0.8" stroke-dasharray="3 3"/>`)}
+        ? `<line x1="${x+w/2}" y1="${y+18}" x2="${x+w/2}" y2="${y+hG-6}" stroke="#7d8b98"/>`
+        : `<line x1="${x+3}" y1="${y+18}" x2="${x+w-3}" y2="${y+hG-6}" stroke="#5a6a78" stroke-width="0.8" stroke-dasharray="3 3"/>`)}
     </g>`;
-    x+=w+gbW;
-    s+=`<rect x="${x-gbW}" y="${yGeo}" width="${gbW}" height="${hG+hK}" fill="#3a4a5a"/>`;
-  });
-  s+=`<rect x="${x}" y="${yGeo}" width="${50*SC}" height="${hG+hK}" fill="#20262e" stroke="#2a333d"/>
-    <rect x="${X0}" y="${yK}" width="${5790*SC}" height="${hK}" fill="#161b21" stroke="#2a333d"/>
-    <text x="${X0+6}" y="${yK+hK-4}" fill="#6b7885" font-size="10">踢脚 120</text>
-    <line x1="${X0}" y1="${yK+hK}" x2="${X0+5790*SC}" y2="${yK+hK}" stroke="#3b4956" stroke-width="2"/>
-    <text x="${X0}" y="${yK+hK+18}" fill="#6b7885" font-size="11">总宽 5790（图上分段合计 5788，差 2mm）</text>`;
+  };
+
+  const strip=(y1,y2_,yG,yKk,total,cells,sharesCorner,label)=>{
+    let x=X0+50*SC;
+    let h=`<rect x="${X0}" y="${y1}" width="${total*SC}" height="${1350*SC}" fill="#12171d" stroke="#2a333d"/>
+      <text x="${X0+8}" y="${y1+16}" fill="#55636f" font-size="11">${label} 上部 1350（吊柜/烟机区，暂未配置）</text>
+      <rect x="${X0}" y="${y2_}" width="${total*SC}" height="${750*SC}" fill="#0d1218"/>
+      <rect x="${X0}" y="${yG}" width="${50*SC}" height="${hG+hK}" fill="#20262e" stroke="#2a333d"/>
+      <line x1="${X0}" y1="${yG}" x2="${X0+total*SC}" y2="${yG}" stroke="#4a5a6a" stroke-width="3"/>`;
+    if(sharesCorner){
+      const w=E2_SHARED*SC;
+      h+=`<rect x="${x}" y="${yG}" width="${w}" height="${hG}" fill="#232a33" stroke="#4a5a6a" stroke-dasharray="5 4"/>
+        <text x="${x+w/2}" y="${yG+hG*0.40}" fill="#8b98a5" font-size="10" text-anchor="middle">转角(与 1-9 共用)</text>
+        <text x="${x+w/2}" y="${yG+hG*0.58}" fill="#6b7885" font-size="10" text-anchor="middle">${E2_SHARED} 不计</text>`;
+      x+=w;
+    }
+    cells.forEach(([c,i])=>{
+      h+=cellSvg(c,i,x,yG); x+=+c.w*SC;
+      h+=`<rect x="${x}" y="${yG}" width="${gbW}" height="${hG+hK}" fill="#3a4a5a"/>`; x+=gbW;
+    });
+    h+=`<rect x="${x}" y="${yG}" width="${50*SC}" height="${hG+hK}" fill="#20262e" stroke="#2a333d"/>
+      <rect x="${X0}" y="${yKk}" width="${total*SC}" height="${hK}" fill="#161b21" stroke="#2a333d"/>
+      <text x="${X0+6}" y="${yKk+hK-4}" fill="#6b7885" font-size="10">踢脚 120</text>
+      <line x1="${X0}" y1="${yKk+hK}" x2="${X0+total*SC}" y2="${yKk+hK}" stroke="#3b4956" stroke-width="2"/>`;
+    return h;
+  };
+  const idxOf=el=>S.map((c,i)=>[c,i]).filter(([c])=>c.el===el);
+
+  let s=`<text x="6" y="${yUpp+14}" fill="#6b7885" font-size="11">立面1</text>
+    <text x="14" y="${yGeo+hG/2}" fill="#6b7885" font-size="11" text-anchor="middle" transform="rotate(-90 14 ${yGeo+hG/2})">地柜 760</text>`
+    + strip(yUpp,yMid,yGeo,yK,5790,idxOf("E1"),false,"立面1（5790 墙）")
+    + `<text x="6" y="${y2Upp+14}" fill="#6b7885" font-size="11">立面2</text>
+    <text x="14" y="${y2Geo+hG/2}" fill="#6b7885" font-size="11" text-anchor="middle" transform="rotate(-90 14 ${y2Geo+hG/2})">地柜 760</text>`
+    + strip(y2Upp,y2Mid,y2Geo,y2K,1675,idxOf("E2"),true,"立面2（1675 墙）")
+    + `<text x="${X0}" y="${yK+hK+20}" fill="#6b7885" font-size="11">立面1 分段 367+734+900+734+367+450+900+610+590 = 5652，加两端 50 与 18mm 见光板 36 → 5788（图注 5790，差 2mm）</text>
+    <text x="${X0}" y="${y2K+hK+20}" fill="#6b7885" font-size="11">立面2 分段 50+590+493+492+50 = 1675；左端 590 与立面1 右端 590 是同一个转角柜，只在立面1 计一次</text>`;
   svg.innerHTML=s;
 
   list.innerHTML=S.map((c,i)=>{
     const ps=parts(c), tot=ps.reduce((s,p)=>s+p.area,0);
     return `<div class="card" id="c${i}">
       <div class="ch"><span class="idx">${i+1}</span><b class="area">${c.w} mm</b>
+        <span class="tag white">${c.pos||""}</span>
         ${c.label?`<span class="tag ${c.cls}">${c.label}</span>`:`<span class="tag ${c.cls}">${c.conf}</span>`}
         <span style="margin-left:auto;color:#7dd3a0" class="area">${tot.toFixed(3)} ㎡</span></div>
       <div class="cb">
@@ -370,7 +393,7 @@ function render(){
   totals.innerHTML=`<tr><th>板件 / 板厚</th><th>㎡</th><th>金额</th></tr>`+rows;
   grand.textContent=ta.toFixed(3)+" ㎡";
   money.textContent=(tm+hm)>0? "¥"+(tm+hm).toFixed(0) : "填单价后显示";
-  localStorage.setItem("cabU5",JSON.stringify(S));
+  localStorage.setItem("cabU6",JSON.stringify(S));
 }
 
 function jump(i){const el=document.getElementById("c"+i);el.scrollIntoView({behavior:"smooth",block:"center"});
@@ -386,7 +409,7 @@ function up(i,k,v){
   }
   render();
 }
-function resetAll(){["cabU5",LS].forEach(k=>localStorage.removeItem(k));location.reload()}
+function resetAll(){["cabU6","cabU5",LS].forEach(k=>localStorage.removeItem(k));location.reload()}
 /* 导出 Excel 在 export_xlsx.js（纯前端生成，静态页面/Flame 上都能用） */
 function exportJSON(){
   const out={params:{size:Object.fromEntries(ST.size.map(o=>[o.id,o.v])),
