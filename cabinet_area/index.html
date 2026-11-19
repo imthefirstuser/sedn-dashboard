@@ -187,8 +187,10 @@ if(!Array.isArray(S) || S.length!==SEED.length) S = SEED.map(c=>({...c, form:"�
 function doorLeaves(c){
   if(c.doors==="无门") return 0;
   const seg = c.form==="高柜" ? 2 : 1;
-  let n = c.conf_==="转角" ? ((c.doors==="对开"?4:2) + (+V("cnDoor")===1?1:0))
-                           : (c.doors==="对开"?2:1);
+  const isL = c.conf_==="转角" && (c.ct||"L")==="L";
+  let n = isL ? (c.doors==="对开"?4:2)                  // L 柜：A/B 两段各自门板
+              : (c.doors==="对开"?2:1);                 // 普通柜 / 转角直角柜
+  if(c.conf_==="转角" && (c.ct||"L")==="直") n = (c.doors==="对开"?2:1);
   return n*seg;
 }
 function leafHeight(c){
@@ -404,10 +406,10 @@ function render(){
           if(draw) h+=`<div><label>抽屉数${+c.vdiv>0?"（每格）":""}</label><input type="number" value="${c.drawers||0}" onchange="up(${i},'drawers',+this.value)"></div>`;
           if(!free && !isL) h+=`<div><label>竖板数（中隔）</label><input type="number" value="${+c.vdiv||0}" onchange="up(${i},'vdiv',Math.max(+this.value||0,0))"></div>`;
           if(isL) h+=`<div><label>回转长 W2 (mm)</label><input type="number" value="${c.leg2||0}" onchange="up(${i},'leg2',+this.value)"></div>`;
-          h+=`<div><label>见光面</label><select onchange="up(${i},'vis',+this.value)">${[0,1,2].map(v=>`<option value="${v}" ${(+c.vis||0)===v?"selected":""}>${["无","1 面","2 面"][v]}</option>`).join("")}</select></div>`;
+          h+=`<div><label>侧板见光面</label><select onchange="up(${i},'vis',+this.value)">${[0,1,2].map(v=>`<option value="${v}" ${(+c.vis||0)===v?"selected":""}>${["无","1 面","2 面"][v]}</option>`).join("")}</select></div>`;
           if(isDirect&&c.doors!=="无门"){
-            h+=`<div><label>第1扇见光</label><select onchange="up(${i},'dv1',+this.value)">${[0,1].map(v=>`<option value="${v}" ${(+c.dv1||0)===v?"selected":""}>${["否","是"][v]}</option>`).join("")}</select></div>`;
-            if(c.doors==="对开") h+=`<div><label>第2扇见光</label><select onchange="up(${i},'dv2',+this.value)">${[0,1].map(v=>`<option value="${v}" ${(+c.dv2||0)===v?"selected":""}>${["否","是"][v]}</option>`).join("")}</select></div>`;
+            h+=`<div><label>门板见光·第1扇</label><select onchange="up(${i},'dv1',+this.value)">${[0,1].map(v=>`<option value="${v}" ${(+c.dv1||0)===v?"selected":""}>${["否","是"][v]}</option>`).join("")}</select></div>`;
+            if(c.doors==="对开") h+=`<div><label>门板见光·第2扇</label><select onchange="up(${i},'dv2',+this.value)">${[0,1].map(v=>`<option value="${v}" ${(+c.dv2||0)===v?"selected":""}>${["否","是"][v]}</option>`).join("")}</select></div>`;
           }
           if(hasDoor) h+=`<div><label>门铰 (件)${c.hj==null?" · 自动":""}</label><input type="number" value="${hingeOf(c)}" onchange="up(${i},'hj',this.value===''?null:+this.value)"></div>`;
           if(draw||bask) h+=`<div><label>轨道 (副)${c.rl==null?" · 自动":""}</label><input type="number" value="${railOf(c)}" onchange="up(${i},'rl',this.value===''?null:+this.value)"></div>`;
@@ -485,7 +487,7 @@ function exportJSON(){
 }
 renderParams(); render();
 </script>
-<script src="xlsx_lite.js?v=20261119i"></script>
-<script src="export_xlsx.js?v=20261119i"></script>
+<script src="xlsx_lite.js?v=20261119j"></script>
+<script src="export_xlsx.js?v=20261119j"></script>
 </body>
 </html>
