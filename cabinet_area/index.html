@@ -202,13 +202,22 @@ function leafHeight(c){
   const dh = (c.form==="高柜" ? V("H"+fi)/2 : V("H"+fi)) - V("G");
   return dh;
 }
-function hingePerLeaf(c){
+function hingePerLeafH(h){
   const base=+V("hjSingle"), th=+V("hjThresh")||900, st=+V("hjStep")||300, mx=+V("hjMax")||6;
-  const h=leafHeight(c);
   if(h<=th) return base;
   return Math.min(base + Math.ceil((h-th)/st), mx);
 }
+function hingePerLeaf(c){ return hingePerLeafH(leafHeight(c)); }
 function hingeDefault(c){
+  if(Array.isArray(c.segs) && c.segs.length){          // 分段柜：每段各自算
+    let n=0;
+    c.segs.forEach(sg=>{
+      if(!sg.doors || sg.doors==="无门") return;
+      const lv=sg.doors==="对开"?2:1, h=Math.max((+sg.h||0)-V("G"),0);
+      n += lv*hingePerLeafH(h);
+    });
+    return n;
+  }
   if(c.conf_==="抽屉") return 0;            // 抽屉柜没有门（面板走抽面板），不装门铰
   if(c.doors==="无门") return 0;
   if(c.doors==="翻门") return +V("hjFlip")*(c.form==="高柜"?2:1)*(c.conf_==="转角"?2:1);
@@ -248,31 +257,54 @@ function parts(c){
     else         push("back",W1+B-C,innerH,1);
     if(c.form!=="吊柜") push("kick",W1+B-C,V("K"),1);
   }else{
-    // 普通柜骨架（2026-11-19 用户确认）：顶底板通长通深 = W×D，侧板夹在中间（高=H−顶−底）
-    const Tv=T("vdiv"), nv=Math.max(+c.vdiv||0,0), bays=nv+1;
+    // 普通柜 / 转角直角柜 / 分段柜 共用骨架（顶底板通长，侧板夹中间）
+    const segs=Array.isArray(c.segs)?c.segs:[], G=V("G");
+    const Tv=T("vdiv"), nv=segs.length?0:Math.max(+c.vdiv||0,0), bays=nv+1;
     const bayW=Math.max((innerW-nv*Tv)/bays,0);
     push("side",   D,Math.max(H-T("top")-T("bottom"),0),2);
     push("top",    W,D,1);
     push("bottom", W,D,1);
     push("back",   innerW,innerH,1);
     if(nv>0) push("vdiv", innerD,innerH,nv);
-    // 层板/抽屉/拉篮按格算：每格一块，宽=格宽，数量=每格数量×格数
-    const asShelf = c.conf_==="层板" || (c.conf_==="转角" && (c.ct||"L")==="直");
-    if(asShelf && +c.shelves>0) push("shelf",bayW,innerD,(+c.shelves)*bays);
-    if(c.conf_==="拉篮")                 push("shelf",bayW,innerD,bays);
-    if(c.conf_==="抽屉" && +c.drawers>0){
-      const n=+c.drawers, G=V("G"), helpT=T("dhelp");
-      const bw=Math.max(bayW-2*V("dGap"),0), bd=Math.max(innerD-V("dRail"),0);
-      const fh=Math.max((H-(n+1)*G)/n,0), bh=Math.max(fh-V("dCut"),0);
-      push("dhelp",bd,bh,2*n*bays);
-      push("dbox", Math.max(bw-2*helpT,0),bd,n*bays);
-      push("dback",Math.max(bw-2*helpT,0),bh,n*bays);
-      push("dface",Math.max(bayW-2*G,0),fh,n*bays);
+
+    if(segs.length){
+      // 分段柜：段间横板 + 每段按自己的构型/门板
+      if(segs.length>1) push("shelf", innerW, innerD, segs.length-1);
+      segs.forEach(sg=>{
+        const sh=Math.max(+sg.h||0,0), sc=sg.conf||"开放格", nD=Math.max(+sg.drawers||0,0);
+        if(sc==="层板" && +sg.shelves>0) push("shelf", innerW, innerD, +sg.shelves);
+        if(sc==="拉篮") push("shelf", innerW, innerD, 1);
+        if(sc==="抽屉" && nD>0){
+          const bw=Math.max(innerW-2*V("dGap"),0), bd=Math.max(innerD-V("dRail"),0);
+          const fh=Math.max((sh-(nD+1)*G)/nD,0), bh=Math.max(fh-V("dCut"),0), ht=T("dhelp");
+          push("dhelp",bd,bh,2*nD);
+          push("dbox", Math.max(bw-2*ht,0),bd,nD);
+          push("dback",Math.max(bw-2*ht,0),bh,nD);
+          push("dface",Math.max(innerW-2*G,0),fh,nD);
+        }
+        if(sg.doors && sg.doors!=="无门"){
+          const nL=sg.doors==="对开"?2:1, lw=Math.max((W-G)/nL,0), dh=Math.max(sh-G,0);
+          push(did, lw, dh, nL);
+        }
+      });
+    }else{
+      const asShelf = c.conf_==="层板" || (c.conf_==="转角" && (c.ct||"L")==="直");
+      if(asShelf && +c.shelves>0) push("shelf",bayW,innerD,(+c.shelves)*bays);
+      if(c.conf_==="拉篮")                 push("shelf",bayW,innerD,bays);
+      if(c.conf_==="抽屉" && +c.drawers>0){
+        const n=+c.drawers, helpT=T("dhelp");
+        const bw=Math.max(bayW-2*V("dGap"),0), bd=Math.max(innerD-V("dRail"),0);
+        const fh=Math.max((H-(n+1)*G)/n,0), bh=Math.max(fh-V("dCut"),0);
+        push("dhelp",bd,bh,2*n*bays);
+        push("dbox", Math.max(bw-2*helpT,0),bd,n*bays);
+        push("dback",Math.max(bw-2*helpT,0),bh,n*bays);
+        push("dface",Math.max(bayW-2*G,0),fh,n*bays);
+      }
     }
     if(c.form!=="吊柜") push("kick",W,V("K"),1);
   }
   const isL = c.conf_==="转角" && (c.ct||"L")==="L";
-  if(c.doors!=="无门" && !isL && c.conf_!=="抽屉"){   // 抽屉柜正面是逐块抽面板，不算整块门板；L 柜门板在转角分支里算
+  if(c.doors!=="无门" && !isL && c.conf_!=="抽屉" && !(Array.isArray(c.segs)&&c.segs.length)){   // 抽屉柜正面是逐块抽面板，不算整块门板；L 柜门板在转角分支里算
     const dh=(c.form==="高柜"?H/2:H)-V("G");
     const nLeaf = c.doors==="对开" ? 2 : 1;          // 对开=两扇，总宽不变，逐扇出明细
     const leafW = Math.max((W-V("G"))/nLeaf,0);
@@ -417,6 +449,29 @@ function render(){
           }
           if(hasDoor) h+=`<div><label>门铰 (件)${c.hj==null?" · 自动":""}</label><input type="number" value="${hingeOf(c)}" onchange="up(${i},'hj',this.value===''?null:+this.value)"></div>`;
           if(draw||bask) h+=`<div><label>轨道 (副)${c.rl==null?" · 自动":""}</label><input type="number" value="${railOf(c)}" onchange="up(${i},'rl',this.value===''?null:+this.value)"></div>`;
+          if(!free && !isL && !isDirect){
+            const segs=c.segs||[];
+            h+=`<div style="grid-column:1/-1;margin-top:6px;border-top:1px solid #2a333d;padding-top:6px">
+              <label style="display:inline-block;color:#8ab4f8">分格（上下分段）</label>
+              <button class="mini" onclick="segToggle(${i})">${segs.length?"取消分段":"开启分段"}</button>
+              ${segs.length?`<span class="sub" style="margin-left:8px">内高 ${segInnerH(c)} mm，段高合计 ${segs.reduce((a,g)=>a+(+g.h||0),0)} mm</span>`:""}
+            </div>`;
+            if(segs.length){
+              segs.forEach((sg,si)=>{
+                const sc=sg.conf||"开放格";
+                h+=`<div style="grid-column:1/-1;display:flex;gap:6px;align-items:center;flex-wrap:wrap;background:#151b22;border:1px solid #232c36;border-radius:6px;padding:6px;margin-top:4px">
+                  <b style="color:#7dd3a0;min-width:44px">第${si+1}段</b>
+                  <label>高</label><input type="number" style="width:70px" value="${sg.h||0}" onchange="segUp(${i},${si},'h',+this.value)">
+                  <label>构型</label><select onchange="segUp(${i},${si},'conf',this.value)">${["开放格","层板","抽屉","拉篮"].map(o=>`<option value="${o}" ${o===sc?"selected":""}>${o}</option>`).join("")}</select>
+                  ${sc==="层板"?`<label>层板数</label><input type="number" style="width:60px" value="${sg.shelves||1}" onchange="segUp(${i},${si},'shelves',+this.value)">`:""}
+                  ${sc==="抽屉"?`<label>抽屉数</label><input type="number" style="width:60px" value="${sg.drawers||2}" onchange="segUp(${i},${si},'drawers',+this.value)">`:""}
+                  <label>门板</label><select onchange="segUp(${i},${si},'doors',this.value)">${["无门","单门","对开"].map(o=>`<option value="${o}" ${o===(sg.doors||"无门")?"selected":""}>${o}</option>`).join("")}</select>
+                  <button class="mini" onclick="segDel(${i},${si})">删</button>
+                </div>`;
+              });
+              h+=`<div style="grid-column:1/-1"><button class="mini" onclick="segAdd(${i})">+ 加一段</button></div>`;
+            }
+          }
           return h;
         })()}
       </div>
@@ -462,6 +517,28 @@ function norm(i){
   c.shelves=Math.max(+c.shelves||0,0); c.drawers=Math.max(+c.drawers||0,0); c.vdiv=Math.min(Math.max(+c.vdiv||0,0),4);
   if(c.conf_==="抽屉" && !(+c.drawers>0)) c.drawers=3;
 }
+function segInnerH(c){
+  const fi=c.form==="吊柜"?2:(c.form==="高柜"?3:1);
+  return Math.max(V("H"+fi)-pv("top").t-pv("bottom").t,0);
+}
+function segToggle(i){
+  const c=S[i];
+  if(Array.isArray(c.segs)&&c.segs.length){ delete c.segs; }
+  else{
+    const ih=segInnerH(c), up1=Math.round(ih*0.4);
+    c.segs=[{h:up1, conf:"开放格", doors:"无门"},{h:ih-up1, conf:"抽屉", doors:"无门", drawers:2}];
+    c.doors="无门"; c.shelves=0; c.vdiv=0;
+  }
+  render();
+}
+function segAdd(i){
+  const c=S[i], ih=segInnerH(c);
+  if(!Array.isArray(c.segs)) c.segs=[];
+  c.segs.push({h:ih, conf:"开放格", doors:"无门"});
+  render();
+}
+function segDel(i,si){ S[i].segs.splice(si,1); if(!S[i].segs.length) delete S[i].segs; render(); }
+function segUp(i,si,k,v){ S[i].segs[si][k]=v; render(); }
 function jump(i){const el=document.getElementById("c"+i);el.scrollIntoView({behavior:"smooth",block:"center"});
   document.querySelectorAll(".card").forEach(e=>e.classList.remove("on"));el.classList.add("on");}
 function up(i,k,v){
@@ -495,7 +572,7 @@ function exportJSON(){
 }
 renderParams(); render();
 </script>
-<script src="xlsx_lite.js?v=20261119m"></script>
-<script src="export_xlsx.js?v=20261119m"></script>
+<script src="xlsx_lite.js?v=20261119o"></script>
+<script src="export_xlsx.js?v=20261119o"></script>
 </body>
 </html>
