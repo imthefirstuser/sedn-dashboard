@@ -69,8 +69,9 @@ details summary{cursor:pointer;padding:9px 12px;background:var(--panel2);font-we
       <div class="ch"><b>参数表</b><span class="sub" style="margin-left:auto">默认 = 行业常用值</span></div>
       <table class="ptab" id="ptab"></table>
       <div class="note">
-        内宽=<code>柜宽−2×侧板厚</code>　内深=<code>柜深−背板厚</code>　背板高=<code>柜高−顶−底</code><br>
-        抽体宽=<code>内宽−2×抽隙</code>　抽深=<code>内深−轨道预留</code>　面板高=<code>(H−(n+1)×门缝)/n</code>　抽体高=<code>面板高−扣减</code>
+        内宽=<code>柜宽−2×侧板厚</code>　内深=<code>柜深−背板厚</code>　背板高=<code>柜高−顶−底</code>　内高=<code>柜高−顶−底</code><br>
+        骨架：侧板 <code>柜深×(柜高−顶−底)</code>、顶底板 <code>柜宽×柜深</code>（通长，侧板夹中间）；竖板数 n 时每格宽=<code>(内宽−n×竖板厚)/(n+1)</code><br>
+        抽体宽=<code>格宽−2×抽隙</code>　抽深=<code>内深−轨道预留</code>　面板高=<code>(H−(n+1)×门缝)/n</code>　抽体高=<code>面板高−扣减</code>
       </div>
     </div>
     <div class="card">
@@ -103,11 +104,14 @@ const PART = [
   {id:"top",   name:"顶板",        t:18, price:0},
   {id:"bottom",name:"底板",        t:18, price:0},
   {id:"shelf", name:"层板",        t:18, price:0},
+  {id:"vdiv",  name:"竖板",        t:18, price:0},
   {id:"corner",name:"转角内侧板",  t:18, price:0},
   {id:"kick",  name:"踢脚板",      t:18, price:0},
   {id:"back",  name:"背板",        t:9,  price:0},
   {id:"vis",   name:"见光板",      t:18, price:0},
-  {id:"door",  name:"门板",        t:18, price:0},
+  {id:"door_p",name:"门板-平板",  t:18, price:0},
+  {id:"door_m",name:"门板-造型",  t:18, price:0},
+  {id:"door_g",name:"门板-玻璃",  t:18, price:0},
   {id:"dhelp", name:"抽侧帮",      t:16, price:0},
   {id:"dbox",  name:"抽底板",      t:16, price:0},
   {id:"dback", name:"抽后板",      t:16, price:0},
@@ -122,6 +126,9 @@ const CRAFT = [
   {id:"cnOver",   name:"转角背板重叠扣减", v:18, u:"mm"},
   {id:"cnDoor",   name:"转角方格门",     v:0, u:"", opts:[0,1], lbls:["无门(盲角)","单门"]},
   {id:"cnW2Ref",  name:"W2 计量起点",    v:0, u:"", opts:[0,1], lbls:["转角方格外端(净长)","相邻墙内角(含方格)"]},
+  {id:"dmP",      name:"门板最低计面积·平板", v:0.15, u:"㎡", grp:"dm"},
+  {id:"dmM",      name:"门板最低计面积·造型", v:0.30, u:"㎡", grp:"dm"},
+  {id:"dmG",      name:"门板最低计面积·玻璃", v:0.50, u:"㎡", grp:"dm"},
   {id:"hjSingle", name:"门铰·每扇单开",  v:2, u:"件", grp:"hw"},
   {id:"hjThresh", name:"门铰·加铰门高门槛", v:900, u:"mm", grp:"hw"},
   {id:"hjStep",   name:"门铰·每加一铰门高步长", v:300, u:"mm", grp:"hw"},
@@ -161,18 +168,21 @@ const SEED = [
   {el:"E1", pos:"E1-6", w:450, label:"BIN",  cls:"white", conf:"图上标注",    conf_:"空位", doors:"无门"},
   {el:"E1", pos:"E1-7", w:900, label:"",     cls:"white", conf:"图上未标(双开)", conf_:"层板", doors:"对开"},
   {el:"E1", pos:"E1-8", w:610, label:"D/W",  cls:"white", conf:"图上标注",    conf_:"空位", doors:"无门"},
-  {el:"E1", pos:"E1-9", w:590, label:"",     cls:"white", conf:"图上未标(转角)", conf_:"转角", doors:"单门"},
+  {el:"E1", pos:"E1-9", w:590, label:"",     cls:"white", conf:"图上未标(转角)", conf_:"转角", doors:"无门"},
   {el:"E2", pos:"E2-2", w:493, label:"BT",   cls:"",      conf:"图上标注",    conf_:"层板", doors:"单门"},
   {el:"E2", pos:"E2-3", w:492, label:"BT",   cls:"",      conf:"图上标注",    conf_:"层板", doors:"对开"}
 ];
 const E2_SHARED = 590;   // 立面2 左端的转角柜与 E1-9 共用，只画不计
 const FORM=["落地柜","吊柜","高柜"], CONF=["层板","抽屉","拉篮","转角","空位"], DOOR=["单门","对开","翻门","无门"];
 const COLOR={"层板":"#1e3a5f","抽屉":"#1f4d3a","拉篮":"#4a3a6b","转角":"#5c3a1e","空位":"#3a2426"};
+/* 门板类型：id=板件档位（各带板厚/单价），min=最低计面积参数 */
+const DT=[{k:"平板",id:"door_p",min:"dmP"},{k:"造型",id:"door_m",min:"dmM"},{k:"玻璃",id:"door_g",min:"dmG"}];
+const dtOf = c => DT.find(x=>x.k===(c.dt||"平板")) || DT[0];
 
 let S = JSON.parse(localStorage.getItem("cabU6")||"null") || SEED.map(c=>({
-  ...c, form:"落地柜", shelves:1, drawers:0, vis:0, leg2:0, hj:null, rl:null
+  ...c, form:"落地柜", shelves:1, drawers:0, vis:0, leg2:0, vdiv:0, ct:"L", dv1:0, dv2:0, dt:"平板", hj:null, rl:null
 }));
-if(!Array.isArray(S) || S.length!==SEED.length) S = SEED.map(c=>({...c, form:"落地柜", shelves:1, drawers:0, vis:0, leg2:0, hj:null, rl:null}));
+if(!Array.isArray(S) || S.length!==SEED.length) S = SEED.map(c=>({...c, form:"落地柜", shelves:1, drawers:0, vis:0, leg2:0, vdiv:0, ct:"L", dv1:0, dv2:0, dt:"平板", hj:null, rl:null}));
 
 /* ================= 五金：门铰 / 轨道（默认按门扇数·抽屉数推，可逐柜改） ================= */
 function doorLeaves(c){
@@ -194,6 +204,7 @@ function hingePerLeaf(c){
   return Math.min(base + Math.ceil((h-th)/st), mx);
 }
 function hingeDefault(c){
+  if(c.conf_==="抽屉") return 0;            // 抽屉柜没有门（面板走抽面板），不装门铰
   if(c.doors==="无门") return 0;
   if(c.doors==="翻门") return +V("hjFlip")*(c.form==="高柜"?2:1)*(c.conf_==="转角"?2:1);
   return doorLeaves(c)*hingePerLeaf(c);
@@ -209,6 +220,7 @@ const railOf  = c => (c.rl==null ? railDefault(c) : +c.rl);
 /* ================= 算法：逐块板真实尺寸（宽×高×块数） ================= */
 function parts(c){
   const T=id=>+pv(id).t;
+  const dtc=dtOf(c), did=dtc.id, dmin=Math.max(+V(dtc.min)||0,0);
   const fi = c.form==="吊柜" ? 2 : (c.form==="高柜" ? 3 : 1);   // 按形态取尺寸
   const H=V("H"+fi), D=V("D"+fi), W=+c.w, out=[];
   const push=(id,w,h,q=1)=>{ if(w>1e-9&&h>1e-9&&q>0) out.push({id,w:+w.toFixed(1),h:+h.toFixed(1),q,area:q*w*h/1e6}) };
@@ -218,7 +230,7 @@ function parts(c){
 
   if(c.conf_==="空位"){
     push("side",D,H,2); push("back",innerW,innerH,1);
-  }else if(c.conf_==="转角"){
+  }else if(c.conf_==="转角" && (c.ct||"L")==="L"){
     const G=V("G"), C=Math.min(D,W), W1=W, W2in=Math.max(+c.leg2||0,0);
     const B = (+V("cnW2Ref")===1) ? Math.max(W2in,C) : C+W2in;
     const aL=Math.max(W1-C,0), bL=Math.max(B-C,0);
@@ -231,33 +243,50 @@ function parts(c){
     else         push("back",W1+B-C,innerH,1);
     if(c.form!=="吊柜") push("kick",W1+B-C,V("K"),1);
     if(c.doors!=="无门"){
-      push("door",Math.max(aL-G,0),H-G,1);
-      push("door",Math.max(bL-G,0),H-G,1);
-      if(+V("cnDoor")===1) push("door",Math.max(C-G,0),H-G,1);
+      push(did,Math.max(aL-G,0),H-G,1);
+      push(did,Math.max(bL-G,0),H-G,1);
+      if(+V("cnDoor")===1) push(did,Math.max(C-G,0),H-G,1);
     }
   }else{
-    push("side",   D,H,2);
-    push("top",    innerW,D,1);
-    push("bottom", innerW,D,1);
+    // 普通柜骨架（2026-11-19 用户确认）：顶底板通长通深 = W×D，侧板夹在中间（高=H−顶−底）
+    const Tv=T("vdiv"), nv=Math.max(+c.vdiv||0,0), bays=nv+1;
+    const bayW=Math.max((innerW-nv*Tv)/bays,0);
+    push("side",   D,Math.max(H-T("top")-T("bottom"),0),2);
+    push("top",    W,D,1);
+    push("bottom", W,D,1);
     push("back",   innerW,innerH,1);
-    if(c.conf_==="层板" && +c.shelves>0) push("shelf",innerW,innerD,+c.shelves);
-    if(c.conf_==="拉篮")                 push("shelf",innerW,innerD,1);
+    if(nv>0) push("vdiv", innerD,innerH,nv);
+    // 层板/抽屉/拉篮按格算：每格一块，宽=格宽，数量=每格数量×格数
+    const asShelf = c.conf_==="层板" || (c.conf_==="转角" && (c.ct||"L")==="直");
+    if(asShelf && +c.shelves>0) push("shelf",bayW,innerD,(+c.shelves)*bays);
+    if(c.conf_==="拉篮")                 push("shelf",bayW,innerD,bays);
     if(c.conf_==="抽屉" && +c.drawers>0){
       const n=+c.drawers, G=V("G"), helpT=T("dhelp");
-      const bw=Math.max(innerW-2*V("dGap"),0), bd=Math.max(innerD-V("dRail"),0);
+      const bw=Math.max(bayW-2*V("dGap"),0), bd=Math.max(innerD-V("dRail"),0);
       const fh=Math.max((H-(n+1)*G)/n,0), bh=Math.max(fh-V("dCut"),0);
-      push("dhelp",bd,bh,2*n);
-      push("dbox", Math.max(bw-2*helpT,0),bd,n);
-      push("dback",Math.max(bw-2*helpT,0),bh,n);
-      push("dface",Math.max(W-2*G,0),fh,n);
+      push("dhelp",bd,bh,2*n*bays);
+      push("dbox", Math.max(bw-2*helpT,0),bd,n*bays);
+      push("dback",Math.max(bw-2*helpT,0),bh,n*bays);
+      push("dface",Math.max(bayW-2*G,0),fh,n*bays);
     }
     if(c.form!=="吊柜") push("kick",W,V("K"),1);
   }
-  if(c.doors!=="无门" && c.conf_!=="转角"){
+  const isL = c.conf_==="转角" && (c.ct||"L")==="L";
+  if(c.doors!=="无门" && !isL && c.conf_!=="抽屉"){   // 抽屉柜正面是逐块抽面板，不算整块门板；L 柜门板在转角分支里算
     const dh=(c.form==="高柜"?H/2:H)-V("G");
-    push("door",Math.max(W-V("G"),0),dh,1);
+    const nLeaf = c.doors==="对开" ? 2 : 1;          // 对开=两扇，总宽不变，逐扇出明细
+    const leafW = Math.max((W-V("G"))/nLeaf,0);
+    push(did, leafW, dh, nLeaf);
+    // 转角直柜：可逐扇指定哪一扇要见光（每扇门背面加见光面）
+    let dv = (+c.dv1?1:0) + (+c.dv2?1:0);
+    if(nLeaf===1) dv = +c.dv1?1:0;
+    dv = Math.min(dv, nLeaf);
+    if(dv>0) push("vis", leafW, dh, dv);
   }
   if(+c.vis>0) push("vis",D,H,+c.vis);   // 见光板：外露侧板面，不含门板
+  // 门板最低计面积：该柜门板面积合计不足门槛时，补一行差额（计价行，不是板件，无尺寸）
+  const dsum=out.filter(p=>p.id===did).reduce((s2,p)=>s2+p.area,0);
+  if(dsum>0 && dmin>0 && dsum<dmin-1e-9) out.push({id:did,w:0,h:0,q:0,area:dmin-dsum,min:true});
   return out;
 }
 const areaOf = c => parts(c).reduce((s,p)=>s+p.area,0);
@@ -273,7 +302,7 @@ function renderParams(){
     <td><input class="n" type="number" value="${o.t}" onchange="setT(${i},+this.value)"></td>
     <td><input class="n" type="number" value="${o.price}" onchange="setPrice(${i},+this.value)"></td></tr>`);
   r += `<tr class="grp"><td colspan="3">抽屉工艺（行业默认）</td></tr>`;
-  ST.craft.filter(o=>!o.opts && !o.id.startsWith("cn")).forEach((o,i)=> r += `<tr><td>${o.name}<span class="badge">${o.u}</span></td>
+  ST.craft.filter(o=>!o.opts && !o.id.startsWith("cn") && !o.grp).forEach((o,i)=> r += `<tr><td>${o.name}<span class="badge">${o.u}</span></td>
     <td><input class="n" type="number" step="0.5" value="${o.v}" onchange="setV('craft',${ST.craft.indexOf(o)},+this.value)"></td><td></td></tr>`);
   r += `<tr class="grp"><td colspan="3">转角工艺（多样性）</td></tr>`;
   ST.craft.filter(o=>o.id.startsWith("cn")).forEach(o=>{
@@ -283,8 +312,14 @@ function renderParams(){
               : `<input class="n" type="number" step="0.5" value="${o.v}" onchange="setV('craft',${idx},+this.value)">`) +
       `</td><td></td></tr>`;
   });
+  r += `<tr class="grp"><td colspan="3">门板计价（每柜最低计面积，㎡）</td></tr>`;
+  ST.craft.filter(o=>o.grp==="dm").forEach(o=>{
+    const idx=ST.craft.indexOf(o);
+    r += `<tr><td>${o.name}<span class="badge">${o.u}</span></td>
+      <td><input class="n" type="number" step="0.05" value="${o.v}" onchange="setV('craft',${idx},+this.value)"></td><td></td></tr>`;
+  });
   r += `<tr class="grp"><td colspan="3">五金（按件，不计面积）</td></tr>`;
-  ST.craft.filter(o=>o.grp).forEach(o=>{
+  ST.craft.filter(o=>o.grp==="hw"||o.grp==="hwp").forEach(o=>{
     const idx=ST.craft.indexOf(o);
     r += `<tr><td>${o.name}<span class="badge">${o.u}</span></td>
       <td><input class="n" type="number" step="0.5" value="${o.v}" onchange="setV('craft',${idx},+this.value)"></td><td></td></tr>`;
@@ -362,15 +397,21 @@ function render(){
         <div><label>柜体形态</label><select onchange="up(${i},'form',this.value)">${FORM.map(o=>`<option ${o===c.form?"selected":""}>${o}</option>`).join("")}</select></div>
         <div><label>内部构型</label><select onchange="up(${i},'conf_',this.value)">${CONF.map(o=>`<option ${o===c.conf_?"selected":""}>${o}</option>`).join("")}</select></div>
         <div><label>门板</label><select onchange="up(${i},'doors',this.value)">${DOOR.map(o=>`<option ${o===c.doors?"selected":""}>${o}</option>`).join("")}</select></div>
+        ${(c.doors!=="无门"&&c.conf_!=="抽屉")?`<div><label>门板类型</label><select onchange="up(${i},'dt',this.value)">${DT.map(o=>`<option ${o.k===(c.dt||"平板")?"selected":""}>${o.k}</option>`).join("")}</select></div>`:""}
         <div><label>宽度 W (mm)</label><input type="number" value="${c.w}" onchange="up(${i},'w',+this.value)"></div>
         <div><label>见光面</label><select onchange="up(${i},'vis',+this.value)">${[0,1,2].map(v=>`<option value="${v}" ${(+c.vis||0)===v?"selected":""}>${["无","1 面","2 面"][v]}</option>`).join("")}</select></div>
-        ${c.conf_==="层板"?`<div><label>层板数</label><input type="number" value="${c.shelves}" onchange="up(${i},'shelves',+this.value)"></div>`:""}
-        ${c.conf_==="抽屉"?`<div><label>抽屉数</label><input type="number" value="${c.drawers}" onchange="up(${i},'drawers',+this.value)"></div>`:""}
-        ${c.conf_==="转角"?`<div><label>回转长 W2 (mm)</label><input type="number" value="${c.leg2||0}" onchange="up(${i},'leg2',+this.value)"></div>`:""}
+        ${c.conf_==="层板"?`<div><label>层板数${+c.vdiv>0?"（每格）":""}</label><input type="number" value="${c.shelves}" onchange="up(${i},'shelves',+this.value)"></div>`:""}
+        ${c.conf_==="抽屉"?`<div><label>抽屉数${+c.vdiv>0?"（每格）":""}</label><input type="number" value="${c.drawers}" onchange="up(${i},'drawers',+this.value)"></div>`:""}
+        ${(c.conf_!=="空位" && !(c.conf_==="转角"&&(c.ct||"L")==="L"))?`<div><label>竖板数（中隔）</label><input type="number" value="${+c.vdiv||0}" onchange="up(${i},'vdiv',Math.max(+this.value||0,0))"></div>`:""}
+        ${c.conf_==="转角"?`<div><label>转角型式</label><select onchange="up(${i},'ct',this.value)">${[["L","L 柜"],["直","直角柜"]].map(([v,t])=>`<option value="${v}" ${v===(c.ct||"L")?"selected":""}>${t}</option>`).join("")}</select></div>`:""}
+        ${(c.conf_==="转角"&&(c.ct||"L")==="直")?`<div><label>层板数</label><input type="number" value="${c.shelves||0}" onchange="up(${i},'shelves',+this.value)"></div>`:""}
+        ${(c.conf_==="转角"&&(c.ct||"L")==="直"&&c.doors!=="无门")?`<div><label>第1扇见光</label><select onchange="up(${i},'dv1',+this.value)">${[0,1].map(v=>`<option value="${v}" ${(+c.dv1||0)===v?"selected":""}>${["否","是"][v]}</option>`).join("")}</select></div>
+          ${(c.doors==="对开")?`<div><label>第2扇见光</label><select onchange="up(${i},'dv2',+this.value)">${[0,1].map(v=>`<option value="${v}" ${(+c.dv2||0)===v?"selected":""}>${["否","是"][v]}</option>`).join("")}</select></div>`:""}`:""}
+        ${(c.conf_==="转角"&&(c.ct||"L")==="L")?`<div><label>回转长 W2 (mm)</label><input type="number" value="${c.leg2||0}" onchange="up(${i},'leg2',+this.value)"></div>`:""}
         <div><label>门铰 (件)${c.hj==null?" · 自动":""}</label><input type="number" value="${hingeOf(c)}" onchange="up(${i},'hj',this.value===''?null:+this.value)"></div>
         <div><label>轨道 (副)${c.rl==null?" · 自动":""}</label><input type="number" value="${railOf(c)}" onchange="up(${i},'rl',this.value===''?null:+this.value)"></div>
       </div>
-      <div class="split">${ps.map(p=>`<div class="kv"><span>${(ST.part.find(q=>q.id===p.id)||{name:p.id}).name} ${pv(p.id).t}mm · ${p.w}×${p.h}${p.q>1?"×"+p.q:""}</span><span class="area">${p.area.toFixed(3)} ㎡</span></div>`).join("")}</div>
+      <div class="split">${ps.map(p=>`<div class="kv"><span>${(ST.part.find(q=>q.id===p.id)||{name:p.id}).name} ${pv(p.id).t}mm · ${p.min?"最低计面积补差":p.w+"×"+p.h+(p.q>1?"×"+p.q:"")}</span><span class="area">${p.area.toFixed(3)} ㎡</span></div>`).join("")}</div>
     </div>`;
   }).join("");
 
@@ -401,7 +442,14 @@ function jump(i){const el=document.getElementById("c"+i);el.scrollIntoView({beha
 function up(i,k,v){
   S[i][k]=v;
   if(k==="conf_"||k==="doors"||k==="form"||k==="drawers"){ S[i].hj=null; S[i].rl=null; }
+  if(k==="ct"){                                  // 转角型式联动：L 柜无门板，直角柜默认对开
+    if(v==="L"){ S[i].doors="无门"; S[i].dv1=0; S[i].dv2=0; }
+    else if(S[i].doors==="无门"){ S[i].doors="对开"; }
+    if(v==="直" && !(+S[i].shelves>0)) S[i].shelves=1;
+    S[i].hj=null; S[i].rl=null;
+  }
   if(k==="conf_"){
+    if(v==="抽屉"){ S[i].doors="无门"; }          // 抽屉柜正面是抽面板，没有门
     if(v==="抽屉" && !(+S[i].drawers>0)) S[i].drawers=3;
     if(v!=="抽屉") S[i].drawers=0;
     if(v==="层板" && !(+S[i].shelves>0)) S[i].shelves=1;
@@ -416,13 +464,13 @@ function exportJSON(){
                      craft:Object.fromEntries(ST.craft.map(o=>[o.id,o.v])),
                      parts:ST.part.map(o=>({id:o.id,name:o.name,t:o.t,price:o.price}))},
     units:S.map((c,i)=>({seq:i+1,w:c.w,label:c.label,form:c.form,conf:c.conf_,doors:c.doors,
-      shelves:c.shelves,drawers:c.drawers,area:+areaOf(c).toFixed(4),detail:parts(c)}))};
+      shelves:c.shelves,drawers:c.drawers,vdiv:+c.vdiv||0,ct:c.ct||"L",dv1:+c.dv1||0,dv2:+c.dv2||0,dt:c.dt||"平板",area:+areaOf(c).toFixed(4),detail:parts(c)}))};
   const b=new Blob([JSON.stringify(out,null,2)],{type:"application/json"});
   const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="cabinet-config.json";a.click();
 }
 renderParams(); render();
 </script>
-<script src="xlsx_lite.js"></script>
-<script src="export_xlsx.js"></script>
+<script src="xlsx_lite.js?v=20261119g"></script>
+<script src="export_xlsx.js?v=20261119g"></script>
 </body>
 </html>
