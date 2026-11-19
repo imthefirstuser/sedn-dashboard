@@ -117,6 +117,7 @@ const PART = [
   {id:"dback", name:"抽后板",      t:16, price:0},
 ];
 const CRAFT = [
+  {id:"bsBoard", name:"拉篮柜加层板",  v:0, u:"", opts:[0,1], lbls:["不要","要一块"], grp:"dr"},
   {id:"dMinFace",  name:"抽屉最小面板高",  v:100, u:"mm", grp:"dr"},
   {id:"spMinGap",  name:"层板最小间距",    v:150, u:"mm", grp:"dr"},
   {id:"bayMin",    name:"最小格宽",        v:200, u:"mm", grp:"dr"},
@@ -285,7 +286,7 @@ function parts(c){
       segs.forEach(sg=>{
         const sh=Math.max(+sg.h||0,0), sc=sg.conf||"开放格", nD=Math.max(+sg.drawers||0,0);
         if(sc==="层板" && +sg.shelves>0) push("shelf", innerW, innerD, +sg.shelves);
-        if(sc==="拉篮") push("shelf", innerW, innerD, 1);
+        if(sc==="拉篮" && +V("bsBoard")===1) push("shelf", innerW, innerD, 1);
         if(sc==="抽屉" && nD>0){
           const bw=Math.max(innerW-2*V("dGap"),0), bd=Math.max(innerD-V("dRail"),0);
           const fh=Math.max((sh-(nD+1)*G)/nD,0), bh=Math.max(fh-V("dCut"),0), ht=T("dhelp");
@@ -302,7 +303,7 @@ function parts(c){
     }else{
       const asShelf = c.conf_==="层板" || (c.conf_==="转角" && (c.ct||"L")==="直");
       if(asShelf && +c.shelves>0) push("shelf",bayW,innerD,(+c.shelves)*bays);
-      if(c.conf_==="拉篮")                 push("shelf",bayW,innerD,bays);
+      if(c.conf_==="拉篮" && +V("bsBoard")===1) push("shelf",bayW,innerD,bays);
       if(c.conf_==="抽屉" && +c.drawers>0){
         const n=+c.drawers, helpT=T("dhelp");
         const bw=Math.max(bayW-2*V("dGap"),0), bd=Math.max(innerD-V("dRail"),0);
@@ -642,7 +643,7 @@ function exportJSON(){
 }
 renderParams(); render();
 </script>
-<script src="xlsx_lite.js?v=20261120t"></script>
-<script src="export_xlsx.js?v=20261120t"></script>
+<script src="xlsx_lite.js?v=20261120u"></script>
+<script src="export_xlsx.js?v=20261120u"></script>
 </body>
 </html>
