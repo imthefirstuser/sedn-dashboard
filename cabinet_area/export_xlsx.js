@@ -184,17 +184,26 @@
       if (Array.isArray(cabSeg.segs) && cabSeg.segs.length) {
         // 分段柜（上开放格/下抽屉…）段数不固定，Excel 无法逐段展开 → 明细按当前参数写成固定值；
         // 柜体清单的 T 列（门板计面积）仍走 SUMIFS，所以板材汇总/合计照样是公式、照样汇总。
+        // 用户口径：分段柜只到"整柜"粒度 —— 按板件名合并，不细到第几个抽屉/层板
+        const grp = new Map();
         parts(cabSeg).forEach(pt => {
           const isDoor = String(pt.id).startsWith("door_");
           const nm = isDoor ? ("门板-" + (cabSeg.dt || "平板")) : (pt.nm || NAME_OF[pt.id] || pt.id);
-          const priceKey = isDoor ? "门板-" + (cabSeg.dt || "平板") : (NAME_OF[pt.id] || pt.id);
-          const th = isDoor ? +pv("door_" + ({ "平板": "p", "造型": "m", "玻璃": "g" }[cabSeg.dt || "平板"] || "p")).t
-                            : +pv(pt.id).t;
-          det.push([{ v: row[0], s: S2 }, { v: nm, s: S2 }, { v: th, s: S2 },
-            { v: +pt.w, s: S2 }, { v: +pt.h, s: S2 }, { v: +pt.q, s: S2 },
-            { v: +pt.area.toFixed(6), s: S3 },
+          const key = nm;
+          const g = grp.get(key) || { nm, q: 0, area: 0, ws: new Set(), hs: new Set(), door: isDoor };
+          g.q += +pt.q; g.area += +pt.area; g.ws.add(+pt.w); g.hs.add(+pt.h);
+          grp.set(key, g);
+        });
+        grp.forEach(g => {
+          const priceKey = g.door ? g.nm : g.nm;
+          const th = g.door ? +pv("door_" + ({ "平板": "p", "造型": "m", "玻璃": "g" }[cabSeg.dt || "平板"] || "p")).t
+                            : +pv(Object.keys(NAME_OF).find(k => NAME_OF[k] === g.nm) || "side").t;
+          det.push([{ v: row[0], s: S2 }, { v: g.nm, s: S2 }, { v: th, s: S2 },
+            { v: g.ws.size === 1 ? [...g.ws][0] : "混合", s: S2 },
+            { v: g.hs.size === 1 ? [...g.hs][0] : "混合", s: S2 },
+            { v: g.q, s: S2 }, { v: +g.area.toFixed(6), s: S3 },
             { f: "单价_" + dnKey(priceKey), s: S4 }, { f: `G${ro}*H${ro}`, s: S4 },
-            { v: "分段柜：按当前段设置固定值（改段参数后请重新导出）", s: S2 }]);
+            { v: "分段柜：整柜按板件合并（改段参数后重新导出）", s: S2 }]);
           ro++;
         });
         return;
