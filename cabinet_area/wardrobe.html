@@ -2,99 +2,98 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<title>衣柜算料 · BED3 WIR 房间3（预览确认）</title>
+<title>衣柜算料 · 分格选配（BED3 WIR 房间3）</title>
 <style>
 :root{--bg:#0f1216;--panel:#171c22;--panel2:#1e252d;--line:#2a333d;--txt:#e6edf3;--dim:#8b98a5;--accent:#3b82f6;--acc:#f0a63c;--ok:#3fb950;--bad:#f85149}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--txt);font:13px/1.5 system-ui,"Microsoft YaHei",sans-serif}
-header{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-h1{font-size:16px;margin:0}
+header{padding:12px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+h1{font-size:15px;margin:0}
 .sub{color:var(--dim);font-size:11px}
-main{display:grid;grid-template-columns:340px 1fr;gap:14px;padding:14px 18px;align-items:start}
-@media(max-width:1000px){main{grid-template-columns:1fr}}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:8px}
-.card h2{font-size:12px;margin:0;padding:9px 12px;border-bottom:1px solid var(--line);color:var(--dim);font-weight:600;letter-spacing:.4px}
+main{display:grid;grid-template-columns:390px 1fr;gap:14px;padding:14px 18px;align-items:start}
+@media(max-width:1080px){main{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;margin-bottom:12px}
+.card h2{font-size:12px;margin:0;padding:9px 12px;border-bottom:1px solid var(--line);color:var(--dim);font-weight:600;letter-spacing:.4px;display:flex;justify-content:space-between;align-items:center}
 .cb{padding:10px 12px;display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .cb>div{display:flex;flex-direction:column}
-label{font-size:11px;color:var(--dim);margin-bottom:3px}
+label{display:block;font-size:11px;color:var(--dim);margin-bottom:3px}
+label.key{color:var(--acc);font-weight:700}
+.kbadge{display:inline-block;margin-left:4px;padding:0 4px;border-radius:3px;background:var(--acc);color:#111;font-size:9px;font-weight:700}
 input,select{background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:5px;padding:5px 7px;font:inherit;width:100%}
 input:focus,select:focus{outline:none;border-color:var(--accent)}
-.key{color:var(--acc);font-weight:700}
-.kbadge{display:inline-block;margin-left:4px;padding:0 4px;border-radius:3px;background:var(--acc);color:#111;font-size:9px;font-weight:700}
+input.key{border-color:var(--acc)}
 table{width:100%;border-collapse:collapse;font-size:12px}
 th,td{padding:6px 9px;border-bottom:1px solid var(--line);text-align:right}
-th{color:var(--dim);font-weight:600;font-size:11px;position:sticky;top:0;background:var(--panel)}
-td:first-child,th:first-child{text-align:left}
-td.nm{text-align:left}
+th{color:var(--dim);font-weight:600;font-size:11px;background:var(--panel)}
+td:first-child,th:first-child,td.nm{text-align:left}
 tr.sum td{border-top:2px solid var(--accent);font-weight:700}
-tr.keyrow td{background:#1d2530}
-tr.keyrow td:first-child{box-shadow:inset 3px 0 0 var(--acc)}
-.big{font-size:22px;font-weight:700;color:var(--ok)}
+.big{font-size:20px;font-weight:700;color:var(--ok)}
 .warn{color:var(--acc)}
-.todo{padding:8px 12px;font-size:11px;color:var(--dim);border-top:1px dashed var(--line)}
-.todo b{color:var(--acc)}
-.btns{padding:10px 12px;display:flex;gap:8px;flex-wrap:wrap}
+.bay{padding:9px 12px;border-bottom:1px solid #202730}
+.bay .top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+.bay .tag{font-size:11px;font-weight:700;color:var(--accent)}
+.bay .g{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bay .g>div{display:flex;flex-direction:column}
+.mini{background:transparent;border:1px solid var(--line);color:var(--dim);border-radius:5px;padding:2px 7px;font-size:11px;cursor:pointer}
+.mini:hover{color:var(--txt);border-color:var(--txt)}
 button{background:var(--accent);color:#fff;border:0;border-radius:6px;padding:8px 14px;font:inherit;font-weight:600;cursor:pointer}
 button.ghost{background:transparent;border:1px solid var(--line);color:var(--txt)}
-button:hover{filter:brightness(1.1)}
-.mono{font-family:ui-monospace,Consolas,monospace}
+.btns{padding:10px 12px;display:flex;gap:8px;flex-wrap:wrap}
+.todo{padding:8px 12px;font-size:11px;color:var(--dim)}
+.todo b{color:var(--acc)}
 .chk{padding:6px 12px;font-size:11.5px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #202730}
-.chk input{width:auto}
-#sketch{padding:10px}
+.chk span{min-width:104px;color:var(--dim)}
+.chk select{flex:1}
+#sketch{padding:10px;overflow:auto}
+.badhint{color:var(--bad);font-size:11px;padding:0 12px 8px}
 </style>
 </head>
 <body>
 <header>
   <div>
-    <h1>BED 3 WIR 房间3衣柜 · 算料预览</h1>
-    <div class="sub">订单 C28-11-01 · 图号 2-1/2-2 · 18mm E0887 爱格三防颗粒板 · 先核对细节，确认后再导出</div>
+    <h1>BED 3 WIR 房间3衣柜 · 分格选配</h1>
+    <div class="sub">订单 C28-11-01 · 18mm E0887 爱格三防板 · 逐格选配 → 实时面积 → 导出 Excel 反馈</div>
   </div>
-  <div class="sub">净面积 <span id="grand" class="big">—</span> ｜ 采购(÷<span id="rateTxt">80</span>%) <span id="buy" class="big" style="color:var(--acc)">—</span></div>
+  <div class="sub">净 <span id="grand" class="big">—</span> ｜ 采购(÷<span id="rateTxt">80</span>%) <span id="buy" class="big" style="color:var(--acc)">—</span></div>
 </header>
 
 <main>
   <div>
-    <div class="card" style="margin-bottom:12px">
-      <h2>图纸尺寸（★=关键，改一个整体重算）</h2>
+    <div class="card">
+      <h2>柜体尺寸（★关键）</h2>
       <div class="cb" id="pane"></div>
-    </div>
-
-    <div class="card" style="margin-bottom:12px">
-      <h2>待确认细节（选完自动重算）</h2>
-      <div id="choices"></div>
-      <div class="todo">这些是图纸上看不出的口径，<b>选错就多算/少算一整块板</b>。选好后点「导出 Excel」，参数与选择会一起写进说明页。</div>
+      <div class="todo">分段合计 <b id="wsum">—</b> / 总宽 <b id="wtot">—</b> <span id="whint"></span></div>
     </div>
 
     <div class="card">
-      <h2>来源</h2>
-      <div class="todo" style="border:0">
-        左：俯视 2400（100+550+866+18+866）×450<br>
-        右：立面 2000 高；左侧 550 段 = 3 个床底抽（275×3，缝 25×3）+ 上部两层开放格；右侧 2 樘推拉门 866 宽，通高；底部踢脚 120
-      </div>
+      <h2>分格选配 <button class="mini" onclick="addBay()">+ 加一格</button></h2>
+      <div id="bays"></div>
+      <div class="badhint" id="bayhint"></div>
+    </div>
+
+    <div class="card">
+      <h2>整体口径（图纸看不出，需你定）</h2>
+      <div id="choices"></div>
     </div>
   </div>
 
   <div>
-    <div class="card" style="margin-bottom:12px">
+    <div class="card">
       <h2>板件清单（实时）</h2>
-      <table id="boards">
-        <thead><tr><th>板件</th><th>宽 mm</th><th>高 mm</th><th>块数</th><th>板厚</th><th>面积 ㎡</th><th>采购 ㎡</th><th style="text-align:left">说明</th></tr></thead>
-        <tbody></tbody>
-      </table>
+      <table id="boards"><thead><tr><th>板件</th><th>位置</th><th>宽 mm</th><th>高 mm</th><th>块</th><th>厚</th><th>面积 ㎡</th><th>采购 ㎡</th></tr></thead><tbody></tbody></table>
     </div>
-
-    <div class="card" style="margin-bottom:12px">
+    <div class="card">
       <h2>按板厚汇总</h2>
       <table id="byThick"><thead><tr><th>板厚</th><th>净面积 ㎡</th><th>采购 ㎡</th><th>占比</th></tr></thead><tbody></tbody></table>
     </div>
-
     <div class="card">
-      <h2>立面示意（按实际比例，左侧 550 段）</h2>
+      <h2>立面示意（按比例）</h2>
       <div id="sketch"></div>
       <div class="btns">
-        <button onclick="exportXlsx()">导出 Excel（板件+汇总+口径）</button>
+        <button onclick="exportXlsx()">导出 Excel（含分格表，可回传给我）</button>
         <button class="ghost" onclick="resetAll()">恢复图纸原值</button>
       </div>
+      <div class="todo">Excel 里的「分格表」逐行记录 宽/上部层板/挂衣杆/抽屉数/抽面高/门类型/见光面，我读回来就能按这套再算或改。</div>
     </div>
   </div>
 </main>
@@ -102,194 +101,265 @@ button:hover{filter:brightness(1.1)}
 <script src="xlsx_lite.js"></script>
 <script>
 /* ================= 参数 ================= */
-const DEF = {
-  W:2400, D:450, H:2000, t:18, tBack:18, tDraw:16,
-  segL:550, doorW:866, midPost:18, filler:100,
-  drawers:3, dFace:275, dGap:25, dSlack:12.5, dRail:40, dCut:10,
-  shelves:2, nVdiv:2, vdivH:900, doorH:1990, kick:120, util:80
-};
-let P = Object.assign({}, DEF);
-// 待确认选项
+const DEFP = { W:2400, D:450, H:2000, t:18, tBack:18, tDraw:16,
+  kick:120, gap:3, slack:12.5, rail:40, cut:10, util:80 };
+let P = Object.assign({}, DEFP);
+
+function bay(w, shelves, hang, drawers, dFace, door, vis){
+  return { w:w, shelves:shelves, hang:hang, drawers:drawers, dFace:(dFace||275), door:door, vis:(vis||0) };
+}
+const DEFB = [
+  bay(100, 0, 0, 0, 0, "无门", 0),
+  bay(550, 2, 0, 3, 275, "无门", 0),
+  bay(866, 0, 1, 0, 0, "推拉门2", 0),
+  bay(866, 0, 1, 0, 0, "推拉门2", 0)
+];
+let B = DEFB.map(b=>Object.assign({},b));
+
+const O = { vdivMode:"full", doorH:"full", backMode:"full", topPanel:"1", fillerBoard:"0" };
 const OPT = {
-  vdivMode:  {name:"竖板高度", opts:[["900 高（客户口径）","900"],["通高（H−顶−底）","full"]], v:"900"},
-  doorMode:  {name:"推拉门高度", opts:[["通高（H−10）","full"],["只到横板（980）","980"]], v:"full"},
-  fillerUse: {name:"左端 100 段", opts:[["侧封板（按一块板算）","board"],["不算板（收口线条）","none"]], v:"none"},
-  backMode:  {name:"背板", opts:[["18mm 整面（W×H）","full"],["内嵌（内宽×内高）","inner"]], v:"full"},
-  shelfBays:{name:"层板分布", opts:[["只左 550 段（2 层）","L"],["左段 + 两个门区各 2 层","all"]], v:"L"}
+  vdivMode:{name:"竖板高度", opts:[["通高（H−顶−底）","full"],["按抽屉区 900 高","900"]]},
+  doorH:{name:"推拉门高度", opts:[["通高（H−10）","full"],["只到横档 980","980"]]},
+  backMode:{name:"背板", opts:[["18mm 整面 W×H","full"],["内嵌 内宽×内高","inner"]]},
+  topPanel:{name:"顶板", opts:[["要","1"],["不要（侧板通顶）","0"]]},
+  fillerBoard:{name:"100 左端", opts:[["算侧封板（多一块板）","1"],["不计板（收口线条）","0"]]}
 };
-const O = {vdivMode:"900", doorMode:"full", fillerUse:"none", backMode:"full", shelfBays:"L"};
+
+const DOORS = ["无门","推拉门2","平开单","平开双","空位"];
 
 /* ================= 计算 ================= */
 function calc(){
-  const {W,D,H,t,tBack,tDraw,segL,doorW,midPost,filler,drawers,dFace,dGap,dSlack,dRail,dCut,shelves,nVdiv,vdivH,doorH,kick,util} = P;
-  const innerH = H - 2*t;
-  const vh = O.vdivMode === "full" ? innerH : Math.min(vdivH, innerH);
-  const dh = O.doorMode === "full" ? (H - 10) : Math.min(+O.doorMode || (H - 10), H);
+  const {W,D,H,t,tBack,tDraw,kick,gap,slack,rail,cut} = P;
+  const hasTop = O.topPanel === "1";
+  const innerH = H - (hasTop?t:0) - t;
+  const vh = O.vdivMode === "full" ? innerH : Math.min(900, innerH);
   const rows = [];
-  const add=(nm,w,h,q,th,note)=>rows.push({nm,w:+w.toFixed(1),h:+h.toFixed(1),q,th,note});
+  const add=(nm,where,w,h,q,th)=>rows.push({nm:nm,where:where,w:+w.toFixed(1),h:+h.toFixed(1),q:q,th:th});
 
-  add("顶板", W, D, 1, t, "整块通长");
-  add("底板", W, D, 1, t, "整块通长");
-  add("侧板", D, innerH, 2, t, "端板，夹在顶底之间");
-  if(nVdiv) add("竖板", D, vh, nVdiv, t, O.vdivMode==="full" ? "通高" : "按客户：两块 900 高");
-  add("背板", O.backMode==="full"? W : W-2*t, O.backMode==="full"? H : innerH, 1, tBack, O.backMode==="full"?"18mm 整面":"内嵌");
-  if(O.fillerUse==="board") add("侧封板", filler, D, 1, t, "左端 100 收口");
+  add("顶板","柜体", W, D, hasTop?1:0, t);
+  add("底板","柜体", W, D, 1, t);
+  add("侧板","两端", D, innerH, 2, t);
+  const nPost = Math.max(B.length - 1, 0);
+  if(nPost) add("竖板", nPost+" 道隔板", D, vh, nPost, t);
+  add("背板","整面", O.backMode==="full"?W:W-2*t, O.backMode==="full"?H:innerH, 1, tBack);
+  add("踢脚","底部", W, kick, 1, t);
 
-  // 层板
-  const shW = segL - t, shD = D - tBack;
-  if(O.shelfBays==="L") add("层板", shW, shD, shelves, t, `左 ${segL} 段 ${shelves} 层`);
-  else {
-    add("层板", shW, shD, shelves, t, `左 ${segL} 段 ${shelves} 层`);
-    add("层板", doorW - t, shD, shelves*2, t, `两个门区各 ${shelves} 层`);
-  }
+  const dh = O.doorH === "full" ? (H - 10) : Math.min(980, H);
 
-  // 抽屉（左段）
-  const bw = segL - 2*dSlack, bd = D - tBack - dRail, bh = dFace - dCut;
-  const n = drawers;
-  if(n){
-    add("抽侧帮", bd, bh, 2*n, tDraw, "抽深=柜深−背板−轨道预留");
-    add("抽底板", bw - 2*tDraw, bd, n, tDraw, "");
-    add("抽后板", bw - 2*tDraw, bh, n, tDraw, "");
-    add("抽面", segL - 2*3, dFace, n, t, `床底抽 ${n} 个`);
-  }
-  add("推拉门", doorW, dh, 2, t, O.doorMode==="full" ? "通高推拉门" : "只到横板");
-  add("踢脚", W, kick, 1, t, "底座踢脚");
-  return rows;
+  B.forEach((b,i)=>{
+    const tag = "第"+(i+1)+"格";
+    const n = +b.drawers || 0;
+    const drawH = n ? (n*(+b.dFace) + (n+1)*gap) : 0;
+    const bayW = Math.max(+b.w, 0);
+    if(+b.shelves > 0) add("层板", tag+"·上部"+b.shelves+"层", bayW - t, D - tBack, +b.shelves, t);
+    if(n){
+      const bw = bayW - 2*slack, bd = D - tBack - rail, bh = (+b.dFace) - cut;
+      add("抽侧帮", tag+"·"+n+"抽", bd, bh, 2*n, tDraw);
+      add("抽底板", tag+"·"+n+"抽", bw - 2*tDraw, bd, n, tDraw);
+      add("抽后板", tag+"·"+n+"抽", bw - 2*tDraw, bh, n, tDraw);
+      add("抽面", tag+"·"+n+"抽", bayW - 2*gap, +b.dFace, n, t);
+    }
+    if(b.door === "推拉门2") add("推拉门", tag+"·2樘", bayW/2, dh, 2, t);
+    if(b.door === "平开单") add("门板", tag+"·单门", bayW - 2*gap, H - 2*gap, 1, t);
+    if(b.door === "平开双") add("门板", tag+"·对开", (bayW - 2*gap)/2, H - 2*gap, 2, t);
+    if(+b.vis) add("见光板", tag+"·见光", D, innerH, +b.vis, t);
+  });
+
+  if(O.fillerBoard === "1" && +B[0].w > 0) add("侧封板","左端 "+B[0].w, +B[0].w, D, 1, t);
+  return rows.filter(r=>r.q>0 && r.w>0 && r.h>0);
+}
+function hardware(){
+  const hw = {挂衣杆:0, 轨道:0, 门铰:0};
+  B.forEach(b=>{
+    if(+b.hang) hw.挂衣杆++;
+    if(b.door === "推拉门2") hw.轨道 += 2;
+    const n = +b.drawers||0; if(n) hw.轨道 += 0;
+    if(b.door === "平开单") hw.门铰 += 2;
+    if(b.door === "平开双") hw.门铰 += 4;
+  });
+  return hw;
 }
 
 /* ================= 渲染 ================= */
 const PARAMS = [
   ["W","总宽","mm",1],["D","柜深","mm",1],["H","柜高","mm",1],
-  ["segL","左段宽（抽屉区）","mm",1],["doorW","单樘门宽","mm",1],
-  ["drawers","抽屉数","个",0],["dFace","抽面高","mm",0],["dGap","抽屉缝","mm",0],
-  ["shelves","层板数（左段）","层",0],["nVdiv","竖板数","块",0],
   ["t","板厚","mm",0],["tBack","背板厚","mm",0],["tDraw","抽板厚","mm",0],
-  ["kick","踢脚高","mm",0],["util","板材利用率","%",0]
+  ["kick","踢脚高","mm",0],["gap","门/抽缝","mm",0],["slack","抽单侧隙","mm",0],
+  ["rail","轨道预留","mm",0],["cut","抽体高扣减","mm",0],["util","利用率","%",0]
 ];
 function renderParams(){
-  pane.innerHTML = PARAMS.map(([k,nm,u,key])=>`
-    <div><label class="${key?'key':''}">${nm}${key?'<span class="kbadge">关键</span>':''}</label>
-    <input type="number" value="${P[k]}" data-k="${k}" onchange="up('${k}',+this.value)"></div>`).join("");
+  pane.innerHTML = PARAMS.map(([k,nm,u,key])=>
+    '<div><label class="'+(key?'key':'')+'">'+nm+(key?'<span class="kbadge">关键</span>':'')+'</label>'+
+    '<input class="'+(key?'key':'')+'" type="number" value="'+P[k]+'" onchange="up(\''+k+'\',+this.value)"></div>'
+  ).join("");
 }
 function renderChoices(){
   choices.innerHTML = Object.keys(OPT).map(k=>{
-    const o=OPT[k];
-    return `<div class="chk"><span style="min-width:92px;color:var(--dim)">${o.name}</span>
-      <select onchange="O['${k}']=this.value;render()">
-        ${o.opts.map(([lab,val])=>`<option value="${val}" ${O[k]===val?'selected':''}>${lab}</option>`).join("")}
-      </select></div>`;
+    const o = OPT[k];
+    return '<div class="chk"><span>'+o.name+'</span><select onchange="O[\''+k+'\']=this.value;render()">'+
+      o.opts.map(([lab,val])=>'<option value="'+val+'" '+(O[k]===val?'selected':'')+'>'+lab+'</option>').join("")+
+      '</select></div>';
   }).join("");
+}
+function renderBays(){
+  bays.innerHTML = B.map((b,i)=>
+    '<div class="bay"><div class="top"><span class="tag">第 '+(i+1)+' 格</span>'+
+      '<span style="font-size:11px;color:var(--dim)">宽 '+b.w+' mm</span>'+
+      (B.length>1?'<button class="mini" onclick="delBay('+i+')">删</button>':'')+'</div>'+
+      '<div class="g">'+
+      '<div><label class="key">宽 (mm)</label><input class="key" type="number" value="'+b.w+'" onchange="upB('+i+',\'w\',+this.value)"></div>'+
+      '<div><label>门</label><select onchange="upB('+i+',\'door\',this.value)">'+DOORS.map(o=>'<option '+(o===b.door?'selected':'')+'>'+o+'</option>').join("")+'</select></div>'+
+      '<div><label>上部层板数</label><input type="number" value="'+b.shelves+'" min="0" onchange="upB('+i+',\'shelves\',+this.value)"></div>'+
+      '<div><label>挂衣杆</label><select onchange="upB('+i+',\'hang\',+this.value)"><option value="0" '+(!b.hang?'selected':'')+'>不要</option><option value="1" '+(b.hang?'selected':'')+'>要</option></select></div>'+
+      '<div><label>下部抽屉数</label><input type="number" value="'+b.drawers+'" min="0" onchange="upB('+i+',\'drawers\',+this.value)"></div>'+
+      '<div><label>抽面高 (mm)</label><input type="number" value="'+b.dFace+'" min="0" onchange="upB('+i+',\'dFace\',+this.value)"></div>'+
+      '<div><label>侧板见光面</label><select onchange="upB('+i+',\'vis\',+this.value)"><option value="0" '+(!b.vis?'selected':'')+'>无</option><option value="1" '+(b.vis==1?'selected':'')+'>1 面</option><option value="2" '+(b.vis==2?'selected':'')+'>2 面</option></select></div>'+
+      '</div></div>').join("");
 }
 function render(){
   const rows = calc();
   const rate = Math.max(P.util,1)/100;
-  let ta=0, rowsHtml="";
+  let ta = 0, html = "";
   rows.forEach(r=>{
-    const a = r.q*r.w*r.h/1e6; ta+=a;
-    rowsHtml += `<tr><td class="nm">${r.nm}</td><td>${r.w}</td><td>${r.h}</td><td>${r.q}</td>
-      <td>${r.th}</td><td>${a.toFixed(3)}</td><td>${(a/rate).toFixed(3)}</td>
-      <td style="text-align:left;color:var(--dim)">${r.note||""}</td></tr>`;
+    const a = r.q*r.w*r.h/1e6; ta += a;
+    html += '<tr><td class="nm">'+r.nm+'</td><td class="nm" style="color:var(--dim)">'+r.where+'</td>'+
+      '<td>'+r.w+'</td><td>'+r.h+'</td><td>'+r.q+'</td><td>'+r.th+'</td>'+
+      '<td>'+a.toFixed(3)+'</td><td>'+(a/rate).toFixed(3)+'</td></tr>';
   });
-  rowsHtml += `<tr class="sum"><td>合计</td><td></td><td></td><td></td><td></td>
-    <td>${ta.toFixed(3)}</td><td>${(ta/rate).toFixed(3)}</td><td></td></tr>`;
-  boards.tBodies[0].innerHTML = rowsHtml;
+  html += '<tr class="sum"><td>合计</td><td></td><td></td><td></td><td></td><td></td><td>'+ta.toFixed(3)+'</td><td>'+(ta/rate).toFixed(3)+'</td></tr>';
+  boards.tBodies[0].innerHTML = html;
   grand.textContent = ta.toFixed(3)+" ㎡";
   buy.textContent = (ta/rate).toFixed(3)+" ㎡";
   rateTxt.textContent = P.util;
 
-  const agg={};
-  rows.forEach(r=>{ agg[r.th]=(agg[r.th]||0)+r.q*r.w*r.h/1e6; });
+  const agg = {};
+  rows.forEach(r=>{ agg[r.th] = (agg[r.th]||0) + r.q*r.w*r.h/1e6; });
   byThick.tBodies[0].innerHTML = Object.keys(agg).sort((a,b)=>a-b).map(th=>
-    `<tr><td class="nm">${th} mm</td><td>${agg[th].toFixed(3)}</td><td>${(agg[th]/rate).toFixed(3)}</td>
-     <td>${(agg[th]/ta*100).toFixed(1)}%</td></tr>`).join("")
-    + `<tr class="sum"><td>合计</td><td>${ta.toFixed(3)}</td><td>${(ta/rate).toFixed(3)}</td><td></td></tr>`;
+    '<tr><td class="nm">'+th+' mm</td><td>'+agg[th].toFixed(3)+'</td><td>'+(agg[th]/rate).toFixed(3)+'</td><td>'+(agg[th]/ta*100).toFixed(1)+'%</td></tr>'
+  ).join("") + '<tr class="sum"><td>合计</td><td>'+ta.toFixed(3)+'</td><td>'+(ta/rate).toFixed(3)+'</td><td></td></tr>';
 
-  sketch.innerHTML = sketchSvg();
+  const ws = B.reduce((s,b)=>s+(+b.w||0),0);
+  const diff = (+P.W) - ws;
+  const postAdd = Math.max(B.length-1,0)*(+P.t);
+  wsum.textContent = ws+" mm（+竖板 "+postAdd+"）"; wtot.textContent = P.W+" mm";
+  whint.innerHTML = (Math.abs(diff) <= 3)
+    ? '<span style="color:var(--ok)"> ✓ 与总宽一致</span>'
+    : (diff > 0 && diff <= (B.length)*(+P.t)+2)
+      ? '<span style="color:var(--ok)"> ✓ 差 '+diff+' mm = 明示中梃/隔板厚（其余隔板厚已含在段宽里）</span>'
+      : '<span class="warn"> ≠ 差 '+diff+' mm（段宽没填齐，自己核对）</span>';
+
+  const hw = hardware();
+  bayhint.textContent = "五金：挂衣杆 "+hw.挂衣杆+" 根 · 轨道 "+hw.轨道+" 副 · 门铰 "+hw.门铰+" 个（不占板面积）";
+
+  sketch.innerHTML = svg();
+  localStorage.setItem("wardrobeB", JSON.stringify({P:P,B:B,O:O}));
 }
-function sketchSvg(){
-  const {W,H,segL,doorW,kick,drawers,dFace,dGap} = P;
-  const s = 300/H, w=W*s, h=H*s;
-  const x1=10,y1=10;
-  const segPx = segL*s, postPx = 18*s, doorPx = doorW*s;
-  const kickH = kick*s;
-  const dTot = drawers*(dFace*s) + (drawers+1)*(dGap*s);
-  let out = `<svg width="${w+20}" height="${h+20}" style="display:block">`;
-  out += `<rect x="${x1}" y="${y1}" width="${w}" height="${h}" fill="#1b222b" stroke="#3b82f6" stroke-width="1.5"/>`;
-  // 抽屉堆
-  let yy = y1 + h - kickH - dTot;
-  for(let i=0;i<drawers;i++){
-    out += `<rect x="${x1}" y="${yy+dGap*s}" width="${segPx}" height="${dFace*s}" fill="none" stroke="#3fb950"/>`;
-    out += `<text x="${x1+6}" y="${yy+dGap*s+dFace*s/2+4}" fill="#8b98a5" font-size="9">床底抽${i+1}</text>`;
-    yy += (dGap*s + dFace*s);
-  }
-  // 左段层板
-  const leftTop = y1;
-  const leftBot = y1 + h - kickH - dTot;
-  const nSh = Math.max(P.shelves,1);
-  for(let i=1;i<=P.shelves;i++){
-    const yl = leftBot - (leftBot-leftTop)/nSh*i;
-    out += `<line x1="${x1}" y1="${yl}" x2="${x1+segPx}" y2="${yl}" stroke="#f0a63c" stroke-width="1"/>`;
-  }
-  out += `<line x1="${x1+segPx}" y1="${y1}" x2="${x1+segPx}" y2="${y1+h}" stroke="#f0a63c" stroke-width="1"/>`;
-  // 门区
-  const dx = x1 + segPx + postPx;
-  out += `<line x1="${dx-postPx}" y1="${y1}" x2="${dx-postPx}" y2="${y1+h}" stroke="#f0a63c" stroke-width="1"/>`;
-  out += `<rect x="${dx}" y="${y1}" width="${doorPx}" height="${h-kickH}" fill="#20262e" stroke="#8b98a5" stroke-dasharray="3 3"/>`;
-  out += `<rect x="${dx+doorPx}" y="${y1}" width="${doorPx}" height="${h-kickH}" fill="#20262e" stroke="#8b98a5" stroke-dasharray="3 3"/>`;
-  out += `<text x="${dx+doorPx/2-18}" y="${y1+h/2}" fill="#8b98a5" font-size="10">推拉门 1</text>`;
-  out += `<text x="${dx+doorPx*1.5-18}" y="${y1+h/2}" fill="#8b98a5" font-size="10">推拉门 2</text>`;
-  // 踢脚
-  out += `<rect x="${x1}" y="${y1+h-kickH}" width="${w}" height="${kickH}" fill="#2a333d"/>`;
-  out += `<text x="${x1+w/2-14}" y="${y1+h-kickH/2+4}" fill="#8b98a5" font-size="9">踢脚 ${kick}</text>`;
-  out += `</svg>`;
+function svg(){
+  const H = +P.H, W = +P.W, kick = +P.kick, t = +P.t;
+  const s = 300/H, w = W*s, h = H*s, x0 = 10, y0 = 10;
+  let out = '<svg width="'+(w+20)+'" height="'+(h+30)+'">';
+  out += '<rect x="'+x0+'" y="'+y0+'" width="'+w+'" height="'+h+'" fill="#1b222b" stroke="#3b82f6" stroke-width="1.5"/>';
+  let cx = x0;
+  B.forEach((b,i)=>{
+    const bw = (+b.w)*s;
+    if(i>0){ out += '<line x1="'+cx+'" y1="'+y0+'" x2="'+cx+'" y2="'+(y0+h)+'" stroke="#f0a63c" stroke-width="1"/>'; cx += t*s; }
+    const n = +b.drawers||0;
+    const dH = n ? (n*(+b.dFace) + (n+1)*(+P.gap))*s : 0;
+    const topY = y0, botY = y0 + h - kick*s;
+    const upH = Math.max(botY - topY - dH, 0);
+    for(let k=1;k<=+b.shelves;k++){
+      const yy = topY + upH/(+b.shelves)*k;
+      out += '<line x1="'+cx+'" y1="'+yy+'" x2="'+(cx+bw)+'" y2="'+yy+'" stroke="#f0a63c" stroke-width="1"/>';
+    }
+    if(+b.hang) out += '<line x1="'+(cx+4)+'" y1="'+(topY+12)+'" x2="'+(cx+bw-4)+'" y2="'+(topY+12)+'" stroke="#8b98a5" stroke-width="2" stroke-dasharray="4 3"/>';
+    let yy = botY - dH;
+    for(let k=0;k<n;k++){
+      yy += (+P.gap)*s;
+      out += '<rect x="'+cx+'" y="'+yy+'" width="'+bw+'" height="'+((+b.dFace)*s)+'" fill="none" stroke="#3fb950"/>';
+      yy += (+b.dFace)*s;
+    }
+    if(b.door === "推拉门2"){
+      out += '<rect x="'+cx+'" y="'+topY+'" width="'+(bw/2)+'" height="'+(botY-topY)+'" fill="#20262e" stroke="#8b98a5" stroke-dasharray="3 3"/>';
+      out += '<rect x="'+(cx+bw/2)+'" y="'+topY+'" width="'+(bw/2)+'" height="'+(botY-topY)+'" fill="#20262e" stroke="#8b98a5" stroke-dasharray="3 3"/>';
+    }
+    if(b.door === "平开单" || b.door === "平开双"){
+      const k = b.door === "平开双" ? 2 : 1;
+      for(let d=0; d<k; d++)
+        out += '<rect x="'+(cx+bw/k*d)+'" y="'+topY+'" width="'+(bw/k-1)+'" height="'+(h)+'" fill="#20262e" stroke="#8b98a5" stroke-dasharray="3 3"/>';
+    }
+    out += '<text x="'+(cx+bw/2-10)+'" y="'+(y0+h+14)+'" fill="#8b98a5" font-size="9">'+b.w+'</text>';
+    cx += bw;
+  });
+  out += '<rect x="'+x0+'" y="'+(y0+h-kick*s)+'" width="'+w+'" height="'+(kick*s)+'" fill="#2a333d"/>';
+  out += '</svg>';
   return out;
 }
 
-function up(k,v){ P[k]=v; render(); localStorage.setItem("wardrobeP",JSON.stringify({P,O})); }
-function resetAll(){ P=Object.assign({},DEF); Object.keys(O).forEach(k=>O[k]=OPT[k].opts[0][1]); render(); localStorage.setItem("wardrobeP",JSON.stringify({P,O})); }
+function up(k,v){ P[k]=v; render(); }
+function upB(i,k,v){ B[i][k]=v; if(k==="drawers" && !(+v)) B[i].dFace = B[i].dFace; render(); }
+function addBay(){ B.push(bay(400,1,0,0,275,"无门",0)); render(); renderBays(); }
+function delBay(i){ if(B.length>1){ B.splice(i,1); renderBays(); render(); } }
+function resetAll(){
+  P = Object.assign({}, DEFP);
+  B = DEFB.map(b=>Object.assign({},b));
+  Object.assign(O,{vdivMode:"full",doorH:"full",backMode:"full",topPanel:"1",fillerBoard:"0"});
+  renderParams(); renderBays(); render();
+}
 
 /* ================= 导出 ================= */
 function exportXlsx(){
-  const rows = calc(), rate = Math.max(P.util,1)/100;
-  const S2=2,S3=3,S4=4,S5=5;
-  const head = ["序号","板件","宽 mm","高 mm","块数","板厚 mm","面积 ㎡","采购面积 ㎡","说明"].map(v=>({v,s:1}));
-  const body = rows.map((r,i)=>[{v:i+1,s:S2},{v:r.nm,s:S2},{v:r.w,s:S2},{v:r.h,s:S2},{v:r.q,s:S2},
-    {v:r.th,s:S2},{v:+(r.q*r.w*r.h/1e6).toFixed(4),s:S3},{v:+(r.q*r.w*r.h/1e6/rate).toFixed(4),s:S3},{v:r.note||"",s:S2}]);
-  const ta = rows.reduce((s,r)=>s+r.q*r.w*r.h/1e6,0);
-  body.push([{v:"",s:S5},{v:"合计",s:S5},{v:"",s:S5},{v:"",s:S5},{v:"",s:S5},{v:"",s:S5},
-    {v:+ta.toFixed(4),s:S5},{v:+(ta/rate).toFixed(4),s:S5},{v:"",s:S5}]);
+  const rows = calc(), rate = Math.max(P.util,1)/100, S2=2, S3=3, S5=5;
+  const ta = rows.reduce((s,r)=>s+r.q*r.w*r.h/1e6, 0);
 
-  const agg={};
-  rows.forEach(r=>{ agg[r.th]=(agg[r.th]||0)+r.q*r.w*r.h/1e6; });
-  const th = [["板厚 mm","净面积 ㎡","采购面积 ㎡","占比"].map(v=>({v,s:1}))]
-    .concat(Object.keys(agg).sort((a,b)=>a-b).map(k=>[{v:+k,s:S2},{v:+agg[k].toFixed(4),s:S3},{v:+(agg[k]/rate).toFixed(4),s:S3},{v:+(agg[k]/ta).toFixed(4),s:S3,fmt:"0.0%"}]));
+  const head = ["序号","板件","位置","宽 mm","高 mm","块数","板厚","面积 ㎡","采购 ㎡"].map(v=>({v:v,s:1}));
+  const body = rows.map((r,i)=>[{v:i+1,s:S2},{v:r.nm,s:S2},{v:r.where,s:S2},{v:r.w,s:S2},{v:r.h,s:S2},
+    {v:r.q,s:S2},{v:r.th,s:S2},{v:+(r.q*r.w*r.h/1e6).toFixed(4),s:S3},{v:+(r.q*r.w*r.h/1e6/rate).toFixed(4),s:S3}]);
+  body.push([{v:"",s:S5},{v:"合计",s:S5},{v:"",s:S5},{v:"",s:S5},{v:"",s:S5},{v:"",s:S5},{v:"",s:S5},
+    {v:+ta.toFixed(4),s:S5},{v:+(ta/rate).toFixed(4),s:S5}]);
 
-  const info = [["项","内容"].map(v=>({v,s:1})),
-    ...([
-      ["项目","BED 3 WIR 房间3衣柜（Akira INTERIOR）"],
-      ["订单","C28-11-01 / 图号 2-1·2-2 / 版本 A/0"],
-      ["外形",`${P.W} × ${P.D} × ${P.H} mm（左段 ${P.segL}，门 ${P.doorW}×2，中梃 ${P.midPost}，左端 ${P.filler}）`],
-      ["板材","18mm E0887 零度爱格三胺防潮颗粒板；抽体 16mm"],
-      ["确认项",`竖板=${O.vdivMode==="full"?"通高":"900 高"}；推拉门=${O.doorMode==="full"?"通高":"只到横板"}；左端100=${O.fillerUse==="board"?"侧封板":"不计板"}；背板=${O.backMode==="full"?"18整面":"内嵌"}；层板=${O.shelfBays==="L"?"只左段":"左段+门区"}；利用率 ${P.util}%`],
-      ["合计",`净 ${ta.toFixed(3)} ㎡；采购 ${(ta/rate).toFixed(3)} ㎡`]
-    ].map(([k,v])=>[{v:k,s:S2},{v:v,s:S2}]))];
+  const bayHead = ["格号","宽 mm","上部层板数","挂衣杆","抽屉数","抽面高","门类型","侧板见光面"].map(v=>({v:v,s:1}));
+  const bayBody = B.map((b,i)=>[{v:i+1,s:S2},{v:+b.w,s:S2},{v:+b.shelves||0,s:S2},{v:+b.hang?"要":"不要",s:S2},
+    {v:+b.drawers||0,s:S2},{v:+b.dFace||0,s:S2},{v:b.door,s:S2},{v:+b.vis||0,s:S2}]);
+  bayBody.push([{v:"合计",s:S5},{v:B.reduce((s,b)=>s+(+b.w||0),0),s:S5},{v:"",s:S5},{v:"",s:S5},{v:"",s:S5},{v:"",s:S5},{v:"",s:S5},{v:"",s:S5}]);
+
+  const agg = {};
+  rows.forEach(r=>{ agg[r.th] = (agg[r.th]||0) + r.q*r.w*r.h/1e6; });
+  const th = [["板厚","净面积 ㎡","采购 ㎡","占比"].map(v=>({v:v,s:1}))].concat(
+    Object.keys(agg).sort((a,b)=>a-b).map(k=>[{v:+k,s:S2},{v:+agg[k].toFixed(4),s:S3},{v:+(agg[k]/rate).toFixed(4),s:S3},{v:+(agg[k]/ta).toFixed(4),s:S3}]));
+
+  const hw = hardware();
+  const info = [["项","内容"].map(v=>({v:v,s:1}))].concat([
+    ["项目","BED 3 WIR 房间3衣柜（Akira INTERIOR）· 订单 C28-11-01"],
+    ["外形",P.W+" × "+P.D+" × "+P.H+" mm"],
+    ["口径","竖板="+(O.vdivMode==="full"?"通高":"900 高")+"；推拉门="+(O.doorH==="full"?"通高":"只到980")+
+      "；背板="+(O.backMode==="full"?"18整面":"内嵌")+"；顶板="+(O.topPanel==="1"?"要":"不要")+
+      "；100左端="+(O.fillerBoard==="1"?"算侧封板":"不计板")+"；利用率 "+P.util+"%"],
+    ["五金","挂衣杆 "+hw.挂衣杆+" 根；轨道 "+hw.轨道+" 副；门铰 "+hw.门铰+" 个"],
+    ["合计","净 "+ta.toFixed(3)+" ㎡；采购 "+(ta/rate).toFixed(3)+" ㎡"],
+    ["反馈","把本文件发回即可：分格表按行读（宽/层板/挂衣杆/抽屉/抽面高/门类型/见光面）"]
+  ].map(([k,v])=>[{v:k,s:S2},{v:v,s:S2}]));
 
   const u8 = XLSXLite.build([
-    {name:"板件清单", cols:[6,14,9,9,7,9,11,14,44], rows:[head,...body], freeze:1},
-    {name:"按板厚", cols:[10,12,14,10], rows:th, freeze:1},
-    {name:"图纸与口径", cols:[12,90], rows:info, freeze:1}
+    {name:"板件清单", cols:[6,14,20,9,9,7,8,11,11], rows:[head].concat(body), freeze:1},
+    {name:"分格表", cols:[6,10,12,10,9,10,12,13], rows:[bayHead].concat(bayBody), freeze:1},
+    {name:"按板厚", cols:[8,12,12,10], rows:th, freeze:1},
+    {name:"口径", cols:[10,100], rows:info, freeze:1}
   ]);
-  const b=new Blob([u8],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
-  const a=document.createElement("a"); a.href=URL.createObjectURL(b);
-  a.download="衣柜算料_房间3.xlsx"; a.click();
+  const b = new Blob([u8],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(b);
+  a.download = "衣柜算料_房间3_选配.xlsx"; a.click();
 }
 
 /* ================= 启动 ================= */
 try{
-  const sv = JSON.parse(localStorage.getItem("wardrobeP")||"null");
-  if(sv){ P=Object.assign({},DEF,sv.P||{}); Object.assign(O,sv.O||{}); }
+  const sv = JSON.parse(localStorage.getItem("wardrobeB")||"null");
+  if(sv){
+    P = Object.assign({}, DEFP, sv.P||{});
+    B = (sv.B && sv.B.length ? sv.B : DEFB).map(b=>Object.assign({},b));
+    Object.assign(O, sv.O||{});
+  }
 }catch(e){}
-renderParams(); renderChoices(); render();
+renderParams(); renderChoices(); renderBays(); render();
 </script>
 </body>
 </html>
