@@ -264,8 +264,8 @@ function parts(c){
     push("corner", D,H,cnSide);
     push("top",    W1+B-C, D, 1);
     push("bottom", W1+B-C, D, 1);
-    if(cnBack>=2){ push("back",W1,innerH,1); push("back",Math.max(B-ov,0),innerH,1); }
-    else         push("back",W1+B-C,innerH,1);
+    if(cnBack>=2){ push("back",W1,innerH,1); push("back",Math.max(B-C-ov,0),innerH,1); }
+    else         push("back",Math.max(W1+B-C-ov,0),innerH,1);
     if(c.form!=="吊柜") push("kick",W1+B-C,V("K"),1);
   }else{
     // 普通柜 / 转角直角柜 / 分段柜 共用骨架（顶底板通长，侧板夹中间）
@@ -316,15 +316,16 @@ function parts(c){
   }
   const isL = c.conf_==="转角" && (c.ct||"L")==="L";
   if(c.doors!=="无门" && !isL && c.conf_!=="抽屉" && !(Array.isArray(c.segs)&&c.segs.length)){   // 抽屉柜正面是逐块抽面板，不算整块门板；L 柜门板在转角分支里算
+    const segN = c.form==="高柜" ? 2 : 1;            // 高柜上下两段，门扇翻倍
     const dh=(c.form==="高柜"?H/2:H)-V("G");
     const nLeaf = c.doors==="对开" ? 2 : 1;          // 对开=两扇，总宽不变，逐扇出明细
     const leafW = Math.max((W-V("G"))/nLeaf,0);
-    push(did, leafW, dh, nLeaf);
+    push(did, leafW, dh, nLeaf*segN);
     // 转角直柜：可逐扇指定哪一扇要见光（每扇门背面加见光面）
     let dv = (+c.dv1?1:0) + (+c.dv2?1:0);
     if(nLeaf===1) dv = +c.dv1?1:0;
     dv = Math.min(dv, nLeaf);
-    if(dv>0) push("vis", leafW, dh, dv);
+    if(dv>0) push("vis", leafW, dh, dv*segN);
   }
   if(+c.vis>0) push("vis",D,H,+c.vis);   // 见光板：外露侧板面，不含门板
   // 门板最低计面积：该柜门板面积合计不足门槛时，补一行差额（计价行，不是板件，无尺寸）
@@ -639,7 +640,7 @@ function exportJSON(){
 }
 renderParams(); render();
 </script>
-<script src="xlsx_lite.js?v=20261120d"></script>
-<script src="export_xlsx.js?v=20261120d"></script>
+<script src="xlsx_lite.js?v=20261120g"></script>
+<script src="export_xlsx.js?v=20261120g"></script>
 </body>
 </html>
