@@ -255,17 +255,16 @@ function parts(c){
   if(c.conf_==="空位"){
     push("side",D,H,2); push("back",innerW,innerH,1);
   }else if(c.conf_==="转角" && (c.ct||"L")==="L"){
-    const G=V("G"), C=Math.min(D,W), W1=W, W2in=Math.max(+c.leg2||0,0);
-    const B = (+V("cnW2Ref")===1) ? Math.max(W2in,C) : C+W2in;
-    const aL=Math.max(W1-C,0), bL=Math.max(B-C,0);
-    const cnSide=+V("cnSide")||1, cnBack=+V("cnBack")||1, ov=+V("cnOver")||0;
+    // L 柜 = 矩形掏口：矩形 W1 × W2（W2 就是矩形深度），掏口当废料按整块料算
+    const G=V("G"), W1=W, W2=Math.max(+c.leg2||0,0);
+    const cnSide=+V("cnSide")||1, cnBack=+V("cnBack")||1;
     push("side",   D,H,2);
-    push("corner", D,H,cnSide);
-    push("top",    W1+B-C, D, 1);
-    push("bottom", W1+B-C, D, 1);
-    if(cnBack>=2){ push("back",W1,innerH,1); push("back",Math.max(B-C-ov,0),innerH,1); }
-    else         push("back",Math.max(W1+B-C-ov,0),innerH,1);
-    if(c.form!=="吊柜") push("kick",W1+B-C,V("K"),1);
+    push("corner", D,H,cnSide);           // 掏口内侧板
+    push("top",    W1,W2,1);
+    push("bottom", W1,W2,1);
+    if(cnBack>=2){ push("back",W1,H,1); push("back",W2,H,1); }   // 两块背板：各沿一面通高
+    else         push("back",W1+W2,H,1);
+    if(c.form!=="吊柜"){ push("kick",W1,V("K"),1); push("kick",W2,V("K"),1); }
   }else{
     // 普通柜 / 转角直角柜 / 分段柜 共用骨架（顶底板通长，侧板夹中间）
     const segs=Array.isArray(c.segs)?c.segs:[], G=V("G");
@@ -640,7 +639,7 @@ function exportJSON(){
 }
 renderParams(); render();
 </script>
-<script src="xlsx_lite.js?v=20261120o"></script>
-<script src="export_xlsx.js?v=20261120o"></script>
+<script src="xlsx_lite.js?v=20261120p"></script>
+<script src="export_xlsx.js?v=20261120p"></script>
 </body>
 </html>
