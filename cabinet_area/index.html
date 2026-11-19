@@ -117,7 +117,6 @@ const PART = [
   {id:"dback", name:"抽后板",      t:16, price:0},
 ];
 const CRAFT = [
-  {id:"topOn", name:"地柜顶板", v:1, u:"", opts:[0,1], lbls:["不要","要"], grp:"bd"},
   {id:"bsBoard", name:"拉篮柜加层板",  v:0, u:"", opts:[0,1], lbls:["不要","要一块"], grp:"dr"},
   {id:"dMinFace",  name:"抽屉最小面板高",  v:100, u:"mm", grp:"dr"},
   {id:"spMinGap",  name:"层板最小间距",    v:150, u:"mm", grp:"dr"},
@@ -252,7 +251,7 @@ function parts(c){
   const push=(id,w,h,q=1,nm,role)=>{ if(w>1e-9&&h>1e-9&&q>0) out.push({id,nm,role,w:+w.toFixed(1),h:+h.toFixed(1),q,area:q*w*h/1e6}) };
   const innerW=Math.max(W-2*T("side"),0);
   const innerD=Math.max(D-T("back"),0);
-  const tTop = (c.form==="吊柜" || +V("topOn")===1) ? T("top") : 0;    // 地柜顶板可不要
+  const tTop = (c.form==="吊柜" || c.top!==0) ? T("top") : 0;    // 每柜可选"顶板要/不要"（吊柜恒有）
   const innerH=Math.max(H-tTop-T("bottom"),0);
 
   if(c.conf_==="空位"){
@@ -489,6 +488,7 @@ function render(){
                 <button class="mini" style="margin-left:6px" onclick="segEven(${i})">均分高度</button></div>`;
             }
           }
+          if(!free && c.form!=="吊柜") h+=`<div><label>顶板</label><select onchange="up(${i},'top',+this.value)">${["要","不要"].map((o,k)=>`<option value="${k?0:1}" ${(c.top===0?0:1)===(k?0:1)?"selected":""}>${o}</option>`).join("")}</select></div>`;   // 每柜单独设：不要顶板时侧板/背板通到顶
           h+=`<div><label>宽度 W (mm)</label><input type="number" value="${c.w}" onchange="up(${i},'w',+this.value)"></div>`;
           if(canDoor && !(c.segs&&c.segs.length)) h+=`<div><label>门板</label><select onchange="up(${i},'doors',this.value)">${doorsOf(c).map(o=>`<option ${o===c.doors?"selected":""}>${o}</option>`).join("")}</select></div>`;
           if(hasDoor||draw||(c.segs&&c.segs.length)) h+=`<div><label>面板类型${c.segs&&c.segs.length?"（各段共用）":""}</label><select onchange="up(${i},'dt',this.value)">${DT.map(o=>`<option ${o.k===(c.dt||"平板")?"selected":""}>${o.k}</option>`).join("")}</select></div>`;
@@ -654,7 +654,7 @@ function exportJSON(){
 }
 renderParams(); render();
 </script>
-<script src="xlsx_lite.js?v=20261120y"></script>
-<script src="export_xlsx.js?v=20261120y"></script>
+<script src="xlsx_lite.js?v=20261121a"></script>
+<script src="export_xlsx.js?v=20261121a"></script>
 </body>
 </html>
