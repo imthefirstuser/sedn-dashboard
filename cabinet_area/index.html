@@ -112,7 +112,7 @@ const PART = [
   {id:"vdiv",  name:"竖板",        t:18, price:0},
   {id:"corner",name:"转角内侧板",  t:18, price:0},
   {id:"kick",  name:"踢脚板",      t:18, price:0},
-  {id:"back",  name:"背板",        t:9,  price:0},
+  {id:"back",  name:"背板",        t:18, price:0},
   {id:"vis",   name:"见光板",      t:18, price:0},
   {id:"door_p",name:"门板-平板",  t:18, price:0},
   {id:"door_m",name:"门板-造型",  t:18, price:0},
@@ -123,6 +123,7 @@ const PART = [
 ];
 const CRAFT = [
   {id:"bsBoard", name:"拉篮柜加层板",  v:0, u:"", opts:[0,1], lbls:["不要","要一块"], grp:"dr"},
+  {id:"util",    name:"板材利用率",    v:80, u:"%", grp:"bd"},
   {id:"dMinFace",  name:"抽屉最小面板高",  v:100, u:"mm", grp:"dr"},
   {id:"spMinGap",  name:"层板最小间距",    v:150, u:"mm", grp:"dr"},
   {id:"bayMin",    name:"最小格宽",        v:200, u:"mm", grp:"dr"},
@@ -391,6 +392,11 @@ function renderParams(){
       `<select style="width:150px;padding:2px" onchange="setV('craft',${idx},+this.value)">${o.opts.map((v,k)=>`<option value="${v}" ${v==o.v?"selected":""}>${o.lbls?o.lbls[k]:v}</option>`).join("")}</select>` +
       `</td><td></td></tr>`;
   });
+  ST.craft.filter(o=>!o.opts && o.grp==="bd").forEach(o=>{
+    const idx=ST.craft.indexOf(o);
+    r += `<tr><td>${o.name}<span class="badge">${o.u||""}</span></td>
+      <td><input class="n" type="number" step="1" value="${o.v}" onchange="setV('craft',${idx},+this.value)"></td><td></td></tr>`;
+  });
   r += `<tr class="grp"><td colspan="3">抽屉工艺（行业默认）</td></tr>`;
   ST.craft.filter(o=>!o.opts && !o.id.startsWith("cn") && !o.grp).forEach((o,i)=> r += `<tr><td>${o.name}<span class="badge">${o.u}</span></td>
     <td><input class="n" type="number" step="0.5" value="${o.v}" onchange="setV('craft',${ST.craft.indexOf(o)},+this.value)"></td><td></td></tr>`);
@@ -563,6 +569,9 @@ function render(){
   const hm = hq*(+V("hjPrice")) + rq*(+V("rlPrice"));
   rows+=`<tr><td>门铰</td><td>${hq} 件</td><td>${+V("hjPrice")?("¥"+(hq*+V("hjPrice")).toFixed(0)):"—"}</td></tr>`;
   rows+=`<tr><td>轨道</td><td>${rq} 副</td><td>${+V("rlPrice")?("¥"+(rq*+V("rlPrice")).toFixed(0)):"—"}</td></tr>`;
+  const util=Math.max(+V("util")||100,1);
+  rows+=`<tr><td><b>净展开面积</b></td><td><b>${ta.toFixed(3)}</b></td><td></td></tr>`;
+  rows+=`<tr><td>采购面积（÷${util}% 利用率）</td><td>${(ta*100/util).toFixed(3)}</td><td></td></tr>`;
   totals.innerHTML=`<tr><th>板件 / 板厚</th><th>㎡</th><th>金额</th></tr>`+rows;
   grand.textContent=ta.toFixed(3)+" ㎡";
   money.textContent=(tm+hm)>0? "¥"+(tm+hm).toFixed(0) : "填单价后显示";
@@ -700,7 +709,7 @@ function exportJSON(){
 }
 renderParams(); render();
 </script>
-<script src="xlsx_lite.js?v=20261121k"></script>
-<script src="export_xlsx.js?v=20261121k"></script>
+<script src="xlsx_lite.js?v=20261121n"></script>
+<script src="export_xlsx.js?v=20261121n"></script>
 </body>
 </html>

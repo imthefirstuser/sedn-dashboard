@@ -22,6 +22,7 @@
     ["抽屉单侧抽隙", () => V("dGap"), "mm", "三节轨常规"],
     ["抽屉轨道预留", () => V("dRail"), "mm", "抽深=柜深-背板-此项"],
     ["抽体高扣减", () => V("dCut"), "mm", "抽体高=面板高-此项"],
+    ["板材利用率", () => V("util"), "%", "净展开面积 ÷ 利用率 = 采购面积（缺省 80%）"],
     ["拉篮柜加层板", () => V("bsBoard"), "0/1", "0=拉篮柜不加板（默认） 1=每个拉篮格加一块层板"],
     ["抽屉最小面板高", () => V("dMinFace"), "mm", "约束：抽屉数上限=按此值算（不影响算料）"],
     ["层板最小间距", () => V("spMinGap"), "mm", "约束：层板数上限=按此值算（不影响算料）"],
@@ -225,7 +226,7 @@
     });
     const last = ro - 1;
 
-    const sum = [["板件", "板厚", "面积㎡", "单价元/㎡", "金额元"].map(v => ({ v, s: 1 }))];
+    const sum = [["板件", "板厚", "面积㎡", "单价元/㎡", "金额元", "采购面积㎡（÷利用率）"].map(v => ({ v, s: 1 }))];
     const listLast = list.length + 1;
     UNIT_PRICE.forEach((p, i) => {
       const r = i + 2;
@@ -237,10 +238,11 @@
         { f: `IFERROR(INDEX(逐柜明细!$C$2:$C$${last},MATCH(A${r},逐柜明细!$B$2:$B$${last},0)),"")`, s: S2 },
         { f: areaF, s: S3 },
         { f: `IFERROR(INDEX(逐柜明细!$H$2:$H$${last},MATCH(A${r},逐柜明细!$B$2:$B$${last},0)),"")`, s: S4 },
-        { f: `IFERROR(C${r}*D${r},0)`, s: S4 }]);
+        { f: `IFERROR(C${r}*D${r},0)`, s: S4 },
+        { f: `IFERROR(C${r}*100/板材利用率,0)`, s: S3 }]);
     });
     const rt = UNIT_PRICE.length + 2;
-    sum.push([{ v: "合计", s: S5 }, "", { f: `SUM(C2:C${rt - 1})`, s: S5 }, "", { f: `SUM(E2:E${rt - 1})`, s: S5 }]);
+    sum.push([{ v: "合计", s: S5 }, "", { f: `SUM(C2:C${rt - 1})`, s: S5 }, "", { f: `SUM(E2:E${rt - 1})`, s: S5 }, { f: `SUM(F2:F${rt - 1})`, s: S5 }]);
 
     const noteRows = [["项", "算法（全部写成公式，改参数自动重算）"].map(v => ({ v, s: 1 }))]
       .concat(NOTES.map(n => [{ v: n[0], s: S2 }, { v: n[1], s: S6 }]));
@@ -254,7 +256,7 @@
       { name: "参数", cols: [6, 20, 12, 8, 46], rows: ps.rows },
       { name: "柜体清单", cols: [6, 12, 9, 8, 9, 8, 9, 8, 8, 7, 7, 9, 12, 8, 8, 11, 12, 8, 9, 12, 9, 9, 9, 10], rows: listRows, freeze: 1 },
       { name: "逐柜明细", cols: [6, 16, 8, 10, 10, 7, 10, 10, 10, 40], rows: det, freeze: 1 },
-      { name: "板材汇总", cols: [16, 8, 12, 12, 12], rows: sum },
+      { name: "板材汇总", cols: [16, 8, 12, 12, 12, 18], rows: sum },
       { name: "五金汇总", cols: [10, 10, 8, 10, 12], rows: hw },
       { name: "算法说明", cols: [20, 110], rows: noteRows },
     ], { definedNames: dn });
@@ -297,14 +299,16 @@
 
     const order = UNIT_PRICE.slice();
     const keys = Object.keys(agg).sort((x, y) => order.indexOf(agg[x].nm) - order.indexOf(agg[y].nm));
-    const sum = [["板件", "板厚", "面积㎡", "单价元/㎡", "金额元"].map(v => ({ v, s: 1 }))];
+    const sum = [["板件", "板厚", "面积㎡", "单价元/㎡", "金额元", "采购面积㎡（÷利用率）"].map(v => ({ v, s: 1 }))];
     let ta = 0, tm = 0;
     keys.forEach(k => {
       const g = agg[k]; ta += g.a; tm += g.a * g.pr;
       sum.push([{ v: g.nm, s: S2 }, { v: g.t, s: S2 }, { v: +g.a.toFixed(4), s: S3 },
-        { v: g.pr, s: S4 }, { v: +(g.a * g.pr).toFixed(2), s: S4 }]);
+        { v: g.pr, s: S4 }, { v: +(g.a * g.pr).toFixed(2), s: S4 },
+        { v: +(g.a * 100 / Math.max(+V("util") || 100, 1)).toFixed(4), s: S3 }]);
     });
-    sum.push([{ v: "合计", s: S5 }, "", { v: +ta.toFixed(4), s: S5 }, "", { v: +tm.toFixed(2), s: S5 }]);
+    sum.push([{ v: "合计", s: S5 }, "", { v: +ta.toFixed(4), s: S5 }, "", { v: +tm.toFixed(2), s: S5 },
+      { v: +(ta * 100 / Math.max(+V("util") || 100, 1)).toFixed(4), s: S5 }]);
 
     const noteRows = [["项", "算法"].map(v => ({ v, s: 1 }))]
       .concat(NOTES.map(n => [{ v: n[0], s: S2 }, { v: n[1], s: S6 }]));
@@ -318,7 +322,7 @@
       { name: "参数", cols: [6, 20, 12, 8, 46], rows: ps.rows },
       { name: "柜体清单", cols: [6, 12, 9, 8, 9, 8, 9, 8, 8, 7, 7, 9, 12, 8, 8, 11, 12, 8, 9, 12, 9, 9, 9, 10], rows: listRows, freeze: 1 },
       { name: "逐柜明细", cols: [6, 16, 8, 10, 10, 7, 10, 10, 10, 40], rows: det, freeze: 1 },
-      { name: "板材汇总", cols: [16, 8, 12, 12, 12], rows: sum },
+      { name: "板材汇总", cols: [16, 8, 12, 12, 12, 18], rows: sum },
       { name: "五金汇总", cols: [10, 10, 8, 10, 12], rows: hw },
       { name: "算法说明", cols: [20, 110], rows: noteRows },
     ], { definedNames: dn });
