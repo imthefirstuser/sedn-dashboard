@@ -124,7 +124,6 @@ const CRAFT = [
   {id:"cnSide",   name:"转角内侧板块数", v:1, u:"块", opts:[1,2]},
   {id:"cnBack",   name:"转角背板片数",   v:2, u:"片", opts:[1,2]},
   {id:"cnOver",   name:"转角背板重叠扣减", v:18, u:"mm"},
-  {id:"cnDoor",   name:"转角方格门",     v:0, u:"", opts:[0,1], lbls:["无门(盲角)","单门"]},
   {id:"cnW2Ref",  name:"W2 计量起点",    v:0, u:"", opts:[0,1], lbls:["转角方格外端(净长)","相邻墙内角(含方格)"]},
   {id:"dmP",      name:"门板最低计面积·平板", v:0.15, u:"㎡", grp:"dm"},
   {id:"dmM",      name:"门板最低计面积·造型", v:0.30, u:"㎡", grp:"dm"},
@@ -242,11 +241,6 @@ function parts(c){
     if(cnBack>=2){ push("back",W1,innerH,1); push("back",Math.max(B-ov,0),innerH,1); }
     else         push("back",W1+B-C,innerH,1);
     if(c.form!=="吊柜") push("kick",W1+B-C,V("K"),1);
-    if(c.doors!=="无门"){
-      push(did,Math.max(aL-G,0),H-G,1);
-      push(did,Math.max(bL-G,0),H-G,1);
-      if(+V("cnDoor")===1) push(did,Math.max(C-G,0),H-G,1);
-    }
   }else{
     // 普通柜骨架（2026-11-19 用户确认）：顶底板通长通深 = W×D，侧板夹在中间（高=H−顶−底）
     const Tv=T("vdiv"), nv=Math.max(+c.vdiv||0,0), bays=nv+1;
@@ -331,6 +325,7 @@ function setT(i,v){ ST.part[i].t=v; saveST(); render() }
 function setPrice(i,v){ ST.part[i].price=v; saveST(); render() }
 
 function render(){
+  S.forEach((c,i)=>norm(i));
   const G=V("GB"), X0=40, SC=0.185, hG=760*SC, hK=120*SC, gbW=G*SC;
   const yUpp=26, yMid=yUpp+1350*SC, yGeo=yMid+750*SC, yK=yGeo+hG;
   const y2Upp=yK+hK+74, y2Mid=y2Upp+1350*SC, y2Geo=y2Mid+750*SC, y2K=y2Geo+hG;
@@ -394,22 +389,30 @@ function render(){
         ${c.label?`<span class="tag ${c.cls}">${c.label}</span>`:`<span class="tag ${c.cls}">${c.conf}</span>`}
         <span style="margin-left:auto;color:#7dd3a0" class="area">${tot.toFixed(3)} ㎡</span></div>
       <div class="cb">
-        <div><label>柜体形态</label><select onchange="up(${i},'form',this.value)">${FORM.map(o=>`<option ${o===c.form?"selected":""}>${o}</option>`).join("")}</select></div>
-        <div><label>内部构型</label><select onchange="up(${i},'conf_',this.value)">${CONF.map(o=>`<option ${o===c.conf_?"selected":""}>${o}</option>`).join("")}</select></div>
-        <div><label>门板</label><select onchange="up(${i},'doors',this.value)">${DOOR.map(o=>`<option ${o===c.doors?"selected":""}>${o}</option>`).join("")}</select></div>
-        ${(c.doors!=="无门"&&c.conf_!=="抽屉")?`<div><label>门板类型</label><select onchange="up(${i},'dt',this.value)">${DT.map(o=>`<option ${o.k===(c.dt||"平板")?"selected":""}>${o.k}</option>`).join("")}</select></div>`:""}
-        <div><label>宽度 W (mm)</label><input type="number" value="${c.w}" onchange="up(${i},'w',+this.value)"></div>
-        <div><label>见光面</label><select onchange="up(${i},'vis',+this.value)">${[0,1,2].map(v=>`<option value="${v}" ${(+c.vis||0)===v?"selected":""}>${["无","1 面","2 面"][v]}</option>`).join("")}</select></div>
-        ${c.conf_==="层板"?`<div><label>层板数${+c.vdiv>0?"（每格）":""}</label><input type="number" value="${c.shelves}" onchange="up(${i},'shelves',+this.value)"></div>`:""}
-        ${c.conf_==="抽屉"?`<div><label>抽屉数${+c.vdiv>0?"（每格）":""}</label><input type="number" value="${c.drawers}" onchange="up(${i},'drawers',+this.value)"></div>`:""}
-        ${(c.conf_!=="空位" && !(c.conf_==="转角"&&(c.ct||"L")==="L"))?`<div><label>竖板数（中隔）</label><input type="number" value="${+c.vdiv||0}" onchange="up(${i},'vdiv',Math.max(+this.value||0,0))"></div>`:""}
-        ${c.conf_==="转角"?`<div><label>转角型式</label><select onchange="up(${i},'ct',this.value)">${[["L","L 柜"],["直","直角柜"]].map(([v,t])=>`<option value="${v}" ${v===(c.ct||"L")?"selected":""}>${t}</option>`).join("")}</select></div>`:""}
-        ${(c.conf_==="转角"&&(c.ct||"L")==="直")?`<div><label>层板数</label><input type="number" value="${c.shelves||0}" onchange="up(${i},'shelves',+this.value)"></div>`:""}
-        ${(c.conf_==="转角"&&(c.ct||"L")==="直"&&c.doors!=="无门")?`<div><label>第1扇见光</label><select onchange="up(${i},'dv1',+this.value)">${[0,1].map(v=>`<option value="${v}" ${(+c.dv1||0)===v?"selected":""}>${["否","是"][v]}</option>`).join("")}</select></div>
-          ${(c.doors==="对开")?`<div><label>第2扇见光</label><select onchange="up(${i},'dv2',+this.value)">${[0,1].map(v=>`<option value="${v}" ${(+c.dv2||0)===v?"selected":""}>${["否","是"][v]}</option>`).join("")}</select></div>`:""}`:""}
-        ${(c.conf_==="转角"&&(c.ct||"L")==="L")?`<div><label>回转长 W2 (mm)</label><input type="number" value="${c.leg2||0}" onchange="up(${i},'leg2',+this.value)"></div>`:""}
-        <div><label>门铰 (件)${c.hj==null?" · 自动":""}</label><input type="number" value="${hingeOf(c)}" onchange="up(${i},'hj',this.value===''?null:+this.value)"></div>
-        <div><label>轨道 (副)${c.rl==null?" · 自动":""}</label><input type="number" value="${railOf(c)}" onchange="up(${i},'rl',this.value===''?null:+this.value)"></div>
+        ${(()=>{
+          const isCorner=c.conf_==="转角", isL=isCorner&&(c.ct||"L")==="L", isDirect=isCorner&&(c.ct||"L")==="直";
+          const free=c.conf_==="空位", draw=c.conf_==="抽屉", bask=c.conf_==="拉篮", shelf=c.conf_==="层板";
+          const hasDoor=!free && !draw && !isL && c.doors!=="无门";      // 真的会有门扇
+          const canDoor=!free && !draw && !isL;                           // 允许选门板
+          let h=`<div><label>柜体形态</label><select onchange="up(${i},'form',this.value)">${FORM.map(o=>`<option ${o===c.form?"selected":""}>${o}</option>`).join("")}</select></div>
+          <div><label>内部构型</label><select onchange="up(${i},'conf_',this.value)">${CONF.map(o=>`<option ${o===c.conf_?"selected":""}>${o}</option>`).join("")}</select></div>`;
+          if(isCorner) h+=`<div><label>转角型式</label><select onchange="up(${i},'ct',this.value)">${[["L","L 柜"],["直","直角柜"]].map(([v,t])=>`<option value="${v}" ${v===(c.ct||"L")?"selected":""}>${t}</option>`).join("")}</select></div>`;
+          h+=`<div><label>宽度 W (mm)</label><input type="number" value="${c.w}" onchange="up(${i},'w',+this.value)"></div>`;
+          if(canDoor) h+=`<div><label>门板</label><select onchange="up(${i},'doors',this.value)">${DOOR.map(o=>`<option ${o===c.doors?"selected":""}>${o}</option>`).join("")}</select></div>`;
+          if(hasDoor) h+=`<div><label>门板类型</label><select onchange="up(${i},'dt',this.value)">${DT.map(o=>`<option ${o.k===(c.dt||"平板")?"selected":""}>${o.k}</option>`).join("")}</select></div>`;
+          if(shelf||isDirect) h+=`<div><label>层板数${+c.vdiv>0?"（每格）":""}</label><input type="number" value="${c.shelves||0}" onchange="up(${i},'shelves',+this.value)"></div>`;
+          if(draw) h+=`<div><label>抽屉数${+c.vdiv>0?"（每格）":""}</label><input type="number" value="${c.drawers||0}" onchange="up(${i},'drawers',+this.value)"></div>`;
+          if(!free && !isL) h+=`<div><label>竖板数（中隔）</label><input type="number" value="${+c.vdiv||0}" onchange="up(${i},'vdiv',Math.max(+this.value||0,0))"></div>`;
+          if(isL) h+=`<div><label>回转长 W2 (mm)</label><input type="number" value="${c.leg2||0}" onchange="up(${i},'leg2',+this.value)"></div>`;
+          h+=`<div><label>见光面</label><select onchange="up(${i},'vis',+this.value)">${[0,1,2].map(v=>`<option value="${v}" ${(+c.vis||0)===v?"selected":""}>${["无","1 面","2 面"][v]}</option>`).join("")}</select></div>`;
+          if(isDirect&&c.doors!=="无门"){
+            h+=`<div><label>第1扇见光</label><select onchange="up(${i},'dv1',+this.value)">${[0,1].map(v=>`<option value="${v}" ${(+c.dv1||0)===v?"selected":""}>${["否","是"][v]}</option>`).join("")}</select></div>`;
+            if(c.doors==="对开") h+=`<div><label>第2扇见光</label><select onchange="up(${i},'dv2',+this.value)">${[0,1].map(v=>`<option value="${v}" ${(+c.dv2||0)===v?"selected":""}>${["否","是"][v]}</option>`).join("")}</select></div>`;
+          }
+          if(hasDoor) h+=`<div><label>门铰 (件)${c.hj==null?" · 自动":""}</label><input type="number" value="${hingeOf(c)}" onchange="up(${i},'hj',this.value===''?null:+this.value)"></div>`;
+          if(draw||bask) h+=`<div><label>轨道 (副)${c.rl==null?" · 自动":""}</label><input type="number" value="${railOf(c)}" onchange="up(${i},'rl',this.value===''?null:+this.value)"></div>`;
+          return h;
+        })()}
       </div>
       <div class="split">${ps.map(p=>`<div class="kv"><span>${(ST.part.find(q=>q.id===p.id)||{name:p.id}).name} ${pv(p.id).t}mm · ${p.min?"最低计面积补差":p.w+"×"+p.h+(p.q>1?"×"+p.q:"")}</span><span class="area">${p.area.toFixed(3)} ㎡</span></div>`).join("")}</div>
     </div>`;
@@ -437,6 +440,18 @@ function render(){
   localStorage.setItem("cabU6",JSON.stringify(S));
 }
 
+function norm(i){
+  const c=S[i], isCorner=c.conf_==="转角", isL=isCorner&&(c.ct||"L")==="L";
+  if(c.conf_==="空位"){ c.doors="无门"; c.shelves=0; c.drawers=0; c.vdiv=0; }
+  if(c.conf_==="抽屉"){ c.doors="无门"; c.shelves=0; }
+  if(c.conf_==="层板"){ c.drawers=0; }
+  if(c.conf_==="拉篮"){ c.shelves=0; c.drawers=0; }
+  if(isL){ c.doors="无门"; c.vdiv=0; }
+  if(c.doors==="无门" || c.doors!=="对开"){ c.dv2 = c.doors==="对开" ? (+c.dv2?1:0) : 0; }
+  if(c.doors==="无门"){ c.dv1=0; }
+  if(isCorner && (c.ct||"L")==="直" && !(+c.shelves>0)) c.shelves=1;
+  c.shelves=Math.max(+c.shelves||0,0); c.drawers=Math.max(+c.drawers||0,0); c.vdiv=Math.max(+c.vdiv||0,0);
+}
 function jump(i){const el=document.getElementById("c"+i);el.scrollIntoView({behavior:"smooth",block:"center"});
   document.querySelectorAll(".card").forEach(e=>e.classList.remove("on"));el.classList.add("on");}
 function up(i,k,v){
@@ -470,7 +485,7 @@ function exportJSON(){
 }
 renderParams(); render();
 </script>
-<script src="xlsx_lite.js?v=20261119g"></script>
-<script src="export_xlsx.js?v=20261119g"></script>
+<script src="xlsx_lite.js?v=20261119i"></script>
+<script src="export_xlsx.js?v=20261119i"></script>
 </body>
 </html>
