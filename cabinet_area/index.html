@@ -531,7 +531,9 @@ function norm(i){
   if(c.conf_==="空位"){ c.doors="无门"; c.shelves=0; c.drawers=0; c.vdiv=0; }
   if(c.conf_==="抽屉"){ c.doors="无门"; c.shelves=0; }
   if(c.conf_==="层板"){ c.drawers=0; }
-  if(c.conf_==="拉篮"){ c.shelves=0; c.drawers=0; }
+  if(c.conf_==="拉篮"){ c.shelves=0; c.drawers=0;
+    if(!c.bsMig){ c.doors="无门"; c.bsMig=1; }       // 老存档迁移一次：拉篮默认无门/无铰，之后手选有效
+  }
   if(isL){ c.doors="无门"; c.vdiv=0; c.shelves=Math.min(Math.max(+c.shelves||0,0),Math.max(Math.floor(V("H"+(c.form==="吊柜"?2:(c.form==="高柜"?3:1)))/((+V("spMinGap")||150)))-1,0)); }
   if(Array.isArray(c.segs) && c.segs.length){
     segNorm(c);
@@ -623,6 +625,7 @@ function up(i,k,v){
   }
   if(k==="conf_"){
     if(v==="抽屉"){ S[i].doors="无门"; }          // 抽屉柜正面是抽面板，没有门
+    if(v==="拉篮"){ S[i].doors="无门"; }            // 有轨道默认不用门铰（要门再手选）
     if(v==="抽屉" && !(+S[i].drawers>0)) S[i].drawers=3;
     if(v!=="抽屉") S[i].drawers=0;
     if(v==="层板" && !(+S[i].shelves>0)) S[i].shelves=1;
@@ -643,7 +646,7 @@ function exportJSON(){
 }
 renderParams(); render();
 </script>
-<script src="xlsx_lite.js?v=20261120u"></script>
-<script src="export_xlsx.js?v=20261120u"></script>
+<script src="xlsx_lite.js?v=20261120v"></script>
+<script src="export_xlsx.js?v=20261120v"></script>
 </body>
 </html>
