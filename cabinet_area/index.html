@@ -314,7 +314,7 @@ function parts(c){
       if(c.conf_==="抽屉" && +c.drawers>0){
         const n=+c.drawers, helpT=T("dhelp");
         const bw=Math.max(bayW-2*V("dGap"),0), bd=Math.max(innerD-V("dRail"),0);
-        const fh=Math.max((H-(n+1)*G)/n,0), bh=Math.max(fh-V("dCut"),0);
+        const fh=Math.max((innerH-(n+1)*G)/n,0), bh=Math.max(fh-V("dCut"),0);   // 抽面落在内空里，扣掉顶/底板
         push("dhelp",bd,bh,2*n*bays);
         push("dbox", Math.max(bw-2*helpT,0),bd,n*bays);
         push("dback",Math.max(bw-2*helpT,0),bh,n*bays);
@@ -589,7 +589,7 @@ function norm(i){
     const Hh=V("H"+fi2), inH=Math.max(Hh-pv("top").t-pv("bottom").t,0);
     const inW=Math.max(+c.w-2*pv("side").t,0), Tv=pv("vdiv").t;
     if(c.conf_==="抽屉"){
-      const mx=Math.max(Math.floor((Hh-G)/(minFace+G)),1);
+      const mx=Math.max(Math.floor((inH-G)/(minFace+G)),1);   // 抽屉排在内空里，用内高算上限
       c.drawers=Math.min(Math.max(+c.drawers||1,1),mx);
     }
     if(c.conf_==="层板" || (c.conf_==="转角"&&(c.ct||"L")==="直")){
@@ -700,7 +700,7 @@ function exportJSON(){
 }
 renderParams(); render();
 </script>
-<script src="xlsx_lite.js?v=20261121j"></script>
-<script src="export_xlsx.js?v=20261121j"></script>
+<script src="xlsx_lite.js?v=20261121k"></script>
+<script src="export_xlsx.js?v=20261121k"></script>
 </body>
 </html>
