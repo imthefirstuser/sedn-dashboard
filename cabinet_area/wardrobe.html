@@ -52,7 +52,9 @@ button.ghost{background:transparent;border:1px solid var(--line);color:var(--txt
 <header>
   <div>
     <h1>BED 3 WIR 房间3衣柜 · 分格选配</h1>
-    <div class="sub">订单 C28-11-01 · 18mm E0887 爱格三防板 · 逐格选配 → 实时面积 → 导出 Excel 反馈</div>
+    <div class="sub">18mm E0887 爱格三防板 · 逐格选配 → 实时面积 → 导出 Excel 反馈　　预设：
+      <select id="preset" style="width:240px;display:inline-block;padding:2px 6px;font-size:11px" onchange="applyPreset(this.value)"></select>
+    </div>
   </div>
   <div class="sub">净 <span id="grand" class="big">—</span> ｜ 采购(÷<span id="rateTxt">80</span>%) <span id="buy" class="big" style="color:var(--acc)">—</span></div>
 </header>
@@ -306,6 +308,34 @@ function resetAll(){
   renderParams(); renderBays(); render();
 }
 
+/* ================= 预设 ================= */
+const PRESETS = {
+  bed3:{label:"房间3衣柜 2400×450×2000",
+    P:{W:2400,D:450,H:2000,kick:120}, O:{vdivMode:"full",doorH:"full",backMode:"full",topPanel:"1",fillerBoard:"0"},
+    B:[[100,0,0,0,275,"无门",0],[550,2,0,3,275,"无门",0],[866,0,1,0,275,"推拉门2",0],[866,0,1,0,275,"推拉门2",0]]},
+  lowA:{label:"矮柜A 全抽4格 2400×500×450",
+    P:{W:2400,D:450,H:500,kick:80}, O:{vdivMode:"full",doorH:"full",backMode:"full",topPanel:"1",fillerBoard:"0"},
+    B:[[600,0,0,1,458,"无门",0],[600,0,0,1,458,"无门",0],[600,0,0,1,458,"无门",0],[600,0,0,1,458,"无门",0]]},
+  lowB:{label:"矮柜B 对开门4格+1层 2400×500×450",
+    P:{W:2400,D:450,H:500,kick:80}, O:{vdivMode:"full",doorH:"full",backMode:"full",topPanel:"1",fillerBoard:"0"},
+    B:[[600,1,0,0,275,"平开双",0],[600,1,0,0,275,"平开双",0],[600,1,0,0,275,"平开双",0],[600,1,0,0,275,"平开双",0]]},
+  lowC:{label:"矮柜C 通长开放2层 2400×500×450",
+    P:{W:2400,D:450,H:500,kick:80}, O:{vdivMode:"full",doorH:"full",backMode:"full",topPanel:"1",fillerBoard:"0"},
+    B:[[2400,2,0,0,275,"无门",0]]}
+};
+function applyPreset(k){
+  const ps = PRESETS[k]; if(!ps) return;
+  P = Object.assign({}, DEFP, ps.P);
+  B = ps.B.map(a=>bay(a[0],a[1],a[2],a[3],a[4],a[5],a[6]));
+  Object.assign(O, ps.O);
+  renderParams(); renderChoices(); renderBays(); render();
+}
+function initPreset(){
+  const sel = document.getElementById("preset"); if(!sel) return;
+  sel.innerHTML = Object.keys(PRESETS).map(k=>'<option value="'+k+'">'+PRESETS[k].label+'</option>').join("");
+  sel.value = "bed3";
+}
+
 /* ================= 导出 ================= */
 function exportXlsx(){
   const rows = calc(), rate = Math.max(P.util,1)/100, S2=2, S3=3, S5=5;
@@ -359,7 +389,7 @@ try{
     Object.assign(O, sv.O||{});
   }
 }catch(e){}
-renderParams(); renderChoices(); renderBays(); render();
+initPreset(); renderParams(); renderChoices(); renderBays(); render();
 </script>
 </body>
 </html>
