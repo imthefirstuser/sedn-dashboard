@@ -327,6 +327,7 @@ function parts(c){
     if(dv>0) push("vis", leafW, dh, dv*segN);
   }
   if(+c.vis>0) push("vis",D,H,+c.vis);   // 见光板：外露侧板面，不含门板
+  if(c.form==="吊柜") push("vis",W,D,1);      // 吊柜固定一块底部见光板（柜宽×柜深，仰视面）
   // 门板最低计面积：该柜门板面积合计不足门槛时，补一行差额（计价行，不是板件，无尺寸）
   const dsum=out.filter(p=>p.id===did).reduce((s2,p)=>s2+p.area,0);
   if(dsum>0 && dmin>0 && dsum<dmin-1e-9) out.push({id:did,w:0,h:0,q:0,area:dmin-dsum,min:true});
@@ -639,7 +640,7 @@ function exportJSON(){
 }
 renderParams(); render();
 </script>
-<script src="xlsx_lite.js?v=20261120k"></script>
-<script src="export_xlsx.js?v=20261120k"></script>
+<script src="xlsx_lite.js?v=20261120l"></script>
+<script src="export_xlsx.js?v=20261120l"></script>
 </body>
 </html>
