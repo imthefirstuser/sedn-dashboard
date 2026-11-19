@@ -635,7 +635,10 @@ function up(i,k,v){
   S[i][k]=v;
   if(k==="conf_"||k==="doors"||k==="form"||k==="drawers"){ S[i].hj=null; S[i].rl=null; }
   if(k==="ct"){                                  // 转角型式联动：L 柜无门板，直角柜默认对开
-    if(v==="L"){ S[i].doors="无门"; S[i].dv1=0; S[i].dv2=0; }
+    if(v==="L"){ S[i].doors="无门"; S[i].dv1=0; S[i].dv2=0;
+      if(!(+S[i].shelves>0)) S[i].shelves=1;                    // L 柜默认：层板 1 层
+      S[i].leg2=Math.max(+S[i].leg2||0,V("D"+(S[i].form==="吊柜"?2:1)));  // 默认回转长=柜深
+    }
     else if(S[i].doors==="无门"){ S[i].doors="对开"; }
     if(v==="直" && !(+S[i].shelves>0)) S[i].shelves=1;
     S[i].hj=null; S[i].rl=null;
@@ -663,7 +666,7 @@ function exportJSON(){
 }
 renderParams(); render();
 </script>
-<script src="xlsx_lite.js?v=20261121d"></script>
-<script src="export_xlsx.js?v=20261121d"></script>
+<script src="xlsx_lite.js?v=20261121e"></script>
+<script src="export_xlsx.js?v=20261121e"></script>
 </body>
 </html>
