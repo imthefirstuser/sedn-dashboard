@@ -115,7 +115,6 @@ const PART = [
   {id:"dhelp", name:"抽侧帮",      t:16, price:0},
   {id:"dbox",  name:"抽底板",      t:16, price:0},
   {id:"dback", name:"抽后板",      t:16, price:0},
-  {id:"dface", name:"抽面板",      t:18, price:0}
 ];
 const CRAFT = [
   {id:"dMinFace",  name:"抽屉最小面板高",  v:100, u:"mm", grp:"dr"},
@@ -249,7 +248,7 @@ function parts(c){
   const dtc=dtOf(c), did=dtc.id, dmin=Math.max(+V(dtc.min)||0,0);
   const fi = c.form==="吊柜" ? 2 : (c.form==="高柜" ? 3 : 1);   // 按形态取尺寸
   const H=V("H"+fi), D=V("D"+fi), W=+c.w, out=[];
-  const push=(id,w,h,q=1,nm)=>{ if(w>1e-9&&h>1e-9&&q>0) out.push({id,nm,w:+w.toFixed(1),h:+h.toFixed(1),q,area:q*w*h/1e6}) };
+  const push=(id,w,h,q=1,nm,role)=>{ if(w>1e-9&&h>1e-9&&q>0) out.push({id,nm,role,w:+w.toFixed(1),h:+h.toFixed(1),q,area:q*w*h/1e6}) };
   const innerW=Math.max(W-2*T("side"),0);
   const innerD=Math.max(D-T("back"),0);
   const innerH=Math.max(H-T("top")-T("bottom"),0);
@@ -292,7 +291,7 @@ function parts(c){
           push("dhelp",bd,bh,2*nD);
           push("dbox", Math.max(bw-2*ht,0),bd,nD);
           push("dback",Math.max(bw-2*ht,0),bh,nD);
-          push(did,Math.max(innerW-2*G,0),fh,nD,"抽面板-"+dtc.k);
+          push(did,Math.max(innerW-2*G,0),fh,nD,null,"抽面");
         }
         if(sg.doors && sg.doors!=="无门"){
           const nL=sg.doors==="对开"?2:1, lw=Math.max((W-G)/nL,0), dh=Math.max(sh-G,0);
@@ -310,7 +309,7 @@ function parts(c){
         push("dhelp",bd,bh,2*n*bays);
         push("dbox", Math.max(bw-2*helpT,0),bd,n*bays);
         push("dback",Math.max(bw-2*helpT,0),bh,n*bays);
-        push(did,Math.max(bayW-2*G,0),fh,n*bays,"抽面板-"+dtc.k);
+        push(did,Math.max(bayW-2*G,0),fh,n*bays,null,"抽面");
       }
     }
     if(c.form!=="吊柜") push("kick",W,V("K"),1);
@@ -640,7 +639,7 @@ function exportJSON(){
 }
 renderParams(); render();
 </script>
-<script src="xlsx_lite.js?v=20261120a"></script>
-<script src="export_xlsx.js?v=20261120a"></script>
+<script src="xlsx_lite.js?v=20261120d"></script>
+<script src="export_xlsx.js?v=20261120d"></script>
 </body>
 </html>
