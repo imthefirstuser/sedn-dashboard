@@ -227,6 +227,15 @@ function hingeDefault(c){
   return doorLeaves(c)*hingePerLeaf(c);
 }
 function railDefault(c){
+  if(Array.isArray(c.segs) && c.segs.length){
+    let n=0;
+    c.segs.forEach(sg=>{
+      const sc=sg.conf||"开放格";
+      if(sc==="抽屉")  n += (+sg.drawers||0)*(+V("rlDrawer"));
+      if(sc==="拉篮")  n += 1*(+V("rlBasket"));
+    });
+    return n;
+  }
   if(c.conf_==="抽屉") return (+c.drawers||0)*(+V("rlDrawer"));
   if(c.conf_==="拉篮") return 1*(+V("rlBasket"));
   return 0;
@@ -479,8 +488,8 @@ function render(){
             h+=`<div><label>门板见光·第1扇</label><select onchange="up(${i},'dv1',+this.value)">${[0,1].map(v=>`<option value="${v}" ${(+c.dv1||0)===v?"selected":""}>${["否","是"][v]}</option>`).join("")}</select></div>`;
             if(c.doors==="对开") h+=`<div><label>门板见光·第2扇</label><select onchange="up(${i},'dv2',+this.value)">${[0,1].map(v=>`<option value="${v}" ${(+c.dv2||0)===v?"selected":""}>${["否","是"][v]}</option>`).join("")}</select></div>`;
           }
-          if(hasDoor) h+=`<div><label>门铰 (件)${c.hj==null?" · 自动":""}</label><input type="number" value="${hingeOf(c)}" onchange="up(${i},'hj',this.value===''?null:+this.value)"></div>`;
-          if(draw||bask) h+=`<div><label>轨道 (副)${c.rl==null?" · 自动":""}</label><input type="number" value="${railOf(c)}" onchange="up(${i},'rl',this.value===''?null:+this.value)"></div>`;
+          if(hasDoor||(c.segs&&c.segs.some(g=>g.doors&&g.doors!=="无门"))) h+=`<div><label>门铰 (件)${c.hj==null?" · 自动":""}</label><input type="number" value="${hingeOf(c)}" onchange="up(${i},'hj',this.value===''?null:+this.value)"></div>`;
+          if(draw||bask||(c.segs&&c.segs.some(g=>g.conf==="抽屉"||g.conf==="拉篮"))) h+=`<div><label>轨道 (副)${c.rl==null?" · 自动":""}</label><input type="number" value="${railOf(c)}" onchange="up(${i},'rl',this.value===''?null:+this.value)"></div>`;
           return h;
         })()}
       </div>
@@ -631,7 +640,7 @@ function exportJSON(){
 }
 renderParams(); render();
 </script>
-<script src="xlsx_lite.js?v=20261119z"></script>
-<script src="export_xlsx.js?v=20261119z"></script>
+<script src="xlsx_lite.js?v=20261120a"></script>
+<script src="export_xlsx.js?v=20261120a"></script>
 </body>
 </html>
