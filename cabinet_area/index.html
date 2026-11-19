@@ -624,6 +624,7 @@ function up(i,k,v){
   }
   if(k==="conf_"){
     if(v==="抽屉"){ S[i].doors="无门"; }          // 抽屉柜正面是抽面板，没有门
+    if(v==="拉篮"){ S[i].doors="单门"; }             // 拉篮默认：一块门板 + 一副轨道（门板类型可选）
     if(v==="抽屉" && !(+S[i].drawers>0)) S[i].drawers=3;
     if(v!=="抽屉") S[i].drawers=0;
     if(v==="层板" && !(+S[i].shelves>0)) S[i].shelves=1;
@@ -644,7 +645,7 @@ function exportJSON(){
 }
 renderParams(); render();
 </script>
-<script src="xlsx_lite.js?v=20261120w"></script>
-<script src="export_xlsx.js?v=20261120w"></script>
+<script src="xlsx_lite.js?v=20261120x"></script>
+<script src="export_xlsx.js?v=20261120x"></script>
 </body>
 </html>
