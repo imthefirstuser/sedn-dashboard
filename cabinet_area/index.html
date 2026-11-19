@@ -552,7 +552,7 @@ function norm(i){
   }
   if(c.doors==="无门" || c.doors!=="对开"){ c.dv2 = c.doors==="对开" ? (+c.dv2?1:0) : 0; }
   if(c.doors==="无门"){ c.dv1=0; }
-  if(isCorner && (c.ct||"L")==="直" && !(+c.shelves>0)) c.shelves=1;
+  // 直角柜层板数允许 0（用户问过为什么不能为 0），不再强制补 1
   c.shelves=Math.max(+c.shelves||0,0); c.drawers=Math.max(+c.drawers||0,0); c.vdiv=Math.min(Math.max(+c.vdiv||0,0),4);
   if(c.conf_==="抽屉" && !(+c.drawers>0)) c.drawers=3;
 }
@@ -640,7 +640,7 @@ function exportJSON(){
 }
 renderParams(); render();
 </script>
-<script src="xlsx_lite.js?v=20261120n"></script>
-<script src="export_xlsx.js?v=20261120n"></script>
+<script src="xlsx_lite.js?v=20261120o"></script>
+<script src="export_xlsx.js?v=20261120o"></script>
 </body>
 </html>
