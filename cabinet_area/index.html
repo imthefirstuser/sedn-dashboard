@@ -174,7 +174,7 @@ const SEED = [
 const E2_SHARED = 590;   // 立面2 左端的转角柜与 E1-9 共用，只画不计
 const FORM=["落地柜","吊柜","高柜"], CONF=["层板","抽屉","拉篮","转角","空位"], DOOR=["单门","对开","翻门","无门"];
 /* 形态约束：转角/空位只落地柜；翻门只吊柜（上翻） */
-const CONF_OF={"落地柜":CONF,"吊柜":["层板","抽屉","拉篮"],"高柜":["层板","抽屉","拉篮"]};
+const CONF_OF={"落地柜":CONF,"吊柜":CONF,"高柜":["层板","抽屉","拉篮"]};   // 吊柜也能转角、也能开放格(空位)
 const DOOR_OF={"落地柜":["单门","对开","无门"],"吊柜":["单门","对开","翻门","无门"],"高柜":["单门","对开","无门"]};
 const confsOf=c=>CONF_OF[c.form||"落地柜"], doorsOf=c=>DOOR_OF[c.form||"落地柜"];
 const COLOR={"层板":"#1e3a5f","抽屉":"#1f4d3a","拉篮":"#4a3a6b","转角":"#5c3a1e","空位":"#3a2426"};
@@ -401,7 +401,7 @@ function render(){
           const hasDoor=!free && !draw && !isL && c.doors!=="无门";      // 真的会有门扇
           const canDoor=!free && !draw && !isL;                           // 允许选门板
           let h=`<div><label>柜体形态</label><select onchange="up(${i},'form',this.value)">${FORM.map(o=>`<option ${o===c.form?"selected":""}>${o}</option>`).join("")}</select></div>
-          <div><label>内部构型</label><select onchange="up(${i},'conf_',this.value)">${confsOf(c).map(o=>`<option ${o===c.conf_?"selected":""}>${o}</option>`).join("")}</select></div>`;
+          <div><label>内部构型</label><select onchange="up(${i},'conf_',this.value)">${confsOf(c).map(o=>`<option value="${o}" ${o===c.conf_?"selected":""}>${o==="空位"?"空位/开放格":o}</option>`).join("")}</select></div>`;
           if(isCorner) h+=`<div><label>转角型式</label><select onchange="up(${i},'ct',this.value)">${[["L","L 柜"],["直","直角柜"]].map(([v,t])=>`<option value="${v}" ${v===(c.ct||"L")?"selected":""}>${t}</option>`).join("")}</select></div>`;
           h+=`<div><label>宽度 W (mm)</label><input type="number" value="${c.w}" onchange="up(${i},'w',+this.value)"></div>`;
           if(canDoor) h+=`<div><label>门板</label><select onchange="up(${i},'doors',this.value)">${doorsOf(c).map(o=>`<option ${o===c.doors?"selected":""}>${o}</option>`).join("")}</select></div>`;
@@ -495,7 +495,7 @@ function exportJSON(){
 }
 renderParams(); render();
 </script>
-<script src="xlsx_lite.js?v=20261119k"></script>
-<script src="export_xlsx.js?v=20261119k"></script>
+<script src="xlsx_lite.js?v=20261119m"></script>
+<script src="export_xlsx.js?v=20261119m"></script>
 </body>
 </html>
