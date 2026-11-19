@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>橱柜用料计算 · 柜体设定与展开面积</title>
 <style>
-:root{--bg:#0f1216;--panel:#171c22;--panel2:#1e252d;--line:#2a333d;--txt:#e6edf3;--dim:#8b98a5;--accent:#3b82f6}
+:root{--bg:#0f1216;--panel:#171c22;--panel2:#1e252d;--line:#2a333d;--txt:#e6edf3;--dim:#8b98a5;--accent:#3b82f6;--acc:#f0a63c}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--txt);font:13px/1.5 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif}
 header{padding:12px 18px;border-bottom:1px solid var(--line);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
@@ -24,6 +24,11 @@ h1{font-size:15px;margin:0;font-weight:600}
 .tag.white{background:#1b2733;color:#bcd3ea;border-color:#2f4356}
 .cb{padding:10px 12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
 label{display:block;font-size:11px;color:var(--dim);margin-bottom:3px}
+label.key{color:var(--acc);font-weight:700}
+.keyrow td{background:#1d2530}
+.keyrow td:first-child{box-shadow:inset 3px 0 0 var(--acc);padding-left:10px}
+input.key{border-color:var(--acc);box-shadow:0 0 0 1px rgba(240,170,60,.35)}
+.kbadge{display:inline-block;margin-left:4px;padding:0 4px;border-radius:3px;background:var(--acc);color:#111;font-size:9px;font-weight:700;vertical-align:1px}
 select,input{width:100%;background:#0d1117;color:var(--txt);border:1px solid var(--line);border-radius:5px;padding:5px 7px;font:inherit}
 select:focus,input:focus{outline:none;border-color:var(--accent)}
 input.n{padding:3px 4px;text-align:right;font-variant-numeric:tabular-nums}
@@ -89,12 +94,12 @@ details summary{cursor:pointer;padding:9px 12px;background:var(--panel2);font-we
 <script>
 /* ================= 统一参数表 ================= */
 const SIZE = [
-  {id:"H1",  name:"落地柜 高",     v:760,  u:"mm"},
-  {id:"D1",  name:"落地柜 深",     v:560,  u:"mm"},
-  {id:"H2",  name:"吊柜 高",       v:700,  u:"mm"},
-  {id:"D2",  name:"吊柜 深",       v:320,  u:"mm"},
-  {id:"H3",  name:"高柜 高",       v:2100, u:"mm"},
-  {id:"D3",  name:"高柜 深",       v:560,  u:"mm"},
+  {id:"H1",  name:"落地柜 高",     v:760,  u:"mm", key:1},
+  {id:"D1",  name:"落地柜 深",     v:560,  u:"mm", key:1},
+  {id:"H2",  name:"吊柜 高",       v:700,  u:"mm", key:1},
+  {id:"D2",  name:"吊柜 深",       v:320,  u:"mm", key:1},
+  {id:"H3",  name:"高柜 高",       v:2100, u:"mm", key:1},
+  {id:"D3",  name:"高柜 深",       v:560,  u:"mm", key:1},
   {id:"K",   name:"踢脚高",        v:120,  u:"mm"},
   {id:"G",   name:"门缝/板缝",      v:3,    u:"mm"},
   {id:"GB",  name:"见光板厚",       v:18,   u:"mm"}
@@ -341,12 +346,40 @@ function parts(c){
 }
 const areaOf = c => parts(c).reduce((s,p)=>s+p.area,0);
 
+/* ===== AI 追问契约：哪些字段是"必须问出来"的关键信息 ===== */
+function keySchema(){
+  return {
+    global:["H1","D1","H2","D2","H3","D3"],                  // 高/深（按形态）
+    perCabinet:["form","conf_","w"],                          // 每柜必收
+    byConf:{
+      "层板":["shelves","doors","dt","vdiv","vis","top"],
+      "抽屉":["drawers","dt","vdiv","vis","top"],
+      "拉篮":["doors","dt","vis","top"],
+      "转角L":["ct","leg2","shelves","vis","top"],
+      "转角直角":["ct","shelves","doors","dt","dv1","dv2","vis","top"],
+      "空位":["vis"]
+    },
+    hanging:["cfTop","cfH"],                                  // 吊柜另收接顶
+    unit:{H:"mm", D:"mm", w:"mm", leg2:"mm", cfH:"mm"}
+  };
+}
+function keyValues(){                                       // 每柜关键值快照（供 AI/接口读取）
+  return S.map((c,i)=>({seq:i+1, form:c.form, conf:c.conf_, w:+c.w||0,
+    H:V("H"+(c.form==="吊柜"?2:(c.form==="高柜"?3:1))), D:V("D"+(c.form==="吊柜"?2:(c.form==="高柜"?3:1))),
+    leg2:(c.conf_==="转角"&&(c.ct||"L")==="L")?+c.leg2||0:undefined,
+    shelves:+c.shelves||0, drawers:+c.drawers||0, doors:c.doors, dt:c.dt||"平板",
+    top:c.form==="吊柜"?1:(c.top===0?0:1), cfH:c.form==="吊柜"&&c.cfTop===1?(+c.cfH||0):0, vis:+c.vis||0}));
+}
+window.CAB_KEY_SCHEMA = keySchema(); window.CAB_KEY_VALUES = () => keyValues();
+
 /* ================= 渲染 ================= */
 function renderParams(){
-  let r = `<tr><th style="text-align:left;padding-left:10px">参数</th><th>数值</th><th>单价</th></tr>`;
+  let r = `<tr><td colspan="3" style="font-size:11px;color:var(--acc);padding:6px 10px;border-bottom:1px solid var(--line)">
+    ★ 关键参数（AI 追问必收）：柜体形态／内部构型／宽度 W／柜高 H／柜深 D；L 柜另收回转长 W2。★ 行已高亮，输入框带 data-key 便于自动取值。</td></tr>`;
+  r += `<tr><th style="text-align:left;padding-left:10px">参数</th><th>数值</th><th>单价</th></tr>`;
   r += `<tr class="grp"><td colspan="3">柜体尺寸</td></tr>`;
-  ST.size.forEach((o,i)=> r += `<tr><td>${o.name}<span class="badge">${o.u}</span></td>
-    <td><input class="n" type="number" step="0.5" value="${o.v}" onchange="setV('size',${i},+this.value)"></td><td></td></tr>`);
+  ST.size.forEach((o,i)=> r += `<tr class="${o.key?"keyrow":""}" data-key="${o.id}"><td>${o.key?"★ ":""}${o.name}<span class="badge">${o.u}</span></td>
+    <td><input class="n" type="number" step="0.5" data-key="${o.id}" value="${o.v}" onchange="setV('size',${i},+this.value)"></td><td></td></tr>`);
   r += `<tr class="grp"><td colspan="3">板件（板厚 / 单价 元/㎡）</td></tr>`;
   ST.part.forEach((o,i)=> r += `<tr><td>${o.name}</td>
     <td><input class="n" type="number" value="${o.t}" onchange="setT(${i},+this.value)"></td>
@@ -492,13 +525,13 @@ function render(){
           if(c.form==="吊柜") h+=`<div><label>接顶板</label><select onchange="up(${i},'cfTop',+this.value)">${["不要","要"].map((o,k)=>`<option value="${k}" ${(c.cfTop===1?1:0)===k?"selected":""}>${o}</option>`).join("")}</select></div>`
             + (c.cfTop===1?`<div><label>接顶高度 (mm)</label><input type="number" value="${+c.cfH||100}" min="0" onchange="up(${i},'cfH',Math.max(+this.value||0,0))"></div>`:"");
           if(!free && c.form!=="吊柜") h+=`<div><label>顶板</label><select onchange="up(${i},'top',+this.value)">${["要","不要"].map((o,k)=>`<option value="${k?0:1}" ${(c.top===0?0:1)===(k?0:1)?"selected":""}>${o}</option>`).join("")}</select></div>`;   // 每柜单独设：不要顶板时侧板/背板通到顶
-          h+=`<div><label>宽度 W (mm)</label><input type="number" value="${c.w}" onchange="up(${i},'w',+this.value)"></div>`;
+          h+=`<div><label class="key">宽度 W (mm)<span class="kbadge">关键</span></label><input class="key" type="number" data-key="w" data-cab="${i+1}" value="${c.w}" onchange="up(${i},'w',+this.value)"></div>`;
           if(canDoor && !(c.segs&&c.segs.length)) h+=`<div><label>门板</label><select onchange="up(${i},'doors',this.value)">${doorsOf(c).map(o=>`<option ${o===c.doors?"selected":""}>${o}</option>`).join("")}</select></div>`;
           if(hasDoor||draw||(c.segs&&c.segs.length)) h+=`<div><label>面板类型${c.segs&&c.segs.length?"（各段共用）":""}</label><select onchange="up(${i},'dt',this.value)">${DT.map(o=>`<option ${o.k===(c.dt||"平板")?"selected":""}>${o.k}</option>`).join("")}</select></div>`;
           if((shelf||isDirect||isL) && !(c.segs&&c.segs.length)) h+=`<div><label>层板数${+c.vdiv>0?"（每格）":""}</label><input type="number" value="${c.shelves||0}" min="0" onchange="up(${i},'shelves',+this.value)"></div>`;
           if(draw && !(c.segs&&c.segs.length)) h+=`<div><label>抽屉数${+c.vdiv>0?"（每格）":""}</label><input type="number" value="${c.drawers||0}" min="1" max="${Math.max(Math.floor(((c.form==="吊柜"?V("H2"):(c.form==="高柜"?V("H3"):V("H1")))-V("G"))/((+V("dMinFace")||100)+V("G"))),1)}" onchange="up(${i},'drawers',+this.value)"></div>`;
           if(!free && !isL && !(c.segs&&c.segs.length)) h+=`<div><label>竖板数（中隔）</label><input type="number" value="${+c.vdiv||0}" onchange="up(${i},'vdiv',Math.max(+this.value||0,0))"></div>`;
-          if(isL) h+=`<div><label>回转长 W2 (mm)</label><input type="number" value="${c.leg2||0}" onchange="setLeg2(${i},this.value)"></div>`;
+          if(isL) h+=`<div><label class="key">回转长 W2 (mm)<span class="kbadge">关键</span></label><input class="key" type="number" data-key="leg2" data-cab="${i+1}" value="${c.leg2||0}" onchange="setLeg2(${i},this.value)"></div>`;
           h+=`<div><label>侧板见光面</label><select onchange="up(${i},'vis',+this.value)">${[0,1,2].map(v=>`<option value="${v}" ${(+c.vis||0)===v?"selected":""}>${["无","1 面","2 面"][v]}</option>`).join("")}</select></div>`;
           if(isDirect&&c.doors!=="无门"){
             h+=`<div><label>门板见光·第1扇</label><select onchange="up(${i},'dv1',+this.value)">${[0,1].map(v=>`<option value="${v}" ${(+c.dv1||0)===v?"selected":""}>${["否","是"][v]}</option>`).join("")}</select></div>`;
@@ -656,7 +689,8 @@ function up(i,k,v){
 function resetAll(){["cabU6","cabU5",LS].forEach(k=>localStorage.removeItem(k));location.reload()}
 /* 导出 Excel 在 export_xlsx.js（纯前端生成，静态页面/Flame 上都能用） */
 function exportJSON(){
-  const out={params:{size:Object.fromEntries(ST.size.map(o=>[o.id,o.v])),
+  const out={keySchema:keySchema(), keyValues:keyValues(),
+    params:{size:Object.fromEntries(ST.size.map(o=>[o.id,o.v])),
                      craft:Object.fromEntries(ST.craft.map(o=>[o.id,o.v])),
                      parts:ST.part.map(o=>({id:o.id,name:o.name,t:o.t,price:o.price}))},
     units:S.map((c,i)=>({seq:i+1,w:c.w,label:c.label,form:c.form,conf:c.conf_,doors:c.doors,
@@ -666,7 +700,7 @@ function exportJSON(){
 }
 renderParams(); render();
 </script>
-<script src="xlsx_lite.js?v=20261121e"></script>
-<script src="export_xlsx.js?v=20261121e"></script>
+<script src="xlsx_lite.js?v=20261121f"></script>
+<script src="export_xlsx.js?v=20261121f"></script>
 </body>
 </html>
