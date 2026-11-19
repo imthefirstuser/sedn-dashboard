@@ -457,7 +457,9 @@ function render(){
                   <label>构型</label><select onchange="segUp(${i},${si},'conf',this.value)">${["开放格","层板","抽屉","拉篮"].map(o=>`<option value="${o}" ${o===sc?"selected":""}>${o}</option>`).join("")}</select>
                   ${sc==="层板"?`<label>层板数</label><input type="number" style="width:60px" value="${sg.shelves||1}" max="${Math.max(Math.floor((+sg.h||0)/(+V("spMinGap")||150))-1,0)}" onchange="segUp(${i},${si},'shelves',+this.value)">`:""}
                   ${sc==="抽屉"?`<label>抽屉数</label><input type="number" style="width:60px" value="${sg.drawers||2}" max="${Math.max(Math.floor(((+sg.h||0)-V("G"))/((+V("dMinFace")||100)+V("G"))),1)}" onchange="segUp(${i},${si},'drawers',+this.value)">`:""}
-                  <label>门板</label><select onchange="segUp(${i},${si},'doors',this.value)">${["无门","单门","对开"].map(o=>`<option value="${o}" ${o===(sg.doors||"无门")?"selected":""}>${o}</option>`).join("")}</select>
+                  ${sc==="抽屉"
+                    ? `<label>门板</label><span class="sub">无门（抽屉正面=抽面板）</span>`
+                    : `<label>门板</label><select onchange="segUp(${i},${si},'doors',this.value)">${["无门","单门","对开"].map(o=>`<option value="${o}" ${o===(sg.doors||"无门")?"selected":""}>${o}</option>`).join("")}</select>`}
                   <button class="mini" onclick="segDel(${i},${si})">删</button>
                 </div>`;
               });
@@ -466,11 +468,11 @@ function render(){
             }
           }
           h+=`<div><label>宽度 W (mm)</label><input type="number" value="${c.w}" onchange="up(${i},'w',+this.value)"></div>`;
-          if(canDoor) h+=`<div><label>门板</label><select onchange="up(${i},'doors',this.value)">${doorsOf(c).map(o=>`<option ${o===c.doors?"selected":""}>${o}</option>`).join("")}</select></div>`;
-          if(hasDoor) h+=`<div><label>门板类型</label><select onchange="up(${i},'dt',this.value)">${DT.map(o=>`<option ${o.k===(c.dt||"平板")?"selected":""}>${o.k}</option>`).join("")}</select></div>`;
-          if(shelf||isDirect) h+=`<div><label>层板数${+c.vdiv>0?"（每格）":""}</label><input type="number" value="${c.shelves||0}" min="0" onchange="up(${i},'shelves',+this.value)"></div>`;
-          if(draw) h+=`<div><label>抽屉数${+c.vdiv>0?"（每格）":""}</label><input type="number" value="${c.drawers||0}" min="1" max="${Math.max(Math.floor(((c.form==="吊柜"?V("H2"):(c.form==="高柜"?V("H3"):V("H1")))-V("G"))/((+V("dMinFace")||100)+V("G"))),1)}" onchange="up(${i},'drawers',+this.value)"></div>`;
-          if(!free && !isL) h+=`<div><label>竖板数（中隔）</label><input type="number" value="${+c.vdiv||0}" onchange="up(${i},'vdiv',Math.max(+this.value||0,0))"></div>`;
+          if(canDoor && !(c.segs&&c.segs.length)) h+=`<div><label>门板</label><select onchange="up(${i},'doors',this.value)">${doorsOf(c).map(o=>`<option ${o===c.doors?"selected":""}>${o}</option>`).join("")}</select></div>`;
+          if(hasDoor||(c.segs&&c.segs.some(g=>g.doors&&g.doors!=="无门"))) h+=`<div><label>门板类型${c.segs&&c.segs.length?"（各段共用）":""}</label><select onchange="up(${i},'dt',this.value)">${DT.map(o=>`<option ${o.k===(c.dt||"平板")?"selected":""}>${o.k}</option>`).join("")}</select></div>`;
+          if((shelf||isDirect) && !(c.segs&&c.segs.length)) h+=`<div><label>层板数${+c.vdiv>0?"（每格）":""}</label><input type="number" value="${c.shelves||0}" min="0" onchange="up(${i},'shelves',+this.value)"></div>`;
+          if(draw && !(c.segs&&c.segs.length)) h+=`<div><label>抽屉数${+c.vdiv>0?"（每格）":""}</label><input type="number" value="${c.drawers||0}" min="1" max="${Math.max(Math.floor(((c.form==="吊柜"?V("H2"):(c.form==="高柜"?V("H3"):V("H1")))-V("G"))/((+V("dMinFace")||100)+V("G"))),1)}" onchange="up(${i},'drawers',+this.value)"></div>`;
+          if(!free && !isL && !(c.segs&&c.segs.length)) h+=`<div><label>竖板数（中隔）</label><input type="number" value="${+c.vdiv||0}" onchange="up(${i},'vdiv',Math.max(+this.value||0,0))"></div>`;
           if(isL) h+=`<div><label>回转长 W2 (mm)</label><input type="number" value="${c.leg2||0}" onchange="up(${i},'leg2',+this.value)"></div>`;
           h+=`<div><label>侧板见光面</label><select onchange="up(${i},'vis',+this.value)">${[0,1,2].map(v=>`<option value="${v}" ${(+c.vis||0)===v?"selected":""}>${["无","1 面","2 面"][v]}</option>`).join("")}</select></div>`;
           if(isDirect&&c.doors!=="无门"){
@@ -558,9 +560,11 @@ function segNorm(c){
   const used=segs.slice(0,-1).reduce((a,g)=>a+(+g.h||0),0);
   segs[segs.length-1].h=Math.max(ih-used,0);
   const minFace=+V("dMinFace")||100, spGap=+V("spMinGap")||150;
+  c.doors="无门";                            // 分段柜的门板全在段里
   segs.forEach(sg=>{
     const sh=+sg.h||0;
     if(sg.conf==="抽屉"){
+      sg.doors="无门";                       // 抽屉段不再加门板，否则抽面板+门板重复计面
       const mx=Math.max(Math.floor((sh-G)/(minFace+G)),1);
       sg.drawers=Math.min(Math.max(Math.round(+sg.drawers||1),1),mx);
     }
@@ -626,7 +630,7 @@ function exportJSON(){
 }
 renderParams(); render();
 </script>
-<script src="xlsx_lite.js?v=20261119t"></script>
-<script src="export_xlsx.js?v=20261119t"></script>
+<script src="xlsx_lite.js?v=20261119v"></script>
+<script src="export_xlsx.js?v=20261119v"></script>
 </body>
 </html>
