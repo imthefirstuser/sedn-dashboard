@@ -265,6 +265,7 @@ function parts(c){
     if(cnBack>=2){ push("back",W1,H,1); push("back",W2,H,1); }   // 两块背板：各沿一面通高
     else         push("back",W1+W2,H,1);
     // 踢脚只沿两段前脸（被另一段挡住的部分不算）：(W1−D) + (W2−D)
+    if(+c.shelves>0) push("shelf",W1,W2,+c.shelves);   // 每层层板=整块 W1×W2（掏口废料）
     if(c.form!=="吊柜"){
       push("kick",Math.max(W1-D,0),V("K"),1);
       push("kick",Math.max(W2-D,0),V("K"),1);
@@ -482,7 +483,7 @@ function render(){
           h+=`<div><label>宽度 W (mm)</label><input type="number" value="${c.w}" onchange="up(${i},'w',+this.value)"></div>`;
           if(canDoor && !(c.segs&&c.segs.length)) h+=`<div><label>门板</label><select onchange="up(${i},'doors',this.value)">${doorsOf(c).map(o=>`<option ${o===c.doors?"selected":""}>${o}</option>`).join("")}</select></div>`;
           if(hasDoor||draw||(c.segs&&c.segs.length)) h+=`<div><label>面板类型${c.segs&&c.segs.length?"（各段共用）":""}</label><select onchange="up(${i},'dt',this.value)">${DT.map(o=>`<option ${o.k===(c.dt||"平板")?"selected":""}>${o.k}</option>`).join("")}</select></div>`;
-          if((shelf||isDirect) && !(c.segs&&c.segs.length)) h+=`<div><label>层板数${+c.vdiv>0?"（每格）":""}</label><input type="number" value="${c.shelves||0}" min="0" onchange="up(${i},'shelves',+this.value)"></div>`;
+          if((shelf||isDirect||isL) && !(c.segs&&c.segs.length)) h+=`<div><label>层板数${+c.vdiv>0?"（每格）":""}</label><input type="number" value="${c.shelves||0}" min="0" onchange="up(${i},'shelves',+this.value)"></div>`;
           if(draw && !(c.segs&&c.segs.length)) h+=`<div><label>抽屉数${+c.vdiv>0?"（每格）":""}</label><input type="number" value="${c.drawers||0}" min="1" max="${Math.max(Math.floor(((c.form==="吊柜"?V("H2"):(c.form==="高柜"?V("H3"):V("H1")))-V("G"))/((+V("dMinFace")||100)+V("G"))),1)}" onchange="up(${i},'drawers',+this.value)"></div>`;
           if(!free && !isL && !(c.segs&&c.segs.length)) h+=`<div><label>竖板数（中隔）</label><input type="number" value="${+c.vdiv||0}" onchange="up(${i},'vdiv',Math.max(+this.value||0,0))"></div>`;
           if(isL) h+=`<div><label>回转长 W2 (mm)</label><input type="number" value="${c.leg2||0}" onchange="up(${i},'leg2',+this.value)"></div>`;
@@ -532,7 +533,7 @@ function norm(i){
   if(c.conf_==="抽屉"){ c.doors="无门"; c.shelves=0; }
   if(c.conf_==="层板"){ c.drawers=0; }
   if(c.conf_==="拉篮"){ c.shelves=0; c.drawers=0; }
-  if(isL){ c.doors="无门"; c.vdiv=0; }
+  if(isL){ c.doors="无门"; c.vdiv=0; c.shelves=Math.min(Math.max(+c.shelves||0,0),Math.max(Math.floor(V("H"+(c.form==="吊柜"?2:(c.form==="高柜"?3:1)))/((+V("spMinGap")||150)))-1,0)); }
   if(Array.isArray(c.segs) && c.segs.length){
     segNorm(c);
   }else{
@@ -643,7 +644,7 @@ function exportJSON(){
 }
 renderParams(); render();
 </script>
-<script src="xlsx_lite.js?v=20261120q"></script>
-<script src="export_xlsx.js?v=20261120q"></script>
+<script src="xlsx_lite.js?v=20261120s"></script>
+<script src="export_xlsx.js?v=20261120s"></script>
 </body>
 </html>
