@@ -176,7 +176,7 @@ const SEED = [
 const E2_SHARED = 590;   // 立面2 左端的转角柜与 E1-9 共用，只画不计
 const FORM=["落地柜","吊柜","高柜"], CONF=["层板","抽屉","拉篮","转角","空位"], DOOR=["单门","对开","翻门","无门"];
 /* 形态约束：转角/空位只落地柜；翻门只吊柜（上翻） */
-const CONF_OF={"落地柜":CONF,"吊柜":CONF,"高柜":["层板","抽屉","拉篮"]};   // 吊柜也能转角、也能开放格(空位)
+const CONF_OF={"落地柜":CONF,"吊柜":CONF,"高柜":CONF};   // 高柜=高一点的落地柜，构型同落地柜；吊柜也能转角/开放格
 const DOOR_OF={"落地柜":["单门","对开","无门"],"吊柜":["单门","对开","翻门","无门"],"高柜":["单门","对开","无门"]};
 const confsOf=c=>CONF_OF[c.form||"落地柜"], doorsOf=c=>DOOR_OF[c.form||"落地柜"];
 const COLOR={"层板":"#1e3a5f","抽屉":"#1f4d3a","拉篮":"#4a3a6b","转角":"#5c3a1e","空位":"#3a2426"};
@@ -192,7 +192,7 @@ if(!Array.isArray(S) || S.length!==SEED.length) S = SEED.map(c=>({...c, form:"�
 /* ================= 五金：门铰 / 轨道（默认按门扇数·抽屉数推，可逐柜改） ================= */
 function doorLeaves(c){
   if(c.doors==="无门") return 0;
-  const seg = c.form==="高柜" ? 2 : 1;
+  const seg = 1;                                  // 高柜=高一点的落地柜，不拆上下段
   const isL = c.conf_==="转角" && (c.ct||"L")==="L";
   let n = isL ? (c.doors==="对开"?4:2)                  // L 柜：A/B 两段各自门板
               : (c.doors==="对开"?2:1);                 // 普通柜 / 转角直角柜
@@ -201,8 +201,7 @@ function doorLeaves(c){
 }
 function leafHeight(c){
   const fi = c.form==="吊柜" ? 2 : (c.form==="高柜" ? 3 : 1);
-  const dh = (c.form==="高柜" ? V("H"+fi)/2 : V("H"+fi)) - V("G");
-  return dh;
+  return V("H"+fi) - V("G");                      // 整块门板通高（高柜同落地柜）
 }
 function hingePerLeafH(h){
   const base=+V("hjSingle"), th=+V("hjThresh")||900, st=+V("hjStep")||300, mx=+V("hjMax")||6;
@@ -222,7 +221,7 @@ function hingeDefault(c){
   }
   if(c.conf_==="抽屉") return 0;            // 抽屉柜没有门（面板走抽面板），不装门铰
   if(c.doors==="无门") return 0;
-  if(c.doors==="翻门") return +V("hjFlip")*(c.form==="高柜"?2:1)*(c.conf_==="转角"?2:1);
+  if(c.doors==="翻门") return +V("hjFlip")*(c.conf_==="转角"?2:1);
   return doorLeaves(c)*hingePerLeaf(c);
 }
 function railDefault(c){
@@ -316,8 +315,8 @@ function parts(c){
   }
   const isL = c.conf_==="转角" && (c.ct||"L")==="L";
   if(c.doors!=="无门" && !isL && c.conf_!=="抽屉" && !(Array.isArray(c.segs)&&c.segs.length)){   // 抽屉柜正面是逐块抽面板，不算整块门板；L 柜门板在转角分支里算
-    const segN = c.form==="高柜" ? 2 : 1;            // 高柜上下两段，门扇翻倍
-    const dh=(c.form==="高柜"?H/2:H)-V("G");
+    const segN = 1;                                 // 高柜=高一点的落地柜，门板通高
+    const dh=H-V("G");
     const nLeaf = c.doors==="对开" ? 2 : 1;          // 对开=两扇，总宽不变，逐扇出明细
     const leafW = Math.max((W-V("G"))/nLeaf,0);
     push(did, leafW, dh, nLeaf*segN);
@@ -640,7 +639,7 @@ function exportJSON(){
 }
 renderParams(); render();
 </script>
-<script src="xlsx_lite.js?v=20261120g"></script>
-<script src="export_xlsx.js?v=20261120g"></script>
+<script src="xlsx_lite.js?v=20261120i"></script>
+<script src="export_xlsx.js?v=20261120i"></script>
 </body>
 </html>
