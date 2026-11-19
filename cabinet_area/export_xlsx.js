@@ -245,7 +245,7 @@
     const agg = {};
     S.forEach((c, i) => {
       parts(c).forEach(p => {
-        const nm = (ST.part.find(q => q.id === p.id) || { name: p.id }).name, t = +pv(p.id).t, pr = +pv(p.id).price || 0;
+        const nm = p.nm || (ST.part.find(q => q.id === p.id) || { name: p.id }).name, t = +pv(p.id).t, pr = +pv(p.id).price || 0;
         det.push([{ v: i + 1, s: S2 }, { v: nm, s: S2 }, { v: t, s: S2 }, { v: p.w, s: S2 }, { v: p.h, s: S2 },
           { v: p.q, s: S2 }, { v: +p.area.toFixed(4), s: S3 }, { v: pr, s: S4 },
           { v: +(p.area * pr).toFixed(2), s: S4 }, { v: `${p.w}×${p.h}×${p.q}`, s: S2 }]);
