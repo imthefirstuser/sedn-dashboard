@@ -264,7 +264,11 @@ function parts(c){
     push("bottom", W1,W2,1);
     if(cnBack>=2){ push("back",W1,H,1); push("back",W2,H,1); }   // 两块背板：各沿一面通高
     else         push("back",W1+W2,H,1);
-    if(c.form!=="吊柜"){ push("kick",W1,V("K"),1); push("kick",W2,V("K"),1); }
+    // 踢脚只沿两段前脸（被另一段挡住的部分不算）：(W1−D) + (W2−D)
+    if(c.form!=="吊柜"){
+      push("kick",Math.max(W1-D,0),V("K"),1);
+      push("kick",Math.max(W2-D,0),V("K"),1);
+    }
   }else{
     // 普通柜 / 转角直角柜 / 分段柜 共用骨架（顶底板通长，侧板夹中间）
     const segs=Array.isArray(c.segs)?c.segs:[], G=V("G");
@@ -639,7 +643,7 @@ function exportJSON(){
 }
 renderParams(); render();
 </script>
-<script src="xlsx_lite.js?v=20261120p"></script>
-<script src="export_xlsx.js?v=20261120p"></script>
+<script src="xlsx_lite.js?v=20261120q"></script>
+<script src="export_xlsx.js?v=20261120q"></script>
 </body>
 </html>
