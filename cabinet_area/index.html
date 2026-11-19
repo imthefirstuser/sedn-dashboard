@@ -332,7 +332,8 @@ function parts(c){
     if(dv>0) push("vis", leafW, dh, dv*segN);
   }
   if(+c.vis>0) push("vis",D,H,+c.vis);   // 见光板：外露侧板面，不含门板
-  if(c.form==="吊柜") push("vis",W,D,1,"见光板-吊柜底");   // 吊柜固定一块底部见光板（柜宽×柜深，仰视面）
+  if(c.form==="吊柜") push("vis",W,D,1,"见光板-吊柜底");
+  if(c.form==="吊柜" && c.cfTop===1 && +c.cfH>0) push("vis",W,+c.cfH,1,"接顶板");   // 吊柜顶部到天花的封板   // 吊柜固定一块底部见光板（柜宽×柜深，仰视面）
   // 门板最低计面积：该柜门板面积合计不足门槛时，补一行差额（计价行，不是板件，无尺寸）
   const dsum=out.filter(p=>p.id===did).reduce((s2,p)=>s2+p.area,0);
   if(dsum>0 && dmin>0 && dsum<dmin-1e-9) out.push({id:did,w:0,h:0,q:0,area:dmin-dsum,min:true});
@@ -488,6 +489,8 @@ function render(){
                 <button class="mini" style="margin-left:6px" onclick="segEven(${i})">均分高度</button></div>`;
             }
           }
+          if(c.form==="吊柜") h+=`<div><label>接顶板</label><select onchange="up(${i},'cfTop',+this.value)">${["不要","要"].map((o,k)=>`<option value="${k}" ${(c.cfTop===1?1:0)===k?"selected":""}>${o}</option>`).join("")}</select></div>`
+            + (c.cfTop===1?`<div><label>接顶高度 (mm)</label><input type="number" value="${+c.cfH||100}" min="0" onchange="up(${i},'cfH',Math.max(+this.value||0,0))"></div>`:"");
           if(!free && c.form!=="吊柜") h+=`<div><label>顶板</label><select onchange="up(${i},'top',+this.value)">${["要","不要"].map((o,k)=>`<option value="${k?0:1}" ${(c.top===0?0:1)===(k?0:1)?"selected":""}>${o}</option>`).join("")}</select></div>`;   // 每柜单独设：不要顶板时侧板/背板通到顶
           h+=`<div><label>宽度 W (mm)</label><input type="number" value="${c.w}" onchange="up(${i},'w',+this.value)"></div>`;
           if(canDoor && !(c.segs&&c.segs.length)) h+=`<div><label>门板</label><select onchange="up(${i},'doors',this.value)">${doorsOf(c).map(o=>`<option ${o===c.doors?"selected":""}>${o}</option>`).join("")}</select></div>`;
@@ -654,7 +657,7 @@ function exportJSON(){
 }
 renderParams(); render();
 </script>
-<script src="xlsx_lite.js?v=20261121a"></script>
-<script src="export_xlsx.js?v=20261121a"></script>
+<script src="xlsx_lite.js?v=20261121b"></script>
+<script src="export_xlsx.js?v=20261121b"></script>
 </body>
 </html>
