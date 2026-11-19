@@ -123,7 +123,6 @@ const CRAFT = [
   {id:"dGap",  name:"抽屉单侧抽隙",   v:12.5, u:"mm"},
   {id:"dRail", name:"抽屉轨道预留(深入)", v:40,  u:"mm"},
   {id:"dCut",  name:"抽体高扣减",     v:10,   u:"mm"},
-  {id:"cnSide",   name:"转角内侧板块数", v:1, u:"块", opts:[1,2]},
   {id:"cnBack",   name:"转角背板片数",   v:2, u:"片", opts:[1,2]},
   {id:"cnOver",   name:"转角背板重叠扣减", v:18, u:"mm"},
   {id:"cnW2Ref",  name:"W2 计量起点",    v:0, u:"", opts:[0,1], lbls:["转角方格外端(净长)","相邻墙内角(含方格)"]},
@@ -257,9 +256,8 @@ function parts(c){
   }else if(c.conf_==="转角" && (c.ct||"L")==="L"){
     // L 柜 = 矩形掏口：矩形 W1 × W2（W2 就是矩形深度），掏口当废料按整块料算
     const G=V("G"), W1=W, W2=Math.max(+c.leg2||0,0);
-    const cnSide=+V("cnSide")||1, cnBack=+V("cnBack")||1;
+    const cnBack=+V("cnBack")||1;
     push("side",   D,H,2);
-    push("corner", D,H,cnSide);           // 掏口内侧板
     push("top",    W1,W2,1);
     push("bottom", W1,W2,1);
     if(cnBack>=2){ push("back",W1,H,1); push("back",W2,H,1); }   // 两块背板：各沿一面通高
@@ -644,7 +642,7 @@ function exportJSON(){
 }
 renderParams(); render();
 </script>
-<script src="xlsx_lite.js?v=20261120s"></script>
-<script src="export_xlsx.js?v=20261120s"></script>
+<script src="xlsx_lite.js?v=20261120t"></script>
+<script src="export_xlsx.js?v=20261120t"></script>
 </body>
 </html>
