@@ -1,0 +1,740 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>柜体看图核对 · Lot 5037</title>
+<style>
+:root{--bg:#12151a;--pan:#1a1f27;--line:#2b333f;--txt:#e6ecf3;--dim:#8b97a6;--acc:#4aa3ff;--ok:#39c07a;--bad:#ff6b6b;--warn:#f0a63c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font:14px/1.5 "Segoe UI","Microsoft YaHei",sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:9px 16px;background:var(--pan);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:9;flex-wrap:wrap}
+header h1{font-size:15px;margin:0;font-weight:600;white-space:nowrap}
+.wtabs{display:flex;gap:4px}
+button{background:#232b36;color:var(--txt);border:1px solid var(--line);padding:4px 10px;border-radius:5px;cursor:pointer;font-size:12.5px}
+button:hover{border-color:var(--acc)}
+.wtabs button.on,.zbar button.on{background:#12324f;border-color:var(--acc);color:#bfe0ff}
+.pill{padding:2px 8px;border:1px solid var(--line);border-radius:10px;font-size:12px;color:var(--dim)}
+.pill b{color:var(--txt)}
+main{display:grid;grid-template-columns:minmax(520px,1fr) 440px;gap:14px;padding:14px 16px 40px}
+.card{background:var(--pan);border:1px solid var(--line);border-radius:8px;padding:12px}
+#stage{position:relative;overflow:hidden;height:calc(100vh - 250px);min-height:420px;background:#0e1218;border-radius:6px;touch-action:none;cursor:grab}
+#stage.drag{cursor:grabbing}
+#pan{position:absolute;left:0;top:0;width:100%;display:block;transform-origin:0 0;will-change:transform}
+#pan svg{display:block;width:100%;height:auto;max-height:none}
+.hd{font-size:16px;font-weight:600;margin:0 0 6px;color:var(--warn)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td{padding:5px 4px;border-bottom:1px dashed #222a34;vertical-align:top}
+td.k{color:var(--dim);width:86px;white-space:nowrap}
+.tag{display:inline-block;padding:1px 7px;border-radius:9px;font-size:12px;border:1px solid var(--line);color:var(--dim)}
+.tag.b{border-color:#2f6da3;color:#9dcbff}
+.tag.w{border-color:#7a5a22;color:var(--warn)}
+.acts{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+button.ok{background:#173a2a;border-color:#2b6b4b;color:#8ff0bb}
+button.bad{background:#3a1c1c;border-color:#7a3232;color:#ffb3b3}
+button.pri{background:#12324f;border-color:#2f6da3;color:#bfe0ff}
+textarea{width:100%;min-height:62px;background:#0e1218;color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:7px;font:13px/1.5 "Microsoft YaHei",monospace;resize:vertical}
+textarea:focus{outline:none;border-color:var(--acc)}
+.pt{width:100%;border-collapse:collapse;font-size:12.5px}
+.pt th{background:#222a34;color:#9dcbff;font-weight:600;padding:4px;text-align:left;position:sticky;top:0;z-index:1}
+.pt td{padding:3px 4px;border-bottom:1px solid #202833}
+.pt tr.sum td{color:#f0a63c;font-weight:600;border-top:1px solid #2b333f}
+#ptbox{max-height:290px;overflow:auto;margin-top:6px;border:1px solid #222a34;border-radius:6px}
+#modal{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;z-index:50}
+#modal.on{display:flex}
+#modal .box{background:var(--pan);border:1px solid var(--line);border-radius:10px;padding:14px;width:min(880px,92vw)}
+#modal textarea{min-height:46vh;font-family:ui-monospace,Consolas,monospace;font-size:12.5px}
+.mono{font-family:ui-monospace,Consolas,monospace}
+.edit{display:none;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px;padding:9px;border:1px dashed var(--warn);border-radius:6px}
+.edit.on{display:grid}
+.edit label{font-size:12px;color:var(--dim);display:block;margin-bottom:3px}
+select,input{background:#0e1218;color:var(--txt);border:1px solid var(--line);border-radius:5px;padding:5px 6px;font-size:13px;width:100%}
+footer{padding:0 16px 26px;color:var(--dim);font-size:12px}
+a{color:var(--acc)}
+.kbd{border:1px solid var(--line);border-radius:4px;padding:0 5px;font-size:11px;color:var(--dim)}
+.visbox{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin-top:10px;padding:9px 10px;border:1px dashed #7a5a22;border-radius:6px;background:#191512}
+.visbox .vt{width:100%;font-size:12.5px;color:#f0a63c;font-weight:600}
+.visbox label{display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer}
+.visbox input{width:15px;height:15px;accent-color:#f0a63c;margin:0}
+.hint{color:#8b97a6;font-size:11.5px;font-weight:400}
+</style>
+</head>
+<body>
+<header>
+  <h1>柜体看图核对</h1>
+  <div class="wtabs" id="wtabs"></div>
+  <span class="zbar">缩放 <button id="zOut" title="缩小">−</button><b id="zPct" style="min-width:46px;text-align:center;color:#bfe0ff">100%</b><button id="zIn" title="放大">+</button>
+    <button id="zFit">适应</button><button id="zW">宽度</button><button id="z1">1:1</button><button id="zRst" title="复位">↺</button></span>
+  <span class="pill">已核 <b id="nDone">0</b>/<b id="nAll">0</b></span>
+  <span class="pill">标错 <b id="nBad" style="color:#ffb3b3">0</b></span>
+  <span class="pill">备注 <b id="nNote" style="color:#f0a63c">0</b></span>
+  <a id="lnkImg" href="#" target="_blank" class="pill">对照原立面图 ↗</a>
+</header>
+<main>
+  <section class="card">
+    <div id="stage"></div>
+    <div style="margin-top:8px;color:var(--dim);font-size:12px">
+      滚轮缩放　拖动平移　双击复位　·　总览点柜放大　·　<span class="kbd">y</span>判对 <span class="kbd">n</span>判错 <span class="kbd">←</span><span class="kbd">→</span>换柜　·　图例：单门 <span class="mono">&gt;</span> 对开 <span class="mono">&gt;&lt;</span> 抽屉/拉篮 <span class="mono">&and;</span> 层板=双细线　<span style="color:#f0a63c">橙条 = 见光/封板</span>
+    </div>
+  </section>
+  <section class="card">
+    <h2 class="hd" id="pos">—</h2>
+    <table id="tbl"></table>
+    <div class="edit" id="edit">
+      <div><label>构型</label><select id="eConf"></select></div>
+      <div><label>门板</label><select id="eDoor"></select></div>
+      <div><label>层板数</label><input id="eShelf" type="number" min="0" max="6"></div>
+      <div><label>抽屉数</label><input id="eDraw" type="number" min="0" max="6"></div>
+      <div style="grid-column:1/-1;display:flex;gap:8px">
+        <button class="pri" id="bSave">保存修正并下一柜</button>
+        <button id="bCancel">取消</button>
+      </div>
+    </div>
+    <div style="margin-top:8px;color:var(--dim);font-size:12px">板件明细（= Excel 里这一柜）</div>
+    <div id="ptbox"><table class="pt" id="pt"></table></div>
+    <div class="visbox">
+      <div class="vt">见光板勾选 <span class="hint">（勾了就计入面积，图上橙色标出）</span></div>
+      <label><input type="checkbox" id="vL"> 左侧见光</label>
+      <label><input type="checkbox" id="vR"> 右侧见光</label>
+      <label><input type="checkbox" id="vB"> 底面见光</label>
+      <label><input type="checkbox" id="vF"> 顶面封板</label>
+      <span id="vInfo" class="hint"></span>
+    </div>
+    <div style="margin-top:8px">
+      <div style="font-size:12px;color:var(--dim);margin-bottom:3px">备注（自动保存，最后一起生成反馈文档）<span id="noteBadge" style="color:var(--warn);margin-left:6px"></span></div>
+      <textarea id="note" placeholder="例：这格其实是对开门、层板 2 块；宽度按 900；抽屉规格没标…"></textarea>
+    </div>
+    <div class="acts">
+      <button class="ok" id="bOk">✓ 判读正确</button>
+      <button class="bad" id="bBad">✗ 判错了</button>
+      <button id="bPrev">← 上一柜</button>
+      <button id="bWall">回总览</button>
+      <button class="pri" id="bDoc">生成反馈文档</button>
+      <button id="bLog">改动日志</button>
+    </div>
+  </section>
+</main>
+<div id="modal"><div class="box">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+    <b>反馈文档（复制发给 AI）</b>
+    <span><button id="mCopy">复制</button> <button id="mDown">下载 .md</button> <button id="mClose">关闭</button></span>
+  </div>
+  <textarea id="mText" readonly></textarea>
+</div></div>
+<footer><span id="hwtot"></span></footer>
+<script>
+const NM={rail:"前后拉条",side:"侧板",top:"顶板",bottom:"底板",back:"背板",shelf:"层板",vdiv:"竖隔板",
+  kick:"踢脚/脚线",door_p:"门（平板）",drw_p:"抽面",vis_s:"侧面见光板",vis_b:"吊柜底部见光板",vis_cf:"顶封板",vis_m:"门背见光",dhelp:"抽侧帮",dbox:"抽底板",dback:"抽后板"};
+const WALLNAME={E1:"E1 主墙",E2:"E2 侧墙",E3:"E3 高柜",E4:"E4 中岛",E5:"E5 WIP",E6:"E6 WIP"};
+const IMG={E1:"01_立面1_主墙5790.png",E2:"02_立面2_1675.png",E3:"03_立面3_1790.png",
+  E4:"04_岛台正面.png",E5:"07_WIP_立面5_1880.png",E6:"08_WIP_立面6_1700.png"};
+const CONFS=["层板","抽屉","拉篮","空位","转角","开放格"], DOORS=["单门","对开","无门"];
+
+let M,cells,i=0,wall=null;
+let ZK=1, TX=0, TY=0;          // 当前缩放/平移
+const V=JSON.parse(localStorage.getItem('cabRev40')||'{}');
+const AREA_NOTE={
+  'E1-2':'抽屉柜：两侧板+顶底板+背板+2 套抽体（抽面单独计入门板段）',
+  'E1-8':'空位/洗碗机位：只算两侧板 + 背板，无顶底板、无门、无层板',
+  'E1-9':'直转角柜：正面柜体 = 两侧板+顶板+底板+背板+踢脚；侧翼 590 在 E2 立面只画不计（是否单独出料待确认）',
+  '空位':'空位只算两侧板+背板',
+  '转角':'转角体=正面柜体+侧翼侧板/背板，共用侧板只算一次',
+  '抽屉':'抽屉柜=箱体板 + 抽体（抽侧帮/抽底/抽后），抽面单独计入门板',
+  '拉篮':'垃圾桶拉篮：箱体板 + 单门 + 1 套拉篮五金，无层板',
+  '层板':'常规柜=两侧板+顶板+底板+背板+踢脚+层板',
+  'U0-烟机柜':'烟机吊柜：侧板×2 + 顶板 + 底板 + 背板 + 正面整块封板（1197×1327，不装门铰）+ 左/右/底见光',
+  'U1下':'吊柜下段：对开门柜=两侧板+顶底+背板+1 层板 + 门背见光（如有）',
+};
+const NB=JSON.parse(localStorage.getItem('cabNote40')||'{}');
+const VB=JSON.parse(localStorage.getItem('cabVis40')||'{}');   // 见光板勾选 {pos:{l,r,b,f}}
+const saveVB=()=>localStorage.setItem('cabVis40',JSON.stringify(VB));
+function visBase(c){
+  const vs=c.visSides||{};
+  return {l:!!vs.l, r:!!vs.r, b:(c.visSides?!!vs.b:(c.parts||[]).some(p=>p.id==='vis_b')), f:(c.parts||[]).some(p=>p.id==='vis_cf')};
+}
+function visOf(c){
+  const b=visBase(c), st=VB[c.pos]||{}, o={};
+  ['l','r','b','f'].forEach(k=>{ o[k]= st[k+'t'] ? !!st[k] : !!b[k]; });
+  return o;
+}
+const saveV=()=>localStorage.setItem('cabRev40',JSON.stringify(V));
+const saveNB=()=>localStorage.setItem('cabNote40',JSON.stringify(NB));
+const nNote=()=>Object.values(NB).filter(v=>v&&String(v).trim()).length;
+const F=c=>`${c.conf||'—'} / ${c.doors||'无门'} / 层板${c.shelves||0} / 抽屉${c.drawers||0}`;
+const el=(t,a={},x)=>{const e=document.createElementNS('http://www.w3.org/2000/svg',t);for(const k in a)e.setAttribute(k,a[k]);if(x!=null)e.textContent=x;return e};
+
+/* ================= 单柜详图 ================= */
+function cabSvg(c,vis={}){
+  const W=+c.w,H=+c.h,D=+c.d,kp=c.parts.find(p=>p.id==='kick'),kick=kp?+kp.h:0;
+  const top=(+c.ybase>0)?0:(c.form==='落地柜'&&kp?20:0);
+  const P=88, vw=W+P*2, vh=H+top+P*2+40;
+  const svg=el('svg',{viewBox:`0 0 ${vw} ${vh}`});
+  const x0=P, y0=P+top;
+  const L=(x1,y1,x2,y2,s={})=>svg.appendChild(el('line',{x1,y1,x2,y2,stroke:s.c||'#8b97a6','stroke-width':s.w||1.6,'stroke-dasharray':s.d||''}));
+  const R=(x1,y1,w,h,s={})=>svg.appendChild(el('rect',{x:x1,y:y1,width:w,height:h,fill:s.f||'none',stroke:s.c||'#4aa3ff','stroke-width':s.w||2}));
+  const T=(x1,y1,t,s={})=>svg.appendChild(el('text',{x:x1,y:y1,fill:s.c||'#e6ecf3','font-size':s.s||40,'font-family':'ui-monospace,Consolas,monospace','text-anchor':s.a||'middle'},t));
+  const T18=18;
+  if(top) R(x0,y0-top,W,top,{c:'#7a5a22',w:1.2,f:'#12151a'});
+  R(x0,y0,W,H);
+  if(c.parts.some(p=>p.id==='side')){L(x0+T18,y0,x0+T18,y0+H,{c:'#5f6b7a',w:1.3});L(x0+W-T18,y0,x0+W-T18,y0+H,{c:'#5f6b7a',w:1.3});}
+  if(c.parts.some(p=>p.id==='top'))   L(x0,y0+T18,x0+W,y0+T18,{c:'#5f6b7a',w:1.3});
+  if(c.parts.some(p=>p.id==='bottom'))L(x0,y0+H-T18,x0+W,y0+H-T18,{c:'#5f6b7a',w:1.1,d:'6 4'});
+  const bp=c.parts.find(p=>p.id==='back');
+  if(bp){const bw=Math.min(+bp.w,W-2*T18);L(x0+(W-bw)/2,y0+18,x0+(W-bw)/2,y0+H-18,{c:'#39424f',w:1,d:'3 5'});L(x0+(W+bw)/2,y0+18,x0+(W+bw)/2,y0+H-18,{c:'#39424f',w:1,d:'3 5'});}
+  if(kick){R(x0,y0+H-kick,W,kick,{c:'#3a4453',w:1,f:'#0e1218'});T(x0+W/2,y0+H-kick/2+14,'踢脚 '+kick,{s:34,c:'#8b97a6'});}
+  const drawShelf=y1=>{L(x0+T18,y1,x0+W-T18,y1,{w:2.2});L(x0+T18,y1+18,x0+W-T18,y1+18,{w:1,d:'5 4'});};
+  const drawDoor=(x1,y1,w1,h1,kind)=>{
+    if(kind==='单门'){L(x1+12,y1+12,x1+w1-12,y1+h1/2,{c:'#e6ecf3',w:2.6});L(x1+12,y1+h1-12,x1+w1-12,y1+h1/2,{c:'#e6ecf3',w:2.6});}
+    if(kind==='对开'){const m=y1+h1/2;L(x1+10,y1+10,x1+w1/2,m,{c:'#e6ecf3',w:2.2});L(x1+w1-10,y1+10,x1+w1/2,m,{c:'#e6ecf3',w:2.2});
+      L(x1+10,y1+h1-10,x1+w1/2,m,{c:'#e6ecf3',w:2.2});L(x1+w1-10,y1+h1-10,x1+w1/2,m,{c:'#e6ecf3',w:2.2});
+      L(x1+w1/2,y1,x1+w1/2,y1+h1,{c:'#6f7d8c',w:1.1,d:'9 7'});}
+  };
+  const segs=(c.segs&&c.segs.length)?c.segs:null;
+  if(segs){
+    const usable=H-kick, sum=segs.reduce((a,s)=>a+(+s.h||0),0)||usable; let cy=y0;
+    for(const s of segs){
+      const sh=usable*(+s.h/sum);
+      L(x0,cy+sh,x0+W,cy+sh,{c:'#4aa3ff',w:2.2});
+      const ns=+s.shelves||0; for(let k=1;k<=ns;k++) drawShelf(cy+sh*k/(ns+1));
+      const nd=+s.drawers||0;
+      if(nd){for(let k=1;k<=nd;k++)L(x0,cy+sh*k/nd,x0+W,cy+sh*k/nd,{w:1.5,d:'6 4'});for(let k=0;k<nd;k++)T(x0+W/2,cy+sh*(k+0.62)/nd,'∧',{s:40,c:'#f0a63c'});}
+      if(s.doors&&s.doors!=='无门') drawDoor(x0,cy,W,sh,s.doors);
+      T(x0+W/2,cy+sh-16,`${s.conf} ${s.h}`+(s.doors&&s.doors!=='无门'?` ${s.doors}`:''),{s:32,c:'#8b97a6'});
+      cy+=sh;
+    }
+  } else {
+    const ns=+c.shelves||0; for(let k=1;k<=ns;k++) drawShelf(y0+18+(H-36-kick)*k/(ns+1));
+    const nd=+c.drawers||0;
+    if(nd){const hh=(H-kick)/nd;for(let k=1;k<=nd;k++)L(x0,y0+hh*k,x0+W,y0+hh*k,{w:1.7,d:'7 5'});for(let k=0;k<nd;k++)T(x0+W/2,y0+hh*(k+0.62),'∧',{s:50,c:'#f0a63c'});}
+    const dr=c.doors||'无门';
+    if(dr!=='无门'&&c.conf!=='转角') drawDoor(x0,y0,W,H-kick,dr);
+    if(c.conf==='转角') T(x0+W/2,y0+H*0.42,`转角柜 ${c.ct==='直'?'直':'L'}${c.leg2?' 回转'+c.leg2:''}`,{s:38,c:'#9dcbff'});
+    if(c.conf==='空位'||c.conf==='开放格') T(x0+W/2,y0+H*0.42,'开放 / 空位',{s:38,c:'#5f6b7a'});
+    if(c.conf==='拉篮') T(x0+W/2,y0+H*0.55,'∧ 垃圾桶拉篮',{s:34,c:'#f0a63c'});
+  }
+  const fc=(c.form==='吊柜');
+  if(vis.l) R(x0,y0,18,H,{c:'#f0a63c',w:1,f:'#3b2c14'});
+  if(vis.r) R(x0+W-18,y0,18,H,{c:'#f0a63c',w:1,f:'#3b2c14'});
+  if(vis.b) R(x0,y0+H-18,W,18,{c:'#f0a63c',w:1,f:'#3b2c14'});
+  if(vis.f) R(x0,y0-top-18,W,18,{c:'#f0a63c',w:1,f:'#3b2c14'});
+  const vs=c.parts.filter(p=>['vis_s','vis_m'].includes(p.id));
+  if(vs.length)T(x0+W/2,y0+H+72,`侧面见光板 ${vs.reduce((a,p)=>a+p.q,0)} 块（${vs.map(p=>p.w+'×'+p.h).join('、')}）`,{s:32,c:'#7fb0d8'});
+  L(x0,y0+H+110,x0+W,y0+H+110,{c:'#4aa3ff',w:1.1});
+  L(x0,y0+H+94,x0,y0+H+126,{c:'#4aa3ff',w:1.1});L(x0+W,y0+H+94,x0+W,y0+H+126,{c:'#4aa3ff',w:1.1});
+  T(x0+W/2,y0+H+160,W+' 宽',{s:40,c:'#9dcbff'});
+  L(x0+W+80,y0,x0+W+80,y0+H,{c:'#4aa3ff',w:1.1});
+  L(x0+W+64,y0,x0+W+96,y0,{c:'#4aa3ff',w:1.1});L(x0+W+64,y0+H,x0+W+96,y0+H,{c:'#4aa3ff',w:1.1});
+  svg.appendChild(el('text',{x:x0+W+120,y:y0+H/2,fill:'#9dcbff','font-size':40,'font-family':'monospace',
+    transform:`rotate(90 ${x0+W+120} ${y0+H/2})`,'text-anchor':'middle'},H+' 高'));
+  T(x0-10,y0-46,`深 ${D}　${c.form}　${c.conf||''}${c.ct?('（'+(c.ct==='直'?'直转角':'L 转角')+'）'):''}`,{s:34,a:'start',c:'#8b97a6'});
+  T(x0-10,y0+H+206,c.pos,{s:46,a:'start',c:'#f0a63c'});
+  return svg;
+}
+
+/* ================= 整墙总览（真实标高） ================= */
+let BANDS={};
+const SC=0.238, SVW=1500, SPP=72;
+function drawWall(svg,HIT,yTop,elName,subset,title,dim,scOv){
+  const cs=subset||cells.filter(c=>c.el===elName);
+  const wallW=(M.walls&&M.walls[elName])||Math.max(...cs.map(c=>+c.x0+ +c.w));
+  const boxH=(M.wallH&&M.wallH[elName])||Math.max(...cs.map(c=>+c.ybase+ +c.h));
+  const sc=scOv||SC,H=Math.round(boxH*sc),yb=yTop+H+26,
+        Y=mm=>yb-mm*sc, X=mm=>SPP+mm*sc;
+  const g=el('g',{opacity:dim?0.28:1}); svg.appendChild(g);
+  const L=(x1,y1,x2,y2,s={})=>g.appendChild(el('line',{x1,y1,x2,y2,stroke:s.c||'#8b97a6','stroke-width':s.w||1.4,'stroke-dasharray':s.d||''}));
+  const R=(x1,y1,w,h,s={})=>g.appendChild(el('rect',{x:x1,y:y1,width:Math.max(w,1.5),height:Math.max(h,2),fill:s.f||'none',stroke:s.c||'#3a4453','stroke-width':s.w||1.4,rx:2}));
+  const T=(x1,y1,t,s={})=>g.appendChild(el('text',{x:x1,y:y1,fill:s.c||'#8b97a6','font-size':s.s||19,'font-family':'ui-monospace,Consolas,monospace','text-anchor':s.a||'middle'},t));
+  L(SPP-34,yb,SPP+wallW*sc+18,yb,{c:'#e6ecf3',w:2});
+  if(boxH>=2500)L(SPP-34,Y(boxH),SPP+wallW*sc+18,Y(boxH),{c:'#3a4453',w:1,d:'8 6'});
+  if(cs.some(c=>+c.h===760||+c.h===860))L(SPP-34,Y(900),SPP+wallW*sc+18,Y(900),{c:'#7a5a22',w:1,d:'6 4'});
+  [[900,'900'],[1650,'1650'],[2350,'2350'],[2700,'2700']].forEach(([mm,t])=>{
+    if(mm>boxH)return; L(SPP-40,Y(mm),SPP-22,Y(mm),{c:'#2b333f',w:1});
+    T(SPP-46,Y(mm)+4,t,{s:16,c:'#5f6b7a',a:'end'});
+  });
+  T(SPP-34,yTop+16,`${elName}${title?' · '+title:''}　${wallW} mm`,{s:22,c:dim?'#5f6b7a':'#9dcbff',a:'start'});
+  for(const gh of ((M.ghosts&&M.ghosts[elName])||[])){
+    const r=R(SPP+ +gh.x0*sc,Y(+(gh.ybase||0)+(+(gh.h)||760)),+gh.w*sc,(+(gh.h)||760)*sc,{c:'#2a333d',f:'#161c24'});
+    r.setAttribute('stroke-dasharray','4 3'); r.__pos=gh.pos; r.style.cursor='pointer'; HIT.push(r);
+  }
+  for(const c of cs){
+    const on=(c.pos===cur.pos);
+    const x=X(+c.x0), w=+c.w*sc, yt=Y(+c.ybase+ +c.h), hh=+c.h*sc;
+    const r=R(x,yt,w,hh,{c:on?'#ffd08a':'#4aa3ff',w:on?2.6:1.5,f:on?'#3b2c14':'#151b23'});
+    r.__pos=c.pos; r.style.cursor='pointer'; HIT.push(r);
+    const kp=c.parts.find(p=>p.id==='kick');
+    if(kp) g.appendChild(el('rect',{x,y:yb-(+kp.h)*sc,width:w,height:(+kp.h)*sc,fill:'#0b0f14',stroke:'#3a4453','stroke-width':1}));
+    const segs=(c.segs&&c.segs.length)?c.segs:null;
+    const segDraw=(gx,gy,gw,gh2,g,label)=>{
+      const gd=g.doors||'无门';
+      if(gd==='单门'){L(gx+3,gy+3,gx+gw-3,gy+gh2/2,{c:'#cfe3fa',w:1.1});L(gx+3,gy+gh2-3,gx+gw-3,gy+gh2/2,{c:'#cfe3fa',w:1.1});}
+      if(gd==='对开'){const m2=gy+gh2/2;L(gx+3,gy+3,gx+gw/2,m2,{c:'#cfe3fa',w:1});L(gx+gw-3,gy+3,gx+gw/2,m2,{c:'#cfe3fa',w:1});
+        L(gx+3,gy+gh2-3,gx+gw/2,m2,{c:'#cfe3fa',w:1});L(gx+gw-3,gy+gh2-3,gx+gw/2,m2,{c:'#cfe3fa',w:1});L(gx+gw/2,gy,gx+gw/2,gy+gh2,{c:'#6f7d8c',w:1,d:'5 4'});}
+      const dn=+g.drawers||0; for(let k=1;k<=dn;k++){const yy=gy+gh2*k/dn;L(gx,yy,gx+gw,yy,{c:'#6f7d8c',w:1,d:'4 3'});}
+      const sn=+g.shelves||0; for(let k=1;k<=sn;k++){const yy=gy+gh2*k/(sn+1);L(gx+3,yy,gx+gw-3,yy,{c:'#6f7d8c',w:1});}
+      if(label&&gw>52&&gh2>16)T(gx+gw/2,gy+gh2/2+4,g.conf+(dn?` ×${dn}`:''),{s:13,c:'#8fa6bd'});
+    };
+    if(segs){
+      let gy=yt;
+      for(const g of segs){
+        const gh2=Math.min(+g.h*sc, yt+hh-gy); if(gh2<=0.5) break;
+        L(x,gy,x+w,gy,{c:'#8fa6bd',w:1.2});
+        segDraw(x,gy,w,gh2,g,true);
+        gy+=gh2;
+      }
+      if(yt+hh-gy>12) L(x,gy,x+w,gy,{c:'#5f6b7a',w:0.9,d:'3 3'});
+    } else {
+      const ns=+c.shelves||0; for(let k=1;k<=ns;k++){const yy=yt+hh*k/(ns+1);L(x+3,yy,x+w-3,yy,{c:'#6f7d8c',w:1});}
+      const nd=+c.drawers||0; for(let k=1;k<=nd;k++){const yy=yt+hh*k/nd;L(x,yy,x+w,yy,{c:'#6f7d8c',w:1,d:'4 3'});}
+      segDraw(x,yt,w,hh,{doors:c.doors,drawers:0,shelves:0,conf:''},false);
+    }
+    if(w>46)T(x+w/2,yt+15,c.pos.replace('WIP-',''),{s:17,c:on?'#ffd08a':'#cfe3fa'});
+    if(c.conf==='拉篮'&&w>30)T(x+w/2,yt+hh*0.62,'∧',{s:18,c:'#f0a63c'});
+    const vv=visOf(c);
+    const mk=(rx,ry,rw,rh)=>g.appendChild(el('rect',{x:rx,y:ry,width:Math.max(rw,2.5),height:Math.max(rh,2.5),fill:'#f0a63c',stroke:'#ffcf80','stroke-width':0.8,rx:1}));
+    if(vv.l) mk(x,yt,Math.max(w*0.07,3),hh);
+    if(vv.r) mk(x+w-Math.max(w*0.07,3),yt,Math.max(w*0.07,3),hh);
+    if(vv.b) mk(x,yt+hh-3.5,w,3.5);
+    if(vv.f) mk(x,yt,w,3.5);
+  }
+  const rec={yTop,h:H+52};
+  const b0=BANDS[elName];
+  if(!b0) BANDS[elName]=rec;
+  else BANDS[elName]={yTop:Math.min(b0.yTop,rec.yTop), h:Math.max(b0.yTop+b0.h, rec.yTop+rec.h)-Math.min(b0.yTop,rec.yTop)};
+  return rec.h+34;
+}
+function masterSvg(){
+  const svg=el('svg',{viewBox:'0 0 1500 3200'}); const HIT=[];
+  let y=46;
+  const list = wall ? [wall] : ['E1','E2','E3','E4','E5','E6'];
+  for(const e of list){
+    const dim=false;
+    const wallW=(M.walls&&M.walls[e])||Math.max(...cells.filter(c=>c.el===e).map(c=>+c.x0+ +c.w));
+    const scBig=wall?Math.min((SVW-2*SPP)/wallW,0.9):SC;   // 单墙按宽度铺满；全部墙用统一比例
+    if(e==='E4'){
+      y+=drawWall(svg,HIT,y,'E4',cells.filter(c=>c.el==='E4'&&c.pos.includes('正面')),'正面（柜门一侧）',dim,scBig);
+      y+=drawWall(svg,HIT,y,'E4',cells.filter(c=>c.el==='E4'&&c.pos.includes('反面')),'反面（岛台另一侧）',dim,scBig);
+    } else y+=drawWall(svg,HIT,y,e,null,'',dim,scBig);
+  }
+  svg.setAttribute('viewBox',`0 0 1500 ${Math.round(y+10)}`);
+  svg.querySelectorAll('line,text,rect').forEach(x=>x.style.pointerEvents='none');
+  HIT.forEach(x=>{x.style.pointerEvents='auto';});
+  return svg;
+}
+function cabSvg(c,vis={}){
+  const W=+c.w,H=+c.h,D=+c.d,kp=c.parts.find(p=>p.id==='kick'),kick=kp?+kp.h:0;
+  const top=(+c.ybase>0)?0:(c.form==='落地柜'&&kp?20:0);
+  const P=88, vw=W+P*2, vh=H+top+P*2+40;
+  const svg=el('svg',{viewBox:`0 0 ${vw} ${vh}`});
+  const x0=P, y0=P+top;
+  const L=(x1,y1,x2,y2,s={})=>svg.appendChild(el('line',{x1,y1,x2,y2,stroke:s.c||'#8b97a6','stroke-width':s.w||1.6,'stroke-dasharray':s.d||''}));
+  const R=(x1,y1,w,h,s={})=>svg.appendChild(el('rect',{x:x1,y:y1,width:w,height:h,fill:s.f||'none',stroke:s.c||'#4aa3ff','stroke-width':s.w||2}));
+  const T=(x1,y1,t,s={})=>svg.appendChild(el('text',{x:x1,y:y1,fill:s.c||'#e6ecf3','font-size':s.s||40,'font-family':'ui-monospace,Consolas,monospace','text-anchor':s.a||'middle'},t));
+  const T18=18;
+  if(top) R(x0,y0-top,W,top,{c:'#7a5a22',w:1.2,f:'#12151a'});
+  R(x0,y0,W,H);
+  if(c.parts.some(p=>p.id==='side')){L(x0+T18,y0,x0+T18,y0+H,{c:'#5f6b7a',w:1.3});L(x0+W-T18,y0,x0+W-T18,y0+H,{c:'#5f6b7a',w:1.3});}
+  if(c.parts.some(p=>p.id==='top'))   L(x0,y0+T18,x0+W,y0+T18,{c:'#5f6b7a',w:1.3});
+  if(c.parts.some(p=>p.id==='bottom'))L(x0,y0+H-T18,x0+W,y0+H-T18,{c:'#5f6b7a',w:1.1,d:'6 4'});
+  const bp=c.parts.find(p=>p.id==='back');
+  if(bp){const bw=Math.min(+bp.w,W-2*T18);L(x0+(W-bw)/2,y0+18,x0+(W-bw)/2,y0+H-18,{c:'#39424f',w:1,d:'3 5'});L(x0+(W+bw)/2,y0+18,x0+(W+bw)/2,y0+H-18,{c:'#39424f',w:1,d:'3 5'});}
+  if(kick){R(x0,y0+H-kick,W,kick,{c:'#3a4453',w:1,f:'#0e1218'});T(x0+W/2,y0+H-kick/2+14,'踢脚 '+kick,{s:34,c:'#8b97a6'});}
+  const drawShelf=y1=>{L(x0+T18,y1,x0+W-T18,y1,{w:2.2});L(x0+T18,y1+18,x0+W-T18,y1+18,{w:1,d:'5 4'});};
+  const drawDoor=(x1,y1,w1,h1,kind)=>{
+    if(kind==='单门'){L(x1+12,y1+12,x1+w1-12,y1+h1/2,{c:'#e6ecf3',w:2.6});L(x1+12,y1+h1-12,x1+w1-12,y1+h1/2,{c:'#e6ecf3',w:2.6});}
+    if(kind==='对开'){const m=y1+h1/2;L(x1+10,y1+10,x1+w1/2,m,{c:'#e6ecf3',w:2.2});L(x1+w1-10,y1+10,x1+w1/2,m,{c:'#e6ecf3',w:2.2});
+      L(x1+10,y1+h1-10,x1+w1/2,m,{c:'#e6ecf3',w:2.2});L(x1+w1-10,y1+h1-10,x1+w1/2,m,{c:'#e6ecf3',w:2.2});
+      L(x1+w1/2,y1,x1+w1/2,y1+h1,{c:'#6f7d8c',w:1.1,d:'9 7'});}
+  };
+  const segs=(c.segs&&c.segs.length)?c.segs:null;
+  if(segs){
+    const usable=H-kick, sum=segs.reduce((a,s)=>a+(+s.h||0),0)||usable; let cy=y0;
+    for(const s of segs){
+      const sh=usable*(+s.h/sum);
+      L(x0,cy+sh,x0+W,cy+sh,{c:'#4aa3ff',w:2.2});
+      const ns=+s.shelves||0; for(let k=1;k<=ns;k++) drawShelf(cy+sh*k/(ns+1));
+      const nd=+s.drawers||0;
+      if(nd){for(let k=1;k<=nd;k++)L(x0,cy+sh*k/nd,x0+W,cy+sh*k/nd,{w:1.5,d:'6 4'});for(let k=0;k<nd;k++)T(x0+W/2,cy+sh*(k+0.62)/nd,'∧',{s:40,c:'#f0a63c'});}
+      if(s.doors&&s.doors!=='无门') drawDoor(x0,cy,W,sh,s.doors);
+      T(x0+W/2,cy+sh-16,`${s.conf} ${s.h}`+(s.doors&&s.doors!=='无门'?` ${s.doors}`:''),{s:32,c:'#8b97a6'});
+      cy+=sh;
+    }
+  } else {
+    const ns=+c.shelves||0; for(let k=1;k<=ns;k++) drawShelf(y0+18+(H-36-kick)*k/(ns+1));
+    const nd=+c.drawers||0;
+    if(nd){const hh=(H-kick)/nd;for(let k=1;k<=nd;k++)L(x0,y0+hh*k,x0+W,y0+hh*k,{w:1.7,d:'7 5'});for(let k=0;k<nd;k++)T(x0+W/2,y0+hh*(k+0.62),'∧',{s:50,c:'#f0a63c'});}
+    const dr=c.doors||'无门';
+    if(dr!=='无门'&&c.conf!=='转角') drawDoor(x0,y0,W,H-kick,dr);
+    if(c.conf==='转角') T(x0+W/2,y0+H*0.42,`转角柜 ${c.ct==='直'?'直':'L'}${c.leg2?' 回转'+c.leg2:''}`,{s:38,c:'#9dcbff'});
+    if(c.conf==='空位'||c.conf==='开放格') T(x0+W/2,y0+H*0.42,'开放 / 空位',{s:38,c:'#5f6b7a'});
+    if(c.conf==='拉篮') T(x0+W/2,y0+H*0.55,'∧ 垃圾桶拉篮',{s:34,c:'#f0a63c'});
+  }
+  const fc=(c.form==='吊柜');
+  if(vis.l) R(x0,y0,18,H,{c:'#f0a63c',w:1,f:'#3b2c14'});
+  if(vis.r) R(x0+W-18,y0,18,H,{c:'#f0a63c',w:1,f:'#3b2c14'});
+  if(vis.b) R(x0,y0+H-18,W,18,{c:'#f0a63c',w:1,f:'#3b2c14'});
+  if(vis.f) R(x0,y0-top-18,W,18,{c:'#f0a63c',w:1,f:'#3b2c14'});
+  const vs=c.parts.filter(p=>['vis_s','vis_m'].includes(p.id));
+  if(vs.length)T(x0+W/2,y0+H+72,`侧面见光板 ${vs.reduce((a,p)=>a+p.q,0)} 块（${vs.map(p=>p.w+'×'+p.h).join('、')}）`,{s:32,c:'#7fb0d8'});
+  L(x0,y0+H+110,x0+W,y0+H+110,{c:'#4aa3ff',w:1.1});
+  L(x0,y0+H+94,x0,y0+H+126,{c:'#4aa3ff',w:1.1});L(x0+W,y0+H+94,x0+W,y0+H+126,{c:'#4aa3ff',w:1.1});
+  T(x0+W/2,y0+H+160,W+' 宽',{s:40,c:'#9dcbff'});
+  L(x0+W+80,y0,x0+W+80,y0+H,{c:'#4aa3ff',w:1.1});
+  L(x0+W+64,y0,x0+W+96,y0,{c:'#4aa3ff',w:1.1});L(x0+W+64,y0+H,x0+W+96,y0+H,{c:'#4aa3ff',w:1.1});
+  svg.appendChild(el('text',{x:x0+W+120,y:y0+H/2,fill:'#9dcbff','font-size':40,'font-family':'monospace',
+    transform:`rotate(90 ${x0+W+120} ${y0+H/2})`,'text-anchor':'middle'},H+' 高'));
+  T(x0-10,y0-46,`深 ${D}　${c.form}　${c.conf||''}${c.ct?('（'+(c.ct==='直'?'直转角':'L 转角')+'）'):''}`,{s:34,a:'start',c:'#8b97a6'});
+  T(x0-10,y0+H+206,c.pos,{s:46,a:'start',c:'#f0a63c'});
+  return svg;
+}
+
+/* ================= 整墙总览（真实标高） ================= */
+function wallSvg(elName,subset,title){
+  const cs=subset||cells.filter(c=>c.el===elName);
+  const wallW=(M.walls&&M.walls[elName])||Math.max(...cs.map(c=>+c.x0+ +c.w));
+  const boxH=(M.wallH&&M.wallH[elName])||Math.max(...cs.map(c=>+c.ybase+ +c.h));
+  const W=1500,P=120,sc=(W-P-50)/wallW,H=Math.round(boxH*sc),yb=H+36,Y=mm=>yb-mm*sc;
+  const svg=el('svg',{viewBox:`0 0 ${W} ${H+96}`}); const HIT=[];
+  const L=(x1,y1,x2,y2,s={})=>svg.appendChild(el('line',{x1,y1,x2,y2,stroke:s.c||'#8b97a6','stroke-width':s.w||1.4,'stroke-dasharray':s.d||''}));
+  const R=(x1,y1,w,h,s={})=>svg.appendChild(el('rect',{x:x1,y:y1,width:Math.max(w,1.5),height:Math.max(h,2),fill:s.f||'none',stroke:s.c||'#3a4453','stroke-width':s.w||1.4,rx:2}));
+  const T=(x1,y1,t,s={})=>svg.appendChild(el('text',{x:x1,y:y1,fill:s.c||'#8b97a6','font-size':s.s||20,'font-family':'ui-monospace,Consolas,monospace','text-anchor':s.a||'middle'},t));
+  L(P-40,yb,P+wallW*sc+24,yb,{c:'#e6ecf3',w:2});
+  if(boxH>=2500)L(P-40,Y(boxH),P+wallW*sc+24,Y(boxH),{c:'#3a4453',w:1,d:'8 6'});
+  if(cs.some(c=>+c.h===760||+c.h===860))L(P-40,Y(900),P+wallW*sc+24,Y(900),{c:'#7a5a22',w:1,d:'6 4'});
+  [[0,'±0'],[900,'900'],[1650,'1650'],[2350,'2350'],[2700,'2700']].forEach(([mm,t])=>{
+    if(mm>boxH)return; L(P-46,Y(mm),P-24,Y(mm),{c:'#2b333f',w:1});
+    T(P-52,Y(mm)+5,t,{s:18,c:'#5f6b7a',a:'end'});
+  });
+  for(const g of ((M.ghosts&&M.ghosts[elName])||[])){
+    const r=R(P+ +g.x0*sc,Y(+(g.ybase||0)+(+(g.h)||760)),+g.w*sc,(+(g.h)||760)*sc,{c:'#2a333d',f:'#161c24'});
+    r.setAttribute('stroke-dasharray','4 3'); r.__pos=g.pos; r.style.cursor='pointer'; HIT.push(r);
+  }
+  for(const c of cs){
+    const on=(c.pos===cur.pos);
+    const x=P+ +c.x0*sc, w=+c.w*sc, yt=Y(+c.ybase+ +c.h), hh=+c.h*sc;
+    const r=R(x,yt,w,hh,{c:on?'#ffd08a':'#4aa3ff',w:on?2.4:1.5,f:on?'#3b2c14':'#151b23'});
+    r.__pos=c.pos; r.style.cursor='pointer'; HIT.push(r);
+    const kp=c.parts.find(p=>p.id==='kick');
+    if(kp) svg.appendChild(el('rect',{x,y:yb-(+kp.h)*sc,width:w,height:(+kp.h)*sc,fill:'#0b0f14',stroke:'#3a4453','stroke-width':1}));
+    const segs=(c.segs&&c.segs.length)?c.segs:null;
+    const segDraw=(gx,gy,gw,gh2,g,label)=>{
+      const gd=g.doors||'无门';
+      if(gd==='单门'){L(gx+3,gy+3,gx+gw-3,gy+gh2/2,{c:'#cfe3fa',w:1.1});L(gx+3,gy+gh2-3,gx+gw-3,gy+gh2/2,{c:'#cfe3fa',w:1.1});}
+      if(gd==='对开'){const m2=gy+gh2/2;L(gx+3,gy+3,gx+gw/2,m2,{c:'#cfe3fa',w:1});L(gx+gw-3,gy+3,gx+gw/2,m2,{c:'#cfe3fa',w:1});
+        L(gx+3,gy+gh2-3,gx+gw/2,m2,{c:'#cfe3fa',w:1});L(gx+gw-3,gy+gh2-3,gx+gw/2,m2,{c:'#cfe3fa',w:1});L(gx+gw/2,gy,gx+gw/2,gy+gh2,{c:'#6f7d8c',w:1,d:'5 4'});}
+      const dn=+g.drawers||0; for(let k=1;k<=dn;k++){const yy=gy+gh2*k/dn;L(gx,yy,gx+gw,yy,{c:'#6f7d8c',w:1,d:'4 3'});}
+      const sn=+g.shelves||0; for(let k=1;k<=sn;k++){const yy=gy+gh2*k/(sn+1);L(gx+3,yy,gx+gw-3,yy,{c:'#6f7d8c',w:1});}
+      if(label&&gw>52&&gh2>16)T(gx+gw/2,gy+gh2/2+4,g.conf+(dn?` ×${dn}`:''),{s:13,c:'#8fa6bd'});
+    };
+    if(segs){
+      let gy=yt;
+      for(const g of segs){
+        const gh2=Math.min(+g.h*sc, yt+hh-gy); if(gh2<=0.5) break;
+        L(x,gy,x+w,gy,{c:'#8fa6bd',w:1.2});
+        segDraw(x,gy,w,gh2,g,true);
+        gy+=gh2;
+      }
+      if(yt+hh-gy>12) L(x,gy,x+w,gy,{c:'#5f6b7a',w:0.9,d:'3 3'});
+    } else {
+      const ns=+c.shelves||0; for(let k=1;k<=ns;k++){const yy=yt+hh*k/(ns+1);L(x+3,yy,x+w-3,yy,{c:'#6f7d8c',w:1});}
+      const nd=+c.drawers||0; for(let k=1;k<=nd;k++){const yy=yt+hh*k/nd;L(x,yy,x+w,yy,{c:'#6f7d8c',w:1,d:'4 3'});}
+      segDraw(x,yt,w,hh,{doors:c.doors,drawers:0,shelves:0,conf:''},false);
+    }
+    if(w>52)T(x+w/2,yt+17,c.pos.replace('WIP-',''),{s:19,c:on?'#ffd08a':'#cfe3fa'});
+    if(w>52)T(x+w/2,yt+hh-7,String(c.w),{s:15,c:'#6f7d8c'});
+    if(c.conf==='拉篮'&&w>34)T(x+w/2,yt+hh*0.62,'∧',{s:20,c:'#f0a63c'});
+    // 见光板高亮（勾选优先，没勾过就用模型默认）
+    const vv=visOf(c);
+    const mk=(rx,ry,rw,rh)=>svg.appendChild(el('rect',{x:rx,y:ry,width:Math.max(rw,2.5),height:Math.max(rh,2.5),fill:'#f0a63c',stroke:'#ffcf80','stroke-width':0.8,rx:1}));
+    if(vv.l) mk(x,yt,Math.max(w*0.06,3),hh);
+    if(vv.r) mk(x+w-Math.max(w*0.06,3),yt,Math.max(w*0.06,3),hh);
+    if(vv.b) mk(x,yt+hh-3,w,3);
+    if(vv.f) mk(x,yt,w,3);
+  }
+  svg.querySelectorAll('line,text,rect').forEach(x=>x.style.pointerEvents='none');   // 装饰件穿透
+  HIT.forEach(x=>{x.style.pointerEvents='auto';});
+  T(P+wallW*sc/2,H+80,`${elName} 墙${title?' · '+title:''} ${wallW} mm　（点任一柜放大）`,{s:21,c:'#9dcbff'});
+  svg.addEventListener('click',ev=>{
+    let t=ev.target, p=t&&t.__pos;
+    while(!p && t && t!==svg){ t=t.parentNode; p=t&&t.__pos; }
+    if(!p)return;
+    const k=cells.findIndex(c=>c.pos===p); if(k<0)return;
+    i=k; render();
+  });
+  return svg;
+}
+
+/* ================= 渲染 ================= */
+let cur={};
+function render(){
+  const c=cells[i]; cur=c;
+  document.getElementById('nAll').textContent=cells.length;
+  document.getElementById('nDone').textContent=Object.keys(V).length;
+  document.getElementById('nBad').textContent=Object.values(V).filter(v=>!v.ok).length;
+  document.getElementById('nNote').textContent=nNote();
+  const HJ=cells.reduce((a,x)=>a+(x.hj||0),0),RL=cells.reduce((a,x)=>a+(x.rl||0),0),LV=cells.reduce((a,x)=>a+(x.lv||0),0);
+  document.getElementById('hwtot').textContent=`全房：${cells.length} 柜｜${M.total} ㎡｜门铰 ${HJ} 件｜轨道 ${RL} 副｜门扇 ${LV} 扇（门铰 @4.10 = ${(HJ*4.1).toFixed(2)} 元）`;
+  const tabs=document.getElementById('wtabs'); tabs.innerHTML='';
+  Object.keys(WALLNAME).forEach(e=>{
+    const b=document.createElement('button'); b.textContent=WALLNAME[e]; b.className=(wall===e)?'on':'';
+    b.onclick=()=>{wall=(wall===e?null:e);const k=cells.findIndex(x=>x.el===e);if(k>=0)i=k;render()};
+    tabs.appendChild(b);
+  });
+  const stage=document.getElementById('stage'); stage.innerHTML='';
+  const pan=document.createElement('div'); pan.id='pan'; stage.appendChild(pan);
+  BANDS={};
+  pan.appendChild(masterSvg());
+  document.getElementById('pos').textContent=(wall?wall+' 聚焦　·　':'')+c.pos+'　'+c.w+'×'+c.d+'×'+c.h;
+  document.getElementById('bWall').textContent='全部墙';
+  const rows=[
+    ['规格',`${c.w} 宽 × ${c.d} 深 × ${c.h} 高 mm${c.ybase?`（底标高 ${c.ybase}）`:''}`],
+    ['形态',`<span class="tag">${c.form}</span>`],
+    ['构型',`<span class="tag b">${c.conf||'—'}</span>${c.conf==='转角'?' <span class="tag">'+(c.ct==='直'?'直转角':'L 转角')+(c.leg2?' 回转'+c.leg2:'')+'</span>':''}`],
+    ['门板',`<span class="tag b">${c.doors||'无门'}</span>${c.side&&c.side!=='—'?' <span class="tag">开向 '+c.side+'</span>':''}`],
+    ['层板/抽屉',(c.segs&&c.segs.length)?'分段：'+c.segs.map(g=>`${g.conf}${g.h}（层板${g.shelves||0}/抽屉${g.drawers||0}/${g.doors||'无门'}）`).join('　')+(Math.abs(c.segs.reduce((a,g)=>a+(+g.h||0),0)-(+c.h-36))>40?` <span class="tag w">分段合计 ${c.segs.reduce((a,g)=>a+(+g.h||0),0)} / 内高 ${(+c.h)-36}</span>`:''):`层板 ${c.shelves||0} 块　抽屉 ${c.drawers||0} 个`],
+    ['展开面积',`<b>${(+c.area).toFixed(4)} ㎡</b>　（${c.parts.length} 行板件 / ${c.parts.reduce((a,p)=>a+p.q,0)} 块）`],
+    ['面积算式',(()=>{const g=c.parts.filter(p=>!p.min);return (g.slice(0,6).map(p=>`${(NM[p.id]||p.id)} ${Math.round(p.w)}×${Math.round(p.h)}×${p.q}`).join(' ＋ ')+(g.length>6?` ＋ …（共 ${g.length} 行）`:''))+` ＝ <b>${(+c.area).toFixed(4)} ㎡</b><br><span class="hint">${AREA_NOTE[c.pos]||AREA_NOTE[c.conf]||'按板件表逐块相加（每块 宽×高×块数 ÷ 1e6）'}</span>`})()],
+    ['五金',`门铰 <b>${c.hj||0}</b> 件（门扇 ${c.lv||0}）　轨道 <b>${c.rl||0}</b> 副${(c.lv>0&&!c.hj)?' <span class="tag w">封板/翻门/拉篮本来不装铰，确认是哪种</span>':''}`],
+    ['图上依据',`${c.conf==='转角'?'图上未标（直转角，两侧同宽）':c.conf==='拉篮'?'∧ 折线（垃圾桶拉篮）':c.conf==='抽屉'?'∧ 折线':c.doors==='单门'?'单楔形 ›':c.doors==='对开'?'双楔形 ›‹':'空白 = 开放格/空位'}${c.shelves?'　+ 层板双细线 ×'+c.shelves:''}`],
+  ];
+  document.getElementById('tbl').innerHTML=rows.map(r=>`<tr><td class="k">${r[0]}</td><td>${r[1]}</td></tr>`).join('');
+  let sumA=0;
+  document.getElementById('pt').innerHTML='<tr><th>板件</th><th>尺寸 mm</th><th>块</th><th>面积㎡</th></tr>'+
+    c.parts.map(p=>{sumA+=+p.area;return `<tr><td>${NM[p.id]||p.id}</td><td class="mono">${Math.round(p.w)}×${Math.round(p.h)}×${(+p.id.length&&p.id.startsWith('d'))?16:18}</td><td>${p.q}</td><td class="mono">${(+p.area).toFixed(4)}</td></tr>`}).join('')+
+    `<tr class="sum"><td>合计</td><td></td><td>${c.parts.reduce((a,p)=>a+p.q,0)}</td><td class="mono">${sumA.toFixed(4)}</td></tr>`;
+  // 用户动过的面以用户为准（t 标记 touched），没动过的面跟模型走
+  const st=VB[c.pos]||{};
+  const vm=visOf(c);
+  VB[c.pos]=Object.assign({},st,vm);   // 保留 *t 标记，否则一重绘就丢掉用户改动
+  ['l','r','b','f'].forEach(k=>{const el2=document.getElementById('v'+k.toUpperCase()); if(el2) el2.checked=!!vm[k];});
+  const vinfo=document.getElementById('vInfo');
+  if(vinfo){
+    const q=[vm.l?1:0,vm.r?1:0].reduce((a,b)=>a+b,0), W2=+c.w,H2=+c.h,D2=+c.d;
+    let a2=(q*D2*H2 + (vm.b?W2*D2:0) + (vm.f?W2*(+c.cfH||0):0))/1e6;
+    vinfo.textContent= a2>0 ? `本柜见光 ${a2.toFixed(4)} ㎡（勾选后我按此改模型重算）` : '本柜不加见光';
+  }
+  document.getElementById('note').value=NB[c.pos]||'';
+  document.getElementById('noteBadge').textContent=NB[c.pos]?'已记':'';
+  document.getElementById('lnkImg').href=IMG[c.el]?'refimg/'+encodeURI(IMG[c.el]):'#';
+  document.getElementById('edit').classList.remove('on');
+  fitView('both');
+}
+function applyTf(){
+  const pan=document.getElementById('pan'); if(!pan) return;
+  pan.style.transform=`translate(${TX}px,${TY}px) scale(${ZK})`;
+  const p=document.getElementById('zPct'); if(p) p.textContent=Math.round(ZK*100)+'%';
+}
+function fitView(mode){
+  const stage=document.getElementById('stage'), pan=document.getElementById('pan'); if(!pan) return;
+  ZK=1; TX=0; TY=0; pan.style.transform='none';
+  const kids=[...pan.children]; if(!kids.length) return;
+  // 内容自然高度（宽度恒等于容器宽，所以宽度方向天生 1:1）
+  let sh=0; kids.forEach(ch=>{ sh+=ch.getBoundingClientRect().height + 10; });
+  const sw=stage.clientWidth;
+  const k=(mode==='w') ? 1 : Math.min(1,(stage.clientHeight-10)/sh);
+  ZK=+k.toFixed(3);
+  TX=Math.max(0,(stage.clientWidth - sw*ZK)/2);
+  TY=(mode==='w') ? 2 : Math.max(2,(stage.clientHeight - sh*ZK)/2);
+  applyTf();
+}
+function focusBand(elName){
+  const stage=document.getElementById('stage'), pan=document.getElementById('pan'), b=BANDS[elName];
+  if(!pan||!b){ fitView('both'); return; }
+  ZK=1; TX=0; TY=0; pan.style.transform='none';
+  const sw=stage.clientWidth, sh=stage.clientHeight;
+  const k=Math.min((sw-10)/sw, (sh-16)/b.h, 3);
+  ZK=+k.toFixed(3);
+  TX=0; TY=+(8 - b.yTop*ZK).toFixed(1);
+  applyTf();
+}
+function zoomAt(f, cx, cy){
+  const stage=document.getElementById('stage');
+  cx=cx??stage.clientWidth/2; cy=cy??stage.clientHeight/2;
+  const nk=Math.min(8, Math.max(0.2, ZK*f));
+  TX = cx - (cx-TX)*(nk/ZK); TY = cy - (cy-TY)*(nk/ZK); ZK=nk;
+  applyTf();
+}
+function bindView(){
+  const stage=document.getElementById('stage');
+  stage.addEventListener('wheel', e=>{
+    e.preventDefault();
+    const r=stage.getBoundingClientRect();
+    zoomAt(e.deltaY<0?1.12:1/1.12, e.clientX-r.left, e.clientY-r.top);
+  }, {passive:false});
+  let drag=null, moved=0;
+  stage.addEventListener('pointerdown', e=>{
+    if(e.button!==0) return; drag={x:e.clientX,y:e.clientY,tx:TX,ty:TY}; moved=0;
+    stage.classList.add('drag'); stage.setPointerCapture(e.pointerId);
+  });
+  stage.addEventListener('pointermove', e=>{
+    if(!drag) return; TX=drag.tx+(e.clientX-drag.x); TY=drag.ty+(e.clientY-drag.y);
+    moved=Math.max(moved, Math.abs(e.clientX-drag.x)+Math.abs(e.clientY-drag.y)); applyTf();
+  });
+  const end=e=>{ if(drag){drag=null; stage.classList.remove('drag');} };
+  stage.addEventListener('pointerup', end); stage.addEventListener('pointercancel', end);
+  stage.addEventListener('dblclick', ()=>fitView(wall?'both':'w'));
+  stage.addEventListener('click', e=>{
+    const wasDrag=moved>6; moved=0;           // 先判后清，避免残留
+    if(wasDrag) return;                       // 拖动不放跳转
+    const el0=document.elementFromPoint(e.clientX, e.clientY);
+    let t=el0, pos=null;
+    while(t && !pos){ pos=t.__pos||null; t=t.parentNode; }
+    if(!pos) return;
+    const k=cells.findIndex(c=>c.pos===pos); if(k<0) return;
+    i=k; render();
+    moved=0;                                  // 用完复位，避免下一次点击被误判成拖动
+  });
+}
+
+/* ================= 判读 ================= */
+function mark(ok,to){
+  const c=cells[i]; if(!c)return;
+  V[c.pos]={ok,orig:{conf:c.conf,doors:c.doors,shelves:c.shelves,drawers:c.drawers},to:ok?null:to};
+  saveV(); i=Math.min(i+1,cells.length-1); render();
+}
+function openEdit(){
+  const c=cells[i]; if(!c)return;
+  const sc=document.getElementById('eConf'),sd=document.getElementById('eDoor');
+  sc.innerHTML=CONFS.map(x=>`<option>${x}</option>`).join('');
+  sd.innerHTML=DOORS.map(x=>`<option>${x}</option>`).join('');
+  sc.value=CONFS.includes(c.conf)?c.conf:'层板';
+  sd.value=DOORS.includes(c.doors)?c.doors:'无门';
+  document.getElementById('eShelf').value=c.shelves||0;
+  document.getElementById('eDraw').value=c.drawers||0;
+  document.getElementById('edit').classList.add('on');
+}
+
+/* ================= 反馈文档 ================= */
+const CHANGELOG=[
+ ['2026-11-25 第二轮（按你的反馈文档）','17 条备注全部落实；面积 114.9102 → 114.9930 ㎡'],
+ ['E1-1','勾选左侧见光（600×760，+0.4560 ㎡）'],
+ ['E1-5 / E2-3','开向改左开（图上单楔形尖端朝左），判读显示「开向 左」'],
+ ['E1-6','标识改 ∧，注明「垃圾桶拉篮」（450 宽，箱体+单门+拉篮五金，无层板）'],
+ ['E1-2 / E1-8 / E1-9','新增「面积算式」行：逐块 宽×高×块数 相加 + 该柜口径说明'],
+ ['E1-9','确认按直转角柜计（2.0487 ㎡）'],
+ ['U1下 / U1上','左侧见光 360×700、360×350（含底面见光）'],
+ ['U2下/U2上/U3下/U3上/U4下','底面见光各一块'],
+ ['U4上','不勾底面见光（按反馈清单）'],
+ ['U5下 / U5上','右侧见光 360×700、360×350；U5上 不勾底面'],
+ ['U0-烟机柜','新增左+右见光（420×1330 各一）+ 底面见光（1200×420），5.3108 → 6.9308 ㎡'],
+ ['UC','确认是上下两层直转角侧边透视；清单未勾见光 → 0.3780 → 0.0000 ㎡（要出这块侧板请勾「左侧见光」）'],
+ ['E4-反面3','双拼：上段 350 开放格 + 下段 410 抽屉，0.7346 ㎡'],
+ ['E4-反面1 / 2','抽屉规格图上未标，暂按竖向链 436/324 出 838×409、838×303（待确认）'],
+ ['WIP 三柜','三层两块层板（6.0646 / 8.6115 / 5.6751 ㎡）'],
+ ['清空','备注、判读、见光勾选全部清零（存储键升到 cabNote40 / cabRev40 / cabVis40）'],
+ ['待确认①','E1-9 侧翼 590 只画不计（是否要单独出侧板/背板/踢脚）'],
+ ['待确认②','E4-反面1/2 抽屉规格图上未标，现按 436/324 竖向链出 838×409、838×303'],
+ ['重算结果（第二轮）','报价 2496.85 + 445.62 + 899.05 = 3841.52 元；用料 117.9696 ㎡ / 362 件 / 46.62 张 / 4317.52 元'],
+ ['2026-11-25 第三轮（见光勾选清单）','按新清单重设见光，面积 114.9930 → 117.1261 ㎡'],
+ ['新增见光','E3-2 底；E4-正面1 左、E4-正面3 右、E4-反面1 左、E4-反面3 右；UC 底（0 → 0.1332 ㎡）'],
+ ['取消见光','U1上/U2上/U3上/U4上/U5上 五个上段取消底+侧见光（清单未列）；E2-3 右取消'],
+ ['重算结果（第三轮）','报价 2496.85 + 516.01 + 899.05 = 3911.91 元；用料 120.1026 ㎡ / 369 件 / 47.47 张 / 4453.11 元'],
+ ['2026-11-25 第四轮（见光清单 v5）','按新清单重设见光，面积 117.1261 → 114.1503 ㎡'],
+ ['本轮见光','只留 8 处：E1-1 左、E2-3 右、U1上 左、U5下 右+底、U5上 右、E4-反面3 右、E3-2 底、E4-正面3 右；其余全部取消'],
+ ['E3 高柜画错（已修）','E3-3 790×2580 以前只画成一个空白高柜，现按 4 段绘制：抽屉569 ×2 ／开放格664／开放格456／对开375，每段单独画门/抽线并标文字'],
+ ['待确认③','E3-3 分段合计 2064 mm，比柜高 2580 少 516 mm（图上还有一段没标？顶柜/封板？）'],
+ ['重算结果（第四轮）','报价 2496.85 + 417.81 + 899.05 = 3813.71 元；用料 117.1269 ㎡ / 361 件 / 46.29 张 / 4269.31 元'],
+ ['2026-11-25 第五轮（口径修正：见光只累加）','见光板改累加口径，历轮勾过的全部保留；面积 114.1503 → 118.6257 ㎡'],
+ ['见光最终 18 柜 23 块','E1-1 左；E2-3 右；U0 左右底；U1下 左+底；U1上 左+底；U2下/U2上/U3下/U3上/U4下 底；UC 底；U5下 右+底；U5上 右；E4-正面1 左、正面3 右、反面1 左、反面3 右；E3-2 底'],
+ ['口径固化','反馈文档第五节改为输出全量 35 柜勾选状态（✔/✘）；未列 ≠ 取消，取消必须明确说「取消某柜某面」'],
+ ['重算结果（第五轮）','报价 2496.85 + 565.48 + 899.05 = 3961.38 元；用料 121.6018 ㎡ / 375 件 / 48.06 张 / 4551.38 元'],
+ ['2026-11-25 第六轮（E3 高柜按图改）','面积 111.6063 ㎡（36 柜）'],
+ ['E3 整墙重建','按图：940 冰箱位（下 1850 空位 + 上 850 对开门柜）｜95 填充｜600 烤箱柜（上 850 对开 + 中 两个烤箱格开放层板 + 下 2 抽）｜95'],
+ ['修 bug','分段柜内高以前取全局 H 值，导致分段合计≠柜高（E3-3 差 516）；改为取本柜柜高，E3-3 420+… 合计 1814 = 1850−36'],
+ ['修 bug','报价柜体表把 E3 写死成 1000 宽上柜 / 790×2580 高柜，改成 1540 宽上柜 + 1540×1850 高柜'],
+ ['重算结果（第六轮）','报价 2747.91 + 368.77 + 899.05 = 4015.73 元；用料 114.6178 ㎡ / 365 件 / 45.30 张 / 4172.50 元'],
+ ['2026-11-25 第七轮（见光恢复，只加不删）','见光回到 18 柜：E1-1左｜E2-3右｜U0左右底｜U1下左+底｜U1上左+底｜U2下/U2上/U3下/U3上/U4下 底｜UC底｜U5下右+底｜U5上右｜E3-2底｜E4-正面1左/正面3右/反面1左/反面3右；面积 111.6063 → 117.5865 ㎡'],
+ ['说明','页面逻辑改为：模型里勾了的面一定显示勾选，页面取消只在本会话生效；不再每次升 localStorage 键（之前升键把见光勾选一起清掉，才出现"改一点丢一点"）'],
+ ['重算结果（第七轮）','报价 2747.91 + 566.10 + 899.05 = 4213.06 元；用料 120.5977 ㎡ / 383 件 / 47.67 张 / 4543.43 元'],
+];
+function buildLog(){
+  return '## 改动日志 · Lot 5037\n\n'+CHANGELOG.map(r=>`- **${r[0]}**：${r[1]}`).join('\n');
+}
+function buildDoc(){
+  const bad=Object.entries(V).filter(([k,v])=>!v.ok);
+  const byPos=Object.fromEntries(cells.map(c=>[c.pos,c]));
+  const noteOnly=cells.filter(c=>NB[c.pos]&&String(NB[c.pos]).trim()&&!(V[c.pos]&&!V[c.pos].ok));
+  const ok=cells.filter(c=>V[c.pos]&&V[c.pos].ok);
+  const HJ=cells.reduce((a,c)=>a+(c.hj||0),0),RL=cells.reduce((a,c)=>a+(c.rl||0),0);
+  const L=['# 柜体核对反馈 · Lot 5037','',`生成时间：${new Date().toLocaleString('zh-CN')}`,
+    `共 ${cells.length} 柜｜已核 ${Object.keys(V).length}｜标错 ${bad.length}｜备注 ${nNote()}｜当前合计 ${M.total} ㎡、门铰 ${HJ} 件、轨道 ${RL} 副`,'',
+    '## 一、要改判的柜'];
+  if(!bad.length)L.push('（无）');
+  bad.forEach(([pos,v],k)=>{const c=byPos[pos]||{};
+    L.push('',`### ${k+1}. ${pos}　${c.w}×${c.d}×${c.h}　${c.form||''}`);
+    L.push(`- 我判：${F({...c,...v.orig})}　${(+c.area||0).toFixed(4)} ㎡`);
+    if(v.to)L.push(`- 改成：${F(v.to)}`);
+    if(NB[pos]&&String(NB[pos]).trim())L.push(`- 备注：${String(NB[pos]).trim()}`);});
+  L.push('','## 二、只留备注、判读不改的柜');
+  if(!noteOnly.length)L.push('（无）');
+  noteOnly.forEach((c,k)=>L.push('',`### ${k+1}. ${c.pos}　${c.w}×${c.d}×${c.h}　${c.form}（当前 ${F(c)}）`,`- 备注：${String(NB[c.pos]).trim()}`));
+  L.push('','## 三、已确认无误的柜');
+  L.push(ok.length?ok.map(c=>c.pos).join('、'):'（无）');
+  L.push('','## 四、给我的改动清单（照此改模型/重算）');
+  const todo=[];
+  bad.forEach(([pos,v])=>{const o=v.orig,t=v.to||{};
+    const d=[]; if(o.conf!==t.conf&&t.conf)d.push(`构型 ${o.conf}→${t.conf}`);
+    if(o.doors!==t.doors&&t.doors)d.push(`门板 ${o.doors}→${t.doors}`);
+    if(t.shelves!=null&&+o.shelves!==+t.shelves)d.push(`层板 ${o.shelves}→${t.shelves}`);
+    if(t.drawers!=null&&+o.drawers!==+t.drawers)d.push(`抽屉 ${o.drawers}→${t.drawers}`);
+    todo.push(`- ${pos}：${d.length?d.join('，'):'判读不变，见备注'}`);});
+  Object.keys(NB).forEach(pos=>{if((!V[pos]||V[pos].ok)&&NB[pos]&&String(NB[pos]).trim())todo.push(`- ${pos}：按备注改 —— ${String(NB[pos]).trim()}`)});
+  L.push(todo.length?todo.join('\n'):'（无）');
+  L.push('','## 五、见光板勾选（全量状态：✔=要，✘=不要；未改动的柜也列出，避免遗漏）');
+  const vrows=cells.map(c=>{
+    const v=visOf(c);
+    const m=k=>v[k]?'✔':'✘';
+    return `- ${c.pos}　${c.w}×${c.d}×${c.h}　左${m('l')} 右${m('r')} 底${m('b')} 顶封${m('f')}`;
+  });
+  L.push(vrows.join('\n'));
+  L.push('','> 面积/五金按当前模型；收到本文件后按上面清单改判读并整套重算。');
+  return L.join('\n');
+}
+
+/* ================= boot ================= */
+(async function boot(){
+  M=await fetch('model.json').then(r=>r.json()); cells=M.cells;
+  wall='E1';   // 默认看主墙立面
+  document.getElementById('zIn').onclick =()=>zoomAt(1.25);
+  document.getElementById('zOut').onclick=()=>zoomAt(0.8);
+  document.getElementById('zFit').onclick=()=>fitView('both');
+  document.getElementById('zW').onclick  =()=>fitView('w');
+  document.getElementById('z1').onclick  =()=>{const st=document.getElementById('stage');ZK=1;TX=(st.clientWidth-document.querySelector('#pan svg').getBoundingClientRect().width)/2;TY=(st.clientHeight-document.querySelector('#pan svg').getBoundingClientRect().height)/2;applyTf()};
+  document.getElementById('zRst').onclick=()=>fitView(wall?'both':'w');
+  bindView();
+  window.addEventListener('resize', ()=>fitView(wall?'both':'w'));
+  document.getElementById('note').addEventListener('input',e=>{
+    const c=cells[i];if(!c)return;const v=e.target.value;
+    if(v.trim())NB[c.pos]=v;else delete NB[c.pos];
+    saveNB();document.getElementById('nNote').textContent=nNote();
+    document.getElementById('noteBadge').textContent=NB[c.pos]?'已记':'';
+  });
+  ['l','r','b','f'].forEach(k=>{
+    const box=document.getElementById('v'+k.toUpperCase());
+    if(box) box.addEventListener('change',()=>{
+      const c=cells[i]; if(!c) return;
+      const v=VB[c.pos]||{}; v[k]=box.checked; v[k+'t']=1; VB[c.pos]=v; saveVB(); render();
+    });
+  });
+  document.getElementById('bOk').onclick=()=>mark(true);
+  document.getElementById('bBad').onclick=openEdit;
+  document.getElementById('bSave').onclick=()=>mark(false,{conf:eConf.value,doors:eDoor.value,shelves:+eShelf.value,drawers:+eDraw.value});
+  document.getElementById('bCancel').onclick=()=>document.getElementById('edit').classList.remove('on');
+  document.getElementById('bPrev').onclick=()=>{i=Math.max(0,i-1);render()};
+  document.getElementById('bWall').onclick=()=>{wall=null;render()};
+  const bl=document.getElementById('bLog');
+  if(bl) bl.onclick=()=>{document.getElementById('mText').value=buildLog();document.getElementById('modal').classList.add('on')};
+  document.getElementById('bDoc').onclick=()=>{document.getElementById('mText').value=buildDoc();document.getElementById('modal').classList.add('on')};
+  document.getElementById('mClose').onclick=()=>document.getElementById('modal').classList.remove('on');
+  document.getElementById('mCopy').onclick=()=>{const t=document.getElementById('mText');t.select();document.execCommand('copy');document.getElementById('mCopy').textContent='已复制';setTimeout(()=>document.getElementById('mCopy').textContent='复制',1200)};
+  document.getElementById('mDown').onclick=()=>{const b=new Blob([document.getElementById('mText').value],{type:'text/markdown'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='柜体核对反馈.md';a.click()};
+  document.addEventListener('keydown',e=>{
+    const t=e.target.tagName; if(t==='INPUT'||t==='TEXTAREA'||t==='SELECT')return;
+    if(e.key==='y')mark(true);
+    if(e.key==='n')openEdit();
+    if(e.key==='ArrowRight'){i=Math.min(i+1,cells.length-1);render()}
+    if(e.key==='ArrowLeft'){i=Math.max(0,i-1);render()}
+  });
+  render();
+})();
+</script>
+</body>
+</html>
